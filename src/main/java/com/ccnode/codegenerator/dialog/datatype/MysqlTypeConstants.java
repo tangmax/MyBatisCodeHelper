@@ -6,6 +6,8 @@ package com.ccnode.codegenerator.dialog.datatype;
 public class MysqlTypeConstants {
     public static final String INTEGER = "INT";
 
+    public static final String UNSIGNED = "UNSIGNED";
+
     public static final String TINYINT = "TINYINT";
 
     public static final String SMALLINT = "SMALLINT";
@@ -13,6 +15,7 @@ public class MysqlTypeConstants {
     public static final String MEDIUMINT = "MEDIUMINT";
 
     public static final String BIGINT = "BIGINT";
+
 
     public static final String FLOAT = "FLOAT";
 

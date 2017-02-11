@@ -2,6 +2,8 @@ package com.ccnode.codegenerator.genCode;
 
 import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.InsertFileProp;
+import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
+import com.ccnode.codegenerator.dialog.datatype.UnsignedCheckResult;
 import com.ccnode.codegenerator.enums.FileType;
 import com.ccnode.codegenerator.pojo.GenCodeResponse;
 import com.ccnode.codegenerator.pojo.GeneratedFile;
@@ -356,10 +358,14 @@ public class GenSqlService {
 
     private static String genfieldSql(GenCodeProp field) {
         StringBuilder ret = new StringBuilder();
+        UnsignedCheckResult result = MySqlTypeUtil.checkUnsigned(field.getFiledType());
         ret.append(GenCodeUtil.ONE_RETRACT).append(GenCodeUtil.wrapComma(field.getColumnName()))
-                .append(" ").append(field.getFiledType());
+                .append(" ").append(result.getType());
         if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
             ret.append(" (" + field.getSize() + ")");
+        }
+        if(result.isUnsigned()){
+            ret.append(" UNSIGNED");
         }
         if (field.getUnique()) {
             ret.append(" UNIQUE");

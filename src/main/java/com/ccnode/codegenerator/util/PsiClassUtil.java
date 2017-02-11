@@ -79,7 +79,7 @@ public class PsiClassUtil {
             if (psiField.hasModifierProperty("private") && !psiField.hasModifierProperty("static")) {
                 ClassFieldInfo info = new ClassFieldInfo();
                 info.setFieldName(psiField.getName());
-                info.setFieldType(psiField.getType().getCanonicalText());
+                info.setFieldType(convertToObjectText(psiField.getType().getCanonicalText()));
                 lists.add(info);
             }
         }
@@ -121,7 +121,13 @@ public class PsiClassUtil {
             return "java.lang.Long";
         } else if (canonicalText.equals("double")) {
             return "java.lang.Double";
-        } else {
+        } else if (canonicalText.equals("float")) {
+            return "java.lang.FLoat";
+        }else if (canonicalText.equals("boolean")) {
+            return "java.lang.Boolean";
+        }else if (canonicalText.equals("byte[]")) {
+            return "java.lang.Byte";
+        }else {
             return canonicalText;
         }
     }

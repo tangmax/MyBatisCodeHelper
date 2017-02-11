@@ -6,6 +6,7 @@ package com.ccnode.codegenerator.dialog.datatype;
 public class ClassFieldInfo {
     private String fieldName;
 
+//    the field type is Object type will convert int -> java.lang.Integer
     private String fieldType;
 
     public String getFieldName() {
