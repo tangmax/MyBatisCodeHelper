@@ -54,13 +54,9 @@ public class QueryBuilder {
         }
         //say this is not an method.
         QueryParseDto dto = new QueryParseDto();
-        //todo if the method is not null later will do it, not now.
-        if (info.getMethod() == null) {
-            //return mutiple things let's user to choose the one because the sql is defferent.
-            dto.setQueryInfos(queryInfos);
-            if (queryInfos.size() > 0) {
-                dto.setHasMatched(true);
-            }
+        dto.setQueryInfos(queryInfos);
+        if (queryInfos.size() > 0) {
+            dto.setHasMatched(true);
         }
         return dto;
     }
@@ -311,10 +307,8 @@ public class QueryBuilder {
             queryInfos.add(buildQueryUpdateInfo(update, fieldMap, info.getTableName(), psiClass.getName(), info.getRelation()));
         }
         QueryParseDto dto = new QueryParseDto();
-        if (info.getMethod() == null) {
-            dto.setQueryInfos(queryInfos);
-            dto.setHasMatched(true);
-        }
+        dto.setQueryInfos(queryInfos);
+        dto.setHasMatched(true);
         return dto;
     }
 
@@ -360,10 +354,8 @@ public class QueryBuilder {
             queryInfos.add(buildQueryDeleteInfo(delete, fieldMap, info.getTableName(), psiClass.getName(), info.getRelation()));
         }
         QueryParseDto dto = new QueryParseDto();
-        if (info.getMethod() == null) {
-            dto.setQueryInfos(queryInfos);
-            dto.setHasMatched(true);
-        }
+        dto.setQueryInfos(queryInfos);
+        dto.setHasMatched(true);
         return dto;
 
     }
@@ -400,10 +392,8 @@ public class QueryBuilder {
             queryInfos.add(buildQueryCountInfo(count, fieldMap, info.getTableName(), psiClass.getName(), info.getRelation()));
         }
         QueryParseDto dto = new QueryParseDto();
-        if (info.getMethod() == null) {
-            dto.setQueryInfos(queryInfos);
-            dto.setHasMatched(true);
-        }
+        dto.setQueryInfos(queryInfos);
+        dto.setHasMatched(true);
         return dto;
 
     }

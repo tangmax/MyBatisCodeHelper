@@ -7,7 +7,6 @@ import com.intellij.psi.PsiMethod;
  * Created by bruce.ge on 2016/12/12.
  */
 public class MethodXmlPsiInfo {
-    private PsiMethod method;
 
     private String methodName;
 
@@ -41,14 +40,6 @@ public class MethodXmlPsiInfo {
 
     public void setPojoClass(PsiClass pojoClass) {
         this.pojoClass = pojoClass;
-    }
-
-    public PsiMethod getMethod() {
-        return method;
-    }
-
-    public void setMethod(PsiMethod method) {
-        this.method = method;
     }
 
     public String getMethodName() {
