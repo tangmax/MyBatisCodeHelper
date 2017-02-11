@@ -1,6 +1,6 @@
 package com.ccnode.codegenerator.nextgenerationparser.parser;
 
-import com.ccnode.codegenerator.jpaparse.KeyWordConstants;
+import com.ccnode.codegenerator.nextgenerationparser.KeyWordConstants;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.delete.ParsedDelete;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.delete.ParsedDeleteDto;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.delete.ParsedDeleteError;

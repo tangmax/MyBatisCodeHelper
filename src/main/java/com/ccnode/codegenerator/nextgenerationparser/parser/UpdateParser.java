@@ -1,6 +1,6 @@
 package com.ccnode.codegenerator.nextgenerationparser.parser;
 
-import com.ccnode.codegenerator.jpaparse.KeyWordConstants;
+import com.ccnode.codegenerator.nextgenerationparser.KeyWordConstants;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.update.ParsedUpdate;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.update.ParsedUpdateDto;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.update.ParsedUpdateError;

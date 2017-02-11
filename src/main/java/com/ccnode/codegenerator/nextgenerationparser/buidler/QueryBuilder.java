@@ -2,7 +2,7 @@ package com.ccnode.codegenerator.nextgenerationparser.buidler;
 
 import com.ccnode.codegenerator.constants.MapperConstants;
 import com.ccnode.codegenerator.constants.QueryTypeConstants;
-import com.ccnode.codegenerator.jpaparse.KeyWordConstants;
+import com.ccnode.codegenerator.nextgenerationparser.KeyWordConstants;
 import com.ccnode.codegenerator.nextgenerationparser.QueryParseDto;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.base.ParsedErrorBase;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.base.QueryRule;

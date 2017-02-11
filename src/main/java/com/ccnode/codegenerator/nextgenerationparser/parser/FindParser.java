@@ -1,6 +1,6 @@
 package com.ccnode.codegenerator.nextgenerationparser.parser;
 
-import com.ccnode.codegenerator.jpaparse.KeyWordConstants;
+import com.ccnode.codegenerator.nextgenerationparser.KeyWordConstants;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.find.ParsedFindError;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.find.ParsedFind;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.find.ParsedFindDto;

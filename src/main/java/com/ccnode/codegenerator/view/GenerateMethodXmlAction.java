@@ -5,7 +5,6 @@ import com.ccnode.codegenerator.dialog.ChooseXmlToUseDialog;
 import com.ccnode.codegenerator.dialog.GenerateResultMapDialog;
 import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.dialog.MethodExistDialog;
-import com.ccnode.codegenerator.jpaparse.ReturnClassInfo;
 import com.ccnode.codegenerator.nextgenerationparser.QueryParseDto;
 import com.ccnode.codegenerator.nextgenerationparser.QueryParser;
 import com.ccnode.codegenerator.nextgenerationparser.buidler.ParamInfo;
@@ -418,16 +417,6 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         info.setReturnClassName(returnClassName);
     }
 
-    private ReturnClassInfo buildReturnClassInfo(String returnClassName, PsiClass pojoClass) {
-        ReturnClassInfo info = new ReturnClassInfo();
-        info.setReturnClassName(returnClassName);
-        if (returnClassName.startsWith("java.lang")) {
-            info.setBasicType(true);
-        } else if (returnClassName.equals(pojoClass.getQualifiedName())) {
-            info.setResultMap(MapperConstants.ALL_COLUMN_MAP);
-        }
-        return info;
-    }
 
     private String buildAllColumn(Map<String, String> filedToColumnMap) {
         StringBuilder bu = new StringBuilder();

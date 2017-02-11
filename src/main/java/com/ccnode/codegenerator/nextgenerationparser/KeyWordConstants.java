@@ -1,4 +1,4 @@
-package com.ccnode.codegenerator.jpaparse;
+package com.ccnode.codegenerator.nextgenerationparser;
 
 /**
  * Created by bruce.ge on 2016/12/4.
