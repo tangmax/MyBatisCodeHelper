@@ -1,6 +1,6 @@
 MyBatisCodeHelper 
 =================
-[![GitHub release][release-img]][latest-release] [![Jetbrains Plugins][plugin-img]][plugin] [![Version](http://phpstorm.espend.de/badge/9445/version)][plugin]  
+[![GitHub release][release-img]][latest-release] [![Jetbrains Plugins][plugin-img]][plugin] [![Version](http://phpstorm.espend.de/badge/9445/version)][plugin]
 [![Downloads](http://phpstorm.espend.de/badge/9445/downloads)][plugin]
 [![Downloads last month](http://phpstorm.espend.de/badge/9445/last-month)][plugin]
 <div align="right">
@@ -13,7 +13,7 @@ Intellij下代码自动生成插件 支持生成mybatis的dao接口,mapper xml,�
 ![generateFile](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/generateFiles.gif)  
 
 
-- 根据dao中的方法名生成对应的在xml并进行方法补全 
+- 根据dao中的方法名生成对应的mapper sql并进行方法补全 
 ![find](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/find.gif)
 ![update](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/update.gif)
 ![delete](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/delete.gif)

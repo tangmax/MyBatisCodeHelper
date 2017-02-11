@@ -19,6 +19,12 @@ Intellij code generate plugin. support to generate mybatis dao interface,mapper 
 ![count](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/count.gif)
 ![all_1](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/all_1.gif)
 
+- refactor mybatis interface method name  
+
+![refacterMethodName](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/refactor_method_name.gif)  
+
+
+
 Installation
 ----
 
