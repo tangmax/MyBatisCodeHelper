@@ -17,13 +17,9 @@ import com.ccnode.codegenerator.nextgenerationparser.parsedresult.update.ParsedU
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.update.ParsedUpdateError;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.pojo.MethodXmlPsiInfo;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiField;
 import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,11 +42,10 @@ public class QueryBuilder {
         }
 
         //get pojo class all fields and their type do it cool.
-        PsiClass pojoClass = info.getPojoClass();
-        Map<String, String> fieldMap = buildFieldMap(pojoClass);
+
         List<QueryInfo> queryInfos = new ArrayList<>();
         for (ParsedFind find : parsedFinds) {
-            queryInfos.add(buildQueryInfo(find, fieldMap, info.getTableName(), pojoClass.getName(), info.getRelation()));
+            queryInfos.add(buildQueryInfo(find, info.getFieldMap(), info.getTableName(), info.getPsiClassName(), info.getRelation()));
         }
         //say this is not an method.
         QueryParseDto dto = new QueryParseDto();
@@ -59,34 +54,6 @@ public class QueryBuilder {
             dto.setHasMatched(true);
         }
         return dto;
-    }
-
-    @NotNull
-    private static Map<String, String> buildFieldMap(PsiClass pojoClass) {
-        Map<String, String> fieldMap = new HashMap<>();
-        PsiField[] allFields = pojoClass.getAllFields();
-        for (PsiField f : allFields) {
-            if (f.hasModifierProperty("private") && !f.hasModifierProperty("static")) {
-                String canonicalText = f.getType().getCanonicalText();
-                String objectTypeText = convertToObjectText(canonicalText);
-                fieldMap.put(f.getName(), objectTypeText);
-            }
-        }
-        return fieldMap;
-    }
-
-    private static String convertToObjectText(String canonicalText) {
-        if (canonicalText.equals("int")) {
-            return "java.lang.Integer";
-        } else if (canonicalText.equals("short")) {
-            return "java.lang.Short";
-        } else if (canonicalText.equals("long")) {
-            return "java.lang.Long";
-        } else if (canonicalText.equals("double")) {
-            return "java.lang.Double";
-        } else {
-            return canonicalText;
-        }
     }
 
     private static String buildErrorMsg(ParsedErrorBase error) {
@@ -300,11 +267,10 @@ public class QueryBuilder {
             dto.setErrorMsg(errorMsgs);
             return dto;
         }
-        PsiClass psiClass = info.getPojoClass();
-        Map<String, String> fieldMap = buildFieldMap(psiClass);
+
         List<QueryInfo> queryInfos = new ArrayList<>();
         for (ParsedUpdate update : updateList) {
-            queryInfos.add(buildQueryUpdateInfo(update, fieldMap, info.getTableName(), psiClass.getName(), info.getRelation()));
+            queryInfos.add(buildQueryUpdateInfo(update, info.getFieldMap(), info.getTableName(), info.getPsiClassName(), info.getRelation()));
         }
         QueryParseDto dto = new QueryParseDto();
         dto.setQueryInfos(queryInfos);
@@ -347,11 +313,9 @@ public class QueryBuilder {
             dto.setErrorMsg(errorMsgs);
         }
 
-        PsiClass psiClass = info.getPojoClass();
-        Map<String, String> fieldMap = buildFieldMap(psiClass);
         List<QueryInfo> queryInfos = new ArrayList<>();
         for (ParsedDelete delete : parsedDeletes) {
-            queryInfos.add(buildQueryDeleteInfo(delete, fieldMap, info.getTableName(), psiClass.getName(), info.getRelation()));
+            queryInfos.add(buildQueryDeleteInfo(delete, info.getFieldMap(), info.getTableName(), info.getPsiClassName(), info.getRelation()));
         }
         QueryParseDto dto = new QueryParseDto();
         dto.setQueryInfos(queryInfos);
@@ -385,11 +349,9 @@ public class QueryBuilder {
             dto.setErrorMsg(errorMsgs);
             return dto;
         }
-        PsiClass psiClass = info.getPojoClass();
-        Map<String, String> fieldMap = buildFieldMap(psiClass);
         List<QueryInfo> queryInfos = new ArrayList<>();
         for (ParsedCount count : parsedCounts) {
-            queryInfos.add(buildQueryCountInfo(count, fieldMap, info.getTableName(), psiClass.getName(), info.getRelation()));
+            queryInfos.add(buildQueryCountInfo(count, info.getFieldMap(), info.getTableName(), info.getPsiClassName(), info.getRelation()));
         }
         QueryParseDto dto = new QueryParseDto();
         dto.setQueryInfos(queryInfos);

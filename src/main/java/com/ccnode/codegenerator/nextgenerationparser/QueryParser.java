@@ -18,6 +18,7 @@ import java.util.List;
  */
 public class QueryParser {
 
+    //hard to test when use with psiclass.
     public static QueryParseDto parse(List<String> props, MethodXmlPsiInfo info) {
         //make it cool to start.
         String methodLower = info.getMethodName().toLowerCase();

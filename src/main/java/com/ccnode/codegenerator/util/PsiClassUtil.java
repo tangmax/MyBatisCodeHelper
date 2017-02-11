@@ -3,9 +3,12 @@ package com.ccnode.codegenerator.util;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTypesUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by bruce.ge on 2016/12/9.
@@ -93,5 +96,33 @@ public class PsiClassUtil {
             }
         }
         return lists;
+    }
+
+    @NotNull
+    public static Map<String, String> buildFieldMap(PsiClass pojoClass) {
+        Map<String, String> fieldMap = new HashMap<>();
+        PsiField[] allFields = pojoClass.getAllFields();
+        for (PsiField f : allFields) {
+            if (f.hasModifierProperty("private") && !f.hasModifierProperty("static")) {
+                String canonicalText = f.getType().getCanonicalText();
+                String objectTypeText = convertToObjectText(canonicalText);
+                fieldMap.put(f.getName(), objectTypeText);
+            }
+        }
+        return fieldMap;
+    }
+
+    private static String convertToObjectText(String canonicalText) {
+        if (canonicalText.equals("int")) {
+            return "java.lang.Integer";
+        } else if (canonicalText.equals("short")) {
+            return "java.lang.Short";
+        } else if (canonicalText.equals("long")) {
+            return "java.lang.Long";
+        } else if (canonicalText.equals("double")) {
+            return "java.lang.Double";
+        } else {
+            return canonicalText;
+        }
     }
 }

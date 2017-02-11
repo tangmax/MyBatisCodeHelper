@@ -1,7 +1,6 @@
 package com.ccnode.codegenerator.pojo;
 
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiMethod;
+import java.util.Map;
 
 /**
  * Created by bruce.ge on 2016/12/12.
@@ -10,13 +9,31 @@ public class MethodXmlPsiInfo {
 
     private String methodName;
 
-    private String returnClassName;
-
     private FieldToColumnRelation relation;
 
-    private PsiClass pojoClass;
 
     private String tableName;
+
+    private Map<String, String> fieldMap;
+
+    private String psiClassName;
+
+
+    public Map<String, String> getFieldMap() {
+        return fieldMap;
+    }
+
+    public void setFieldMap(Map<String, String> fieldMap) {
+        this.fieldMap = fieldMap;
+    }
+
+    public String getPsiClassName() {
+        return psiClassName;
+    }
+
+    public void setPsiClassName(String psiClassName) {
+        this.psiClassName = psiClassName;
+    }
 
     public FieldToColumnRelation getRelation() {
         return relation;
@@ -34,27 +51,11 @@ public class MethodXmlPsiInfo {
         this.tableName = tableName;
     }
 
-    public PsiClass getPojoClass() {
-        return pojoClass;
-    }
-
-    public void setPojoClass(PsiClass pojoClass) {
-        this.pojoClass = pojoClass;
-    }
-
     public String getMethodName() {
         return methodName;
     }
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
-    }
-
-    public String getReturnClassName() {
-        return returnClassName;
-    }
-
-    public void setReturnClassName(String returnClassName) {
-        this.returnClassName = returnClassName;
     }
 }

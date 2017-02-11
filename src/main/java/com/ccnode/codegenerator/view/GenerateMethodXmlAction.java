@@ -85,7 +85,6 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
 //        PsiPackage srcPackage = JavaDirectoryService.getInstance().getPackage(srcDir);
         PsiElement parent = element.getParent();
         MethodXmlPsiInfo methodInfo = new MethodXmlPsiInfo();
-        methodInfo.setPojoClass(pojoClass);
         if (parent instanceof PsiMethod) {
             return;
         } else if (parent instanceof PsiJavaCodeReferenceElement) {
@@ -252,6 +251,8 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         }
         rootTag = psixml.getRootTag();
         methodInfo.setTableName(tableName);
+        methodInfo.setPsiClassName(pojoClass.getName());
+        methodInfo.setFieldMap(PsiClassUtil.buildFieldMap(pojoClass));
         QueryParseDto parseDto = QueryParser.parse(props, methodInfo);
         XmlTagAndInfo choosed = null;
         if (parseDto.getHasMatched()) {
