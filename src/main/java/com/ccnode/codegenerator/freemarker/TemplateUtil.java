@@ -3,6 +3,8 @@ package com.ccnode.codegenerator.freemarker;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Map;
@@ -13,6 +15,8 @@ import java.util.Map;
  * @Description
  */
 public class TemplateUtil {
+
+    private static Logger logger = LoggerFactory.getLogger(TemplateUtil.class);
 
     private static Configuration configuration;
 
@@ -38,6 +42,7 @@ public class TemplateUtil {
             return out.toString();
         } catch (Exception e) {
             // TODO: 2017/1/12 add logger
+            logger.info("templateUtil process to String catch exception", e);
             return null;
         }
     }

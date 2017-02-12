@@ -8,6 +8,7 @@ import com.ccnode.codegenerator.dialog.dto.mybatis.*;
 import com.ccnode.codegenerator.enums.MethodName;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.DateUtil;
+import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.ccnode.codegenerator.util.PsiDocumentUtils;
 import com.google.common.collect.Lists;
@@ -173,7 +174,7 @@ public class UpdateDialogMore extends DialogWrapper {
                 if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
                     ret.append("(" + field.getSize() + ")");
                 }
-                if(result.isUnsigned()){
+                if (result.isUnsigned()) {
                     ret.append(" UNSIGNED");
                 }
                 if (field.getUnique()) {
@@ -210,6 +211,7 @@ public class UpdateDialogMore extends DialogWrapper {
             }
 
         }
+        // TODO: 2017/2/12 flush to disk and show success
         super.doOKAction();
     }
 
@@ -259,9 +261,19 @@ public class UpdateDialogMore extends DialogWrapper {
             return;
         } else {
             String finalValue = newValueText.replaceAll("\r", "");
+            if (classMapperMethod.getMethodName().equals(MethodName.update.name())) {
+                String oldValue = mapperMethod.getXmlTag().getValue().getText();
+                int where = oldValue.toLowerCase().lastIndexOf("where");
+                if (where != -1) {
+                    finalValue = finalValue + "\n" + GenCodeUtil.TWO_RETRACT + oldValue.substring(where);
+                } else {
+                    //todo ask user to input the primary key?
+                }
+            }
+            final String insertValue = finalValue;
             WriteCommandAction.runWriteCommandAction(myProject, () -> {
                 TextRange valueTextRange = mapperMethod.getXmlTag().getValue().getTextRange();
-                manager.getDocument(myXmlFile.getContainingFile()).replaceString(valueTextRange.getStartOffset(), valueTextRange.getEndOffset(), finalValue);
+                manager.getDocument(myXmlFile.getContainingFile()).replaceString(valueTextRange.getStartOffset(), valueTextRange.getEndOffset(), insertValue);
             });
         }
         //else set with value.
