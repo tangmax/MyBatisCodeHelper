@@ -20,6 +20,11 @@ Intellij下代码自动生成插件 支持生成mybatis的dao接口,mapper xml,�
 ![count](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/count.gif)
 ![all_1](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/all_1.gif)
 
+- mybatis接口方法名重构支持  
+![refacterMethodName](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/refactor_method_name.gif)  
+
+
+
 安装
 ----
 
