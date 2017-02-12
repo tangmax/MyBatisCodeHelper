@@ -65,7 +65,7 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
                     break;
 
                 case NOFIELD:
-                    errorBuilder.append(" there is no avaliable field in current classs");
+                    errorBuilder.append(" there is no available field in current class");
             }
             Messages.showErrorDialog(project, errorBuilder.toString(), "validate fail");
             return;

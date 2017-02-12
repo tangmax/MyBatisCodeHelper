@@ -8,6 +8,8 @@ package com.ccnode.codegenerator.freemarker;
 public class TemplateConstants {
     public static final String insertTemplateName = "insert.ftl";
 
+    public static final String insertWithOutTestTemplateName = "insert_without_test.ftl";
+
     public static final String insertListTemplateName = "insertList.ftl";
 
     public static final String updateTemplateName = "update.ftl";

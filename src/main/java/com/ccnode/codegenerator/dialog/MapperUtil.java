@@ -148,7 +148,13 @@ public class MapperUtil {
         Map<String, Object> root = Maps.newHashMap();
         root.put("finalFields", finalFields);
         root.put("tableName", tableName);
-        String s = TemplateUtil.processToString(TemplateConstants.insertTemplateName, root);
+        String s = null;
+        boolean useTest = false;
+        if(useTest) {
+             s= TemplateUtil.processToString(TemplateConstants.insertTemplateName, root);
+        }else {
+            s = TemplateUtil.processToString(TemplateConstants.insertWithOutTestTemplateName, root);
+        }
         return s;
     }
 

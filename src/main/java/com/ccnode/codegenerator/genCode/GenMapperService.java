@@ -468,14 +468,6 @@ public class GenMapperService {
         return retList;
     }
 
-    public static void main(String[] args) {
-//        Pattern day3DataPattern = Pattern.compile("var dataSK = (.*)");
-        String match = RegexUtil.getMatch("(.*)pojo.(.*)",
-                "refund_finish_time = #{pojo.refundFinishTime},");
-        System.out.println(match);
-
-    }
-
     public static void generateMapperXml(InsertFileProp fileProp, List<GenCodeProp> props, ClassInfo srcClass, InsertFileProp daoProp, String tableName, GenCodeProp primaryProp) {
         List<String> retList = Lists.newArrayList();
         retList.add("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
@@ -550,27 +542,59 @@ public class GenMapperService {
     private static Collection<? extends String> genInsertMethod(List<GenCodeProp> props, String tableName) {
         List<String> retList = Lists.newArrayList();
         retList.add(AUTO_GENERATED_CODE);
-        retList.add(GenCodeUtil.ONE_RETRACT + "<insert id=\"" + MethodName.insert.name() + "\">");
-        retList.add(GenCodeUtil.TWO_RETRACT + "INSERT INTO " + GenCodeUtil.wrapComma(tableName));
-        retList.add(GenCodeUtil.TWO_RETRACT + "<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
-        for (GenCodeProp fieldInfo : props) {
-            String fieldName = fieldInfo.getFieldName();
-            String s = GenCodeUtil.THREE_RETRACT + String.format("<if test=\"pojo.%s != null\"> %s, </if>"
-                    , fieldName, GenCodeUtil.wrapComma(fieldInfo.getColumnName()));
-            retList.add(s);
+        boolean useTest = false;
+        //todo make useTest get it from config file?
+        if (useTest) {
+            retList.add(GenCodeUtil.ONE_RETRACT + "<insert id=\"" + MethodName.insert.name() + "\">");
+            retList.add(GenCodeUtil.TWO_RETRACT + "INSERT INTO " + GenCodeUtil.wrapComma(tableName));
+            retList.add(GenCodeUtil.TWO_RETRACT + "<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
+            for (GenCodeProp fieldInfo : props) {
+                String fieldName = fieldInfo.getFieldName();
+                String s = GenCodeUtil.THREE_RETRACT + String.format("<if test=\"pojo.%s != null\"> %s, </if>"
+                        , fieldName, GenCodeUtil.wrapComma(fieldInfo.getColumnName()));
+                retList.add(s);
+            }
+            retList.add(GenCodeUtil.TWO_RETRACT + "</trim>");
+            retList.add(GenCodeUtil.TWO_RETRACT + "VALUES");
+            retList.add(GenCodeUtil.TWO_RETRACT + "<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
+            for (GenCodeProp fieldInfo : props) {
+                String fieldName = fieldInfo.getFieldName();
+                String s = GenCodeUtil.THREE_RETRACT + String.format("<if test=\"pojo.%s != null\"> #{pojo.%s}, </if>"
+                        , fieldName, fieldName);
+                retList.add(s);
+            }
+            retList.add(GenCodeUtil.TWO_RETRACT + "</trim>");
+            retList.add(GenCodeUtil.ONE_RETRACT + "</insert>");
+            retList.add(StringUtils.EMPTY);
+        } else {
+            retList.add(GenCodeUtil.ONE_RETRACT + "<insert id=\"" + MethodName.insert.name() + "\">");
+            retList.add(GenCodeUtil.TWO_RETRACT + "INSERT INTO " + GenCodeUtil.wrapComma(tableName));
+            String columns = GenCodeUtil.TWO_RETRACT + "(";
+            for (int i = 0; i < props.size(); i++) {
+                columns += String.format("%s"
+                        , GenCodeUtil.wrapComma(props.get(i).getColumnName()));
+                if (i != props.size() - 1) {
+                    columns += ",";
+                }
+            }
+            columns += ")";
+            retList.add(columns);
+
+            String values = GenCodeUtil.TWO_RETRACT + "VALUES (";
+            for (int i = 0; i < props.size(); i++) {
+                GenCodeProp fieldInfo = props.get(i);
+                String fieldName = fieldInfo.getFieldName();
+                values += String.format("#{pojo.%s}"
+                        , fieldName);
+                if (i != props.size() - 1) {
+                    values += ",";
+                }
+            }
+            values += ")";
+            retList.add(values);
+            retList.add(GenCodeUtil.ONE_RETRACT + "</insert>");
+            retList.add(StringUtils.EMPTY);
         }
-        retList.add(GenCodeUtil.TWO_RETRACT + "</trim>");
-        retList.add(GenCodeUtil.TWO_RETRACT + "VALUES");
-        retList.add(GenCodeUtil.TWO_RETRACT + "<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
-        for (GenCodeProp fieldInfo : props) {
-            String fieldName = fieldInfo.getFieldName();
-            String s = GenCodeUtil.THREE_RETRACT + String.format("<if test=\"pojo.%s != null\"> #{pojo.%s}, </if>"
-                    , fieldName, fieldName);
-            retList.add(s);
-        }
-        retList.add(GenCodeUtil.TWO_RETRACT + "</trim>");
-        retList.add(GenCodeUtil.ONE_RETRACT + "</insert>");
-        retList.add(StringUtils.EMPTY);
         return retList;
     }
 

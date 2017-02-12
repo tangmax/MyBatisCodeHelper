@@ -1,6 +1,8 @@
 package com.ccnode.codegenerator.dialog;
 
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
+import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
+import com.ccnode.codegenerator.dialog.datatype.UnsignedCheckResult;
 import com.ccnode.codegenerator.dialog.dto.MapperDto;
 import com.ccnode.codegenerator.dialog.dto.mybatis.*;
 import com.ccnode.codegenerator.enums.MethodName;
@@ -166,9 +168,13 @@ public class UpdateDialogMore extends DialogWrapper {
             for (GenCodeProp field : newAddedProps) {
                 StringBuilder ret = new StringBuilder();
                 ret.append("ALTER TABLE " + tableName + " ADD " + field.getColumnName());
-                ret.append(" " + field.getFiledType());
+                UnsignedCheckResult result = MySqlTypeUtil.checkUnsigned(field.getFiledType());
+                ret.append(" " + result.getType());
                 if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
                     ret.append("(" + field.getSize() + ")");
+                }
+                if(result.isUnsigned()){
+                    ret.append(" UNSIGNED");
                 }
                 if (field.getUnique()) {
                     ret.append(" UNIQUE");
