@@ -32,7 +32,7 @@ public class MySqlTypeUtil {
 
 
         TypeDefault doubleTypeProp = new TypeDefault("15", "-1.0");
-        javaDefaultMap.put("java.lang.DOUBLE", MysqlTypeConstants.DOUBLE);
+        javaDefaultMap.put("java.lang.Double", MysqlTypeConstants.DOUBLE);
 
         typeDefaultMap.put(MysqlTypeConstants.DOUBLE, doubleTypeProp);
 
