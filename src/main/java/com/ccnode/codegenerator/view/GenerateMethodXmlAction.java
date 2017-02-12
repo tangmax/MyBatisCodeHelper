@@ -239,7 +239,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         rootTag = psixml.getRootTag();
         methodInfo.setTableName(tableName);
         methodInfo.setPsiClassName(pojoClass.getName());
-        methodInfo.setFieldMap(PsiClassUtil.buildFieldMap(pojoClass));
+        methodInfo.setFieldMap(PsiClassUtil.buildFieldMapWithConvertPrimitiveType(pojoClass));
         QueryParseDto parseDto = QueryParser.parse(props, methodInfo);
         XmlTagAndInfo choosed = null;
         if (parseDto.getHasMatched()) {

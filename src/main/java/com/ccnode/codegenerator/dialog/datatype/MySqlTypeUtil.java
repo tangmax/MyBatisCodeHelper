@@ -124,7 +124,7 @@ public class MySqlTypeUtil {
         return javaRecommendMap.get(fieldType);
     }
 
-    public static boolean isDefaultType(String type) {
+    public static boolean isSupportedType(String type) {
         return javaDefaultMap.get(type) != null;
     }
 }

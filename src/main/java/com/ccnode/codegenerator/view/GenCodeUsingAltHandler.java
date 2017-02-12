@@ -9,6 +9,9 @@ import com.ccnode.codegenerator.pojo.GenCodeResponse;
 import com.ccnode.codegenerator.service.pojo.GenerateInsertCodeService;
 import com.ccnode.codegenerator.util.LoggerWrapper;
 import com.ccnode.codegenerator.util.PojoUtil;
+import com.ccnode.codegenerator.util.valdiate.InvalidField;
+import com.ccnode.codegenerator.util.valdiate.PsiClassValidateUtils;
+import com.ccnode.codegenerator.util.valdiate.ValidateResult;
 import com.google.common.collect.Lists;
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.codeInsight.CodeInsightUtilBase;
@@ -36,7 +39,7 @@ import java.util.List;
  */
 public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
 
-    private final static Logger LOGGER = LoggerWrapper.getLogger(GenCodeAction.class);
+    private final static Logger LOGGER = LoggerWrapper.getLogger(GenCodeUsingAltHandler.class);
 
     @Override
     public void invoke(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file) {
@@ -47,8 +50,28 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
         if (!FileDocumentManager.getInstance().requestWriting(editor.getDocument(), project)) {
             return;
         }
-        final PsiClass aClass = OverrideImplementUtil.getContextClass(project, editor, file, false);
-        Module moduleForFile = ModuleUtilCore.findModuleForPsiElement(aClass);
+        final PsiClass currentClass = OverrideImplementUtil.getContextClass(project, editor, file, false);
+        ValidateResult validate =
+                PsiClassValidateUtils.validate(currentClass);
+        if (!validate.getValid()) {
+            List<InvalidField> invalidFieldList =
+                    validate.getInvalidFieldList();
+            StringBuilder errorBuilder = new StringBuilder();
+            switch (validate.getInvalidType()) {
+                case FIELDERROR:
+                    for (InvalidField field : invalidFieldList) {
+                        errorBuilder.append("field name is:" + field.getFieldName() + " field Type is:" + field.getType() + " the reason is:" + field.getReason() + "\n");
+                    }
+                    break;
+
+                case NOFIELD:
+                    errorBuilder.append(" there is no avaliable field in current classs");
+            }
+            Messages.showErrorDialog(project, errorBuilder.toString(), "validate fail");
+            return;
+        }
+
+        Module moduleForFile = ModuleUtilCore.findModuleForPsiElement(currentClass);
         String modulePath = moduleForFile.getModuleFilePath();
         Path parent = Paths.get(modulePath).getParent();
         while (parent.toString().contains(".idea")) {
@@ -61,14 +84,14 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
         if (projectPath == null) {
             projectPath = StringUtils.EMPTY;
         }
-        GenCodeDialog genCodeDialog = new GenCodeDialog(project, aClass);
+        GenCodeDialog genCodeDialog = new GenCodeDialog(project, currentClass);
         boolean b = genCodeDialog.showAndGet();
         if (!b) {
             return;
         } else {
             ClassInfo info = new ClassInfo();
-            info.setQualifiedName(aClass.getQualifiedName());
-            info.setName(aClass.getName());
+            info.setQualifiedName(currentClass.getQualifiedName());
+            info.setName(currentClass.getName());
             switch (genCodeDialog.getType()) {
                 case INSERT: {
                     InsertDialogResult insertDialogResult = genCodeDialog.getInsertDialogResult();
@@ -85,7 +108,7 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
                     }
                     // TODO: 2016/12/26 need to make sure message is call after file refresh
                     VirtualFileManager.getInstance().syncRefresh();
-                    Messages.showMessageDialog(project, "generate files success", "hehe", Messages.getInformationIcon());
+                    Messages.showMessageDialog(project, "generate files success", "success", Messages.getInformationIcon());
                     return;
                 }
                 case UPDATE: {
@@ -100,7 +123,7 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
 //            GenCodeRequest request = new GenCodeRequest(Lists.newArrayList(), projectPath,
 //                    System.getProperty("file.separator"));
 //            AltInsertInfo insertInfo = new AltInsertInfo();
-//            insertInfo.setSrcClass(aClass);
+//            insertInfo.setSrcClass(currentClass);
 //            insertInfo.setFolderPath(file.getVirtualFile().getFolderPath());
 //            request.setInfo(insertInfo);
 //            request.setProject(project);

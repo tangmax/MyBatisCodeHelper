@@ -120,7 +120,8 @@ public class MapperXmlCompletionContributor extends CompletionContributor {
                 String parameterText = parameter.getText();
                 String param = extractParam(parameterText);
                 String parameterType = parameter.getType().getCanonicalText();
-                if (MySqlTypeUtil.isDefaultType(parameterType)) {
+                parameterType = PsiClassUtil.convertToObjectText(parameterType);
+                if (MySqlTypeUtil.isSupportedType(parameterType)) {
                     if (param == null) {
                         continue;
                     } else {
