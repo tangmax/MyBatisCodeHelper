@@ -17,6 +17,13 @@ public class MysqlTypeConstants {
     public static final String BIGINT = "BIGINT";
 
 
+    public static final String BIT = "BIT";
+
+    public static final String BOOL = "BOOL";
+
+    public static final String BOOLEAN = "BOOLEAN";
+
+
     public static final String FLOAT = "FLOAT";
 
     public static final String DOUBLE = "DOUBLE";

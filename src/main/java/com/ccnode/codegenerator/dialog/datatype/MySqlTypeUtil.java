@@ -40,6 +40,7 @@ public class MySqlTypeUtil {
         javaDefaultMap.put("java.lang.Boolean", MysqlTypeConstants.TINYINT);
         typeDefaultMap.put(MysqlTypeConstants.TINYINT, booleanProp);
         typeDefaultMap.put(unsigned(MysqlTypeConstants.TINYINT), booleanProp);
+        typeDefaultMap.put(MysqlTypeConstants.BIT, new TypeDefault("1", "0"));
 
         TypeDefault dateTimeDefault = new TypeDefault("", "'1000-01-01 00:00:00'");
         javaDefaultMap.put("java.util.Date", MysqlTypeConstants.DATETIME);
@@ -82,7 +83,7 @@ public class MySqlTypeUtil {
         String[] bigIntTypes = new String[]{MysqlTypeConstants.BIGINT, unsigned(MysqlTypeConstants.BIGINT)};
         javaRecommendMap.put("java.lang.Long", bigIntTypes);
 
-        javaRecommendMap.put("java.lang.Boolean", new String[]{MysqlTypeConstants.TINYINT, unsigned(MysqlTypeConstants.TINYINT)});
+        javaRecommendMap.put("java.lang.Boolean", new String[]{MysqlTypeConstants.TINYINT, unsigned(MysqlTypeConstants.TINYINT), MysqlTypeConstants.BIT});
 
         javaRecommendMap.put("java.lang.Short", new String[]{MysqlTypeConstants.MEDIUMINT, unsigned(MysqlTypeConstants.MEDIUMINT)});
 
