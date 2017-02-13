@@ -130,7 +130,6 @@ class MyJTable extends JTable {
 
     @Override
     public void setValueAt(Object aValue, int row, int column) {
-        // TODO: 2016/12/28 add primary key check
         super.setValueAt(aValue, row, column);
         if (column == TYPECOLUMNINDEX) {
             TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault((String) aValue);
