@@ -261,6 +261,7 @@ public class UpdateDialogMore extends DialogWrapper {
             return;
         } else {
             String finalValue = newValueText.replaceAll("\r", "");
+            finalValue = finalValue.replaceAll("\\t",GenCodeUtil.ONE_RETRACT);
             if (classMapperMethod.getMethodName().equals(MethodName.update.name())) {
                 String oldValue = mapperMethod.getXmlTag().getValue().getText();
                 int where = oldValue.toLowerCase().lastIndexOf("where");

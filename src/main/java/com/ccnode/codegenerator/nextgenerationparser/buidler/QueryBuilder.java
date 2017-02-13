@@ -17,6 +17,7 @@ import com.ccnode.codegenerator.nextgenerationparser.parsedresult.update.ParsedU
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.update.ParsedUpdateError;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.pojo.MethodXmlPsiInfo;
+import com.ccnode.codegenerator.util.GenCodeUtil;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -110,9 +111,9 @@ public class QueryBuilder {
         StringBuilder builder = new StringBuilder();
         //will notice it.
         if (queryAllTable) {
-            builder.append("\n\tselect <include refid=\"" + MapperConstants.ALL_COLUMN + "\"/>");
+            builder.append("\n"+ GenCodeUtil.ONE_RETRACT+"select <include refid=\"" + MapperConstants.ALL_COLUMN + "\"/>");
         } else {
-            builder.append("\n\tselect");
+            builder.append("\n"+GenCodeUtil.ONE_RETRACT+"select");
             if (find.getDistinct()) {
                 builder.append(" distinct(");
                 for (String prop : find.getFetchProps()) {
@@ -127,7 +128,7 @@ public class QueryBuilder {
                 builder.deleteCharAt(builder.length() - 1);
             }
         }
-        builder.append("\n\t from " + tableName);
+        builder.append("\n"+GenCodeUtil.ONE_RETRACT+" from " + tableName);
         info.setSql(builder.toString());
         info.setParamInfos(new ArrayList<>());
         if (find.getQueryRules() != null) {
@@ -152,7 +153,7 @@ public class QueryBuilder {
     }
 
     private static void buildQuerySqlAndParam(List<QueryRule> queryRules, QueryInfo info, Map<String, String> fieldMap, FieldToColumnRelation relation) {
-        info.setSql(info.getSql() + "\n\twhere");
+        info.setSql(info.getSql() + "\n"+GenCodeUtil.ONE_RETRACT+"where");
         StringBuilder builder = new StringBuilder();
         for (QueryRule rule : queryRules) {
             String prop = rule.getProp();
@@ -202,18 +203,18 @@ public class QueryBuilder {
                     case KeyWordConstants.NOTIN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop + "List").withParamType("List<" + extractLast(fieldMap.get(prop)) + ">").withParamValue(prop + "List").build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + " not in \n\t<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n\t" +
-                                "open=\"(\" separator=\",\" close=\")\">\n\t" +
-                                "#{item}\n\t" +
+                        builder.append(" " + relation.getPropColumn(prop) + " not in \n"+GenCodeUtil.ONE_RETRACT+"<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n"+GenCodeUtil.ONE_RETRACT+"" +
+                                "open=\"(\" separator=\",\" close=\")\">\n"+GenCodeUtil.ONE_RETRACT+"" +
+                                "#{item}\n"+GenCodeUtil.ONE_RETRACT+"" +
                                 "</foreach>\n");
                         break;
                     }
                     case KeyWordConstants.IN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop + "List").withParamType("List<" + extractLast(fieldMap.get(prop)) + ">").withParamValue(prop + "List").build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + " in \n\t<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n\t" +
-                                "open=\"(\" separator=\",\" close=\")\">\n\t" +
-                                "#{item}\n\t" +
+                        builder.append(" " + relation.getPropColumn(prop) + " in \n"+GenCodeUtil.ONE_RETRACT+"<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n"+GenCodeUtil.ONE_RETRACT+"" +
+                                "open=\"(\" separator=\",\" close=\")\">\n"+GenCodeUtil.ONE_RETRACT+"" +
+                                "#{item}\n"+GenCodeUtil.ONE_RETRACT+"" +
                                 "</foreach>\n");
                         break;
                     }
@@ -283,7 +284,7 @@ public class QueryBuilder {
         info.setType(QueryTypeConstants.UPDATE);
         info.setMethodReturnType("int");
         StringBuilder builder = new StringBuilder();
-        builder.append("\n\tupdate " + tableName + "\n\tset");
+        builder.append("\n"+GenCodeUtil.ONE_RETRACT+"update " + tableName + "\n"+GenCodeUtil.ONE_RETRACT+"set");
         info.setParamInfos(new ArrayList<>());
         for (int i = 0; i < update.getUpdateProps().size(); i++) {
             String prop = update.getUpdateProps().get(i);
@@ -329,7 +330,7 @@ public class QueryBuilder {
         info.setType(QueryTypeConstants.DELETE);
         info.setMethodReturnType("int");
         StringBuilder builder = new StringBuilder();
-        builder.append("\n\tdelete from  " + tableName);
+        builder.append("\n"+GenCodeUtil.ONE_RETRACT+"delete from  " + tableName);
         info.setParamInfos(new ArrayList<>());
         info.setSql(builder.toString());
         if (delete.getQueryRules() != null) {
@@ -374,7 +375,7 @@ public class QueryBuilder {
         }
 
         StringBuilder builder = new StringBuilder();
-        builder.append("\n\tselect count(");
+        builder.append("\n"+GenCodeUtil.ONE_RETRACT+"select count(");
         if (count.isDistinct()) {
             builder.append("distinct(");
             for (int i = 0; i < count.getFetchProps().size(); i++) {
@@ -397,7 +398,7 @@ public class QueryBuilder {
             }
         }
         builder.append(")");
-        builder.append("\n\tfrom " + tableName);
+        builder.append("\n"+GenCodeUtil.ONE_RETRACT+"from " + tableName);
         info.setParamInfos(new ArrayList<>());
         info.setSql(builder.toString());
         if (count.getQueryRules() != null) {
