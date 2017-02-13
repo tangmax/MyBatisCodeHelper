@@ -265,10 +265,13 @@ public class UpdateDialogMore extends DialogWrapper {
                 String oldValue = mapperMethod.getXmlTag().getValue().getText();
                 int where = oldValue.toLowerCase().lastIndexOf("where");
                 if (where != -1) {
-                    finalValue = finalValue + "\n" + GenCodeUtil.TWO_RETRACT + oldValue.substring(where);
+                    finalValue = finalValue+ GenCodeUtil.TWO_RETRACT + oldValue.substring(where);
                 } else {
                     //todo ask user to input the primary key?
                 }
+            } else {
+//                for insert and insertList add blanks after it.
+                finalValue = finalValue + GenCodeUtil.ONE_RETRACT;
             }
             final String insertValue = finalValue;
             WriteCommandAction.runWriteCommandAction(myProject, () -> {
