@@ -70,7 +70,7 @@ public class MybatisJavaLineMarkerProvider extends RelatedItemLineMarkerProvider
             }
             if (methodElement != null) {
                 result.add(NavigationGutterIconBuilder.create(AllIcons.Gutter.ImplementedMethod).setAlignment(GutterIconRenderer.Alignment.CENTER)
-                        .setTarget(methodElement).setTooltipTitle("navigation to mapper xml").createLineMarkerInfo(element));
+                        .setTarget(methodElement).setTooltipTitle("navigation to mapper xml").createLineMarkerInfo(method.getNameIdentifier()));
             }
 
             //只进行method的判断 进行控制 其他的不管
