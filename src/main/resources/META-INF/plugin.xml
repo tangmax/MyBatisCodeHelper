@@ -17,7 +17,7 @@
       <li><p>Jump from mybatis dao interface to mapper xml each other</p></li>
       <li><p>generate files provide insert, insertList,update</p></li>
       <li><p>refactor for mybatis interface method name</p></li>
-      <li><p>mysql mapper sql auto completion</p></li>
+      <li><p>mybatis mapper sql auto completion</p></li>
       <li><p>Support java + MySQL and later will support more DB.</p></li>
       <li><a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a> to learn more.</li>
       </ul>
