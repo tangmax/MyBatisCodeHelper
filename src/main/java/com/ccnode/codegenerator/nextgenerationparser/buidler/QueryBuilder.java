@@ -196,7 +196,7 @@ public class QueryBuilder {
                     case KeyWordConstants.NOT: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("not" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("not" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + "!= #{" + paramInfo.getParamAnno() + "}");
+                        builder.append(" " + relation.getPropColumn(prop) + "<> #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
                     case KeyWordConstants.NOTIN: {
