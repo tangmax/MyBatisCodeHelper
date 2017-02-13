@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.ccnode.codegenerator.MyBatisCodeHelper</id>
     <name>MyBatisCodeHelper</name>
-    <version>1.1</version>
+    <version>1.2</version>
     <vendor email="gejun123456@gmail.com">MyBatisCodeHelper</vendor>
 
     <description><![CDATA[
@@ -16,7 +16,8 @@
       <li><p>Generate mybatis sql based on mybatis interface method name</p></li>
       <li><p>Jump from mybatis dao interface to mapper xml each other</p></li>
       <li><p>generate files provide insert, insertList,update</p></li>
-      <li><p>support refactor for mybatis interface method name</p></li>
+      <li><p>refactor for mybatis interface method name</p></li>
+      <li><p>mysql mapper sql auto completion</p></li>
       <li><p>Support java + MySQL and later will support more DB.</p></li>
       <li><a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a> to learn more.</li>
       </ul>
@@ -35,7 +36,8 @@
       <li><p>mybatis接口文件的mapper xml之间的相互跳转</p></li>
       <li><p>数据库对象更新后一键更新对应的Sql和mybatis xml文件</p></li>
       <li><p>默认提供insert，insertList，update</p></li>
-      <li><p>支持mybatis接口方法名的重构</p></li>
+      <li><p>提供mybatis接口方法名的重构</p></li>
+      <li><p>mybatis mapper xml文件sql的自动补全</p></li>
       </ul>
       <p>使用方法</p>
       <ul>
@@ -48,6 +50,15 @@
     ]]></description>
 
     <change-notes><![CDATA[
+     <p><h4>1.2</h4>
+            <ul>
+                <li>add support for unsigned type, small int.</li>
+                <li>check for using object type instead of primitive type</li>
+                <li>support more auto completion for sql</li>
+                <li>double type support - bug fix</li>
+                <li>update field exception -bug fix</li>
+            </ul>
+     </p>
      <p> 1.1 fix doc</p>
      <p>1.0 use gradle, fix bugs.</p>
     ]]>
