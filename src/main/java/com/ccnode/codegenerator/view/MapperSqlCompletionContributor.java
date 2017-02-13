@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * Created by bruce.ge on 2017/1/3.
  */
-public class MapperXmlCompletionContributor extends CompletionContributor {
+public class MapperSqlCompletionContributor extends CompletionContributor {
 
     public static final String PARAM = "@Param(\"";
     private static Set<String> mapperMethodSet = new HashSet<String>() {{

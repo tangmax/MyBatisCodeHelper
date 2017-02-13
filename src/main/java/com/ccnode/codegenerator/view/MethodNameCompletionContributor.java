@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by bruce.ge on 2016/12/8.
  */
-public class SqlCompletionContributor extends CompletionContributor {
+public class MethodNameCompletionContributor extends CompletionContributor {
     private static List<String> textEndList = new ArrayList<String>() {{
         add("find");
         add("update");
