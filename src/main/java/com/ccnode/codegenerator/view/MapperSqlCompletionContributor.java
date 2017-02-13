@@ -4,7 +4,12 @@ import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
 import com.ccnode.codegenerator.util.PsiClassUtil;
-import com.intellij.codeInsight.completion.*;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
+import com.intellij.codeInsight.completion.CompletionContributor;
+import com.intellij.codeInsight.completion.CompletionParameters;
+import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.*;
@@ -36,6 +41,62 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
     }};
 
 
+    private static ImmutableListMultimap<String, String> multimap = ImmutableListMultimap.<String, String>builder()
+            .put("s", "select")
+            .put("S", "SELECT")
+            .put("i", "insert into")
+            .put("I", "INSERT INTO")
+            .put("u", "update")
+            .put("U", "UPDATE")
+            .put("d", "delete")
+            .put("D", "DELETE")
+            .put("j", "join")
+            .put("J", "JOIN")
+            .put("i", "inner join")
+            .put("I", "INNER JOIN")
+            .put("l", "left join")
+            .put("L", "LEFT JOIN")
+            .put("o", "on")
+            .put("O", "ON")
+            .put("m", "max")
+            .put("M", "MAX")
+            .put("m", "min")
+            .put("M", "MIN")
+            .put("c", "count")
+            .put("C", "COUNT")
+            .put("d", "distinct")
+            .put("D", "DISTINCT")
+            .put("f", "from")
+            .put("F", "FROM")
+            .put("o", "order by")
+            .put("O", "ORDER BY")
+            .put("d", "desc")
+            .put("d", "DESC")
+            .put("w", "where")
+            .put("W", "WHERE")
+            .put("r", "right join")
+            .put("R", "RIGHT JOIN")
+            .put("l", "limit")
+            .put("L", "LIMIT")
+            .put("h", "having")
+            .put("H", "HAVING")
+            .put("g", "group by")
+            .put("G", "GROUP BY")
+            .put("v", "values")
+            .put("V", "VALUES")
+            .put("d", "duplicate")
+            .put("D", "DUPLICATE")
+            .put("f", "for update")
+            .put("F", "FOR UPDATE")
+            .put("a", "asc")
+            .put("A", "ASC")
+            .put("u", "union")
+            .put("U", "UNION")
+            .put("r","replace")
+            .put("R","REPLACE")
+            .build();
+
+
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         if (parameters.getCompletionType() != CompletionType.BASIC) {
@@ -51,7 +112,13 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         }
         PsiElement position = parameters.getPosition();
         String positionText = position.getText();
-        String realStart = positionText.substring(0, positionText.length() - CompletionUtil.DUMMY_IDENTIFIER_TRIMMED.length());
+        int endPosition = parameters.getEditor().getCaretModel().getCurrentCaret().getSelectionStart();
+        int startOffset = parameters.getPosition().getTextRange().getStartOffset();
+        if (endPosition - startOffset <= 0) {
+            return;
+        }
+        //there are end text for it.
+        String realStart = positionText.substring(0, endPosition - startOffset);
         PsiFile originalFile = parameters.getOriginalFile();
         if (!(originalFile instanceof XmlFile)) {
             return;
@@ -148,10 +215,12 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             }
         }
 
-        if (realStart.startsWith("ins")) {
-            result.addElement(LookupElementBuilder.create("insert into "));
+        if (realStart.length() == 1) {
+            ImmutableList<String> recommends = multimap.get(realStart);
+            for (String recommend : recommends) {
+                result.addElement(LookupElementBuilder.create(recommend));
+            }
         }
-
 
     }
 
