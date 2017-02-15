@@ -8,6 +8,13 @@ public class ColumnAndField {
 
     private String field;
 
+    public ColumnAndField(){}
+
+    public ColumnAndField(String column, String field) {
+        this.column = column;
+        this.field = field;
+    }
+
     public String getColumn() {
         return column;
     }

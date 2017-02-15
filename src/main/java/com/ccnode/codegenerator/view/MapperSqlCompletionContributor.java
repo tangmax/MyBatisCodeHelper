@@ -218,7 +218,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         if (realStart.length() == 1) {
             ImmutableList<String> recommends = multimap.get(realStart);
             for (String recommend : recommends) {
-                result.addElement(LookupElementBuilder.create(recommend));
+                result.addElement(LookupElementBuilder.create(recommend+" "));
             }
         }
 

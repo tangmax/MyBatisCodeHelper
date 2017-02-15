@@ -18,11 +18,11 @@ import java.util.Map;
  * @Date 2017/1/11
  * @Description
  */
-public class GenerateMapperTest {
+public class UpdateMapperTest {
     @Test
     public void testGenerateMapper() throws IOException, TemplateException {
         Configuration configuration = new Configuration(Configuration.getVersion());
-        configuration.setDirectoryForTemplateLoading(new File(GenerateMapperTest.class.getClassLoader().getResource("templates").getPath()));
+        configuration.setDirectoryForTemplateLoading(new File(UpdateMapperTest.class.getClassLoader().getResource("templates").getPath()));
         configuration.setDefaultEncoding("UTF-8");
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         configuration.setLogTemplateExceptions(false);
@@ -55,7 +55,7 @@ public class GenerateMapperTest {
         root.put("tableName", tableName);
         root.put("finalFields", ss);
         Configuration configuration = new Configuration(Configuration.getVersion());
-        configuration.setDirectoryForTemplateLoading(new File(GenerateMapperTest.class.getClassLoader().getResource("templates").getPath()));
+        configuration.setDirectoryForTemplateLoading(new File(UpdateMapperTest.class.getClassLoader().getResource("templates").getPath()));
         configuration.setDefaultEncoding("UTF-8");
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         configuration.setLogTemplateExceptions(false);
