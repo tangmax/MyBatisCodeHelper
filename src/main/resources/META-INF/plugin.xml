@@ -116,7 +116,8 @@
 
         <psi.referenceContributor
                 implementation="com.ccnode.codegenerator.view.MyBatisJavaToXmlPsiReferenceContributor"/>
-
+        <psi.referenceContributor
+                implementation="com.ccnode.codegenerator.view.MyBatisXmlAttributeReferenceContributor"/>
 
         <intentionAction>
             <className>com.ccnode.codegenerator.view.GenerateMethodXmlAction</className>
