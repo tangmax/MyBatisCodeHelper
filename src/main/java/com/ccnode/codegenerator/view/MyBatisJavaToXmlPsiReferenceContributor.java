@@ -47,6 +47,9 @@ public class MyBatisJavaToXmlPsiReferenceContributor extends PsiReferenceContrib
                         }
                         //check the file is mapper file.
                         XmlTag selectTag = parent.getParent();
+                        if (selectTag == null) {
+                            return PsiReference.EMPTY_ARRAY;
+                        }
                         if (!tagNames.contains(selectTag.getName())) {
                             return PsiReference.EMPTY_ARRAY;
                         }
