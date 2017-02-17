@@ -32,13 +32,22 @@ public class PsiJavaMethodReference implements PsiReference {
 
     @Override
     public TextRange getRangeInElement() {
+        String text = psiElement.getText();
+        if (text.startsWith("\"") && text.endsWith("\"") && text.length() > 2) {
+            return new TextRange(1, this.psiElement.getTextLength() - 1);
+        }
         return new TextRange(0, this.psiElement.getTextLength());
     }
 
     @Nullable
     @Override
     public PsiElement resolve() {
-        return myIdentifier;
+        PsiElement parent = myIdentifier.getParent();
+        if (parent != null && (parent instanceof PsiMethod)) {
+            return parent;
+        } else {
+            return myIdentifier;
+        }
     }
 
     @NotNull
@@ -66,10 +75,7 @@ public class PsiJavaMethodReference implements PsiReference {
 
     @Override
     public boolean isReferenceTo(PsiElement element) {
-        if (element instanceof PsiMethod) {
-            return ((PsiMethod) element).getNameIdentifier() == resolve();
-        }
-        return false;
+        return element == resolve();
     }
 
     @NotNull
