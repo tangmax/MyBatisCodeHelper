@@ -86,11 +86,11 @@ xml中对应的resultMap为
 比较符  | 生成sql                  
 ------- | --------
 between |  prop > {} and prop <{}
-betweenorequalto | prop >={} and prop <={}
-lessthan  | prop < {}
-lessthanorequalto | prop <={}
-greaterthan | prop > {}
-greaterthanorequalto | prop >={}
+betweenOrEqualto | prop >={} and prop <={}
+lessThan  | prop < {}
+lessThanOrEqualto | prop <={}
+greaterThan | prop > {}
+greaterThanOrEqualto | prop >={}
 isnull | prop is null
 notnull | prop is not null
 like   | prop like {}
