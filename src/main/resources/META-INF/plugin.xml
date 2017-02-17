@@ -119,6 +119,8 @@
         <psi.referenceContributor
                 implementation="com.ccnode.codegenerator.view.MyBatisXmlAttributeReferenceContributor"/>
 
+        <!--<renamePsiElementProcessor implementation="com.ccnode.codegenerator.view.rename.RenameResultMapSqlProcessor" order="first"/>-->
+
         <intentionAction>
             <className>com.ccnode.codegenerator.view.GenerateMethodXmlAction</className>
             <!--<category>Conditional Operator</category>-->

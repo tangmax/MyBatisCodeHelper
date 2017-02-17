@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.view;
 
 import com.ccnode.codegenerator.dialog.MapperUtil;
+import com.ccnode.codegenerator.reference.PsiJavaMethodReference;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;

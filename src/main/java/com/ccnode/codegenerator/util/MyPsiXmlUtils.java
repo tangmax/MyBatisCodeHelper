@@ -28,6 +28,7 @@ public class MyPsiXmlUtils {
         return values;
     }
 
+    @NotNull
     public static List<XmlTag> getXmlAttributeOfType(XmlDocument xmlDocument, String tagName) {
         List<XmlTag> values = Lists.newArrayList();
         XmlTag rootTag = xmlDocument.getRootTag();

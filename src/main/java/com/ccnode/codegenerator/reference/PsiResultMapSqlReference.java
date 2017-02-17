@@ -1,8 +1,7 @@
-package com.ccnode.codegenerator.view;
+package com.ccnode.codegenerator.reference;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlAttributeValue;
@@ -10,17 +9,27 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @Author bruce.ge
- * @Date 2017/2/16
+ * @Date 2017/2/17
  * @Description
  */
-public class PsiXmlAttributeReference  implements PsiReference{
+public class PsiResultMapSqlReference implements PsiReference {
+    private static Set<String> tagNames = new HashSet<String>() {{
+        add("update");
+        add("insert");
+        add("select");
+        add("delete");
+    }};
 
     private XmlAttributeValue psiReference;
 
     private XmlAttributeValue psiElement;
-    public PsiXmlAttributeReference(XmlAttributeValue element, XmlAttributeValue psiReference) {
+
+    public PsiResultMapSqlReference(XmlAttributeValue element, XmlAttributeValue psiReference) {
         this.psiElement = element;
         this.psiReference = psiReference;
     }
@@ -66,10 +75,7 @@ public class PsiXmlAttributeReference  implements PsiReference{
 
     @Override
     public boolean isReferenceTo(PsiElement element) {
-        if (element instanceof PsiMethod) {
-            return ((PsiMethod) element).getNameIdentifier() == resolve();
-        }
-        return false;
+        return element == resolve();
     }
 
     @NotNull
