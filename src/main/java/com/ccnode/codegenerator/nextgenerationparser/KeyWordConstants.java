@@ -30,7 +30,11 @@ public class KeyWordConstants {
 
     public static final String LESSTHAN = "lessthan";
 
+    public static final String LESSTHANOREQUALTO = "lessthanorequalto";
+
     public static final String GREATERTHAN = "greaterthan";
+
+    public static final String GREATERTHANOREQUALTO = "greaterthanorequalto";
 
     public static final String ISNULL = "isnull";
 

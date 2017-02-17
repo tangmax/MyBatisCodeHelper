@@ -82,9 +82,11 @@ public class MethodNameCompletionContributor extends CompletionContributor {
             List<String> afterlower = new ArrayList<String>();
             if (lower.endsWith("g")) {
                 afterlower.add("reaterThan");
+                afterlower.add("reaterThanOrEqualTo");
             }
             if (lower.endsWith("l")) {
                 afterlower.add("essThan");
+                afterlower.add("essThanOrEqualTo");
                 afterlower.add("ike");
             }
             if (lower.endsWith("b")) {

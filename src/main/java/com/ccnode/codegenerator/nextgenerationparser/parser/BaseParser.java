@@ -18,14 +18,15 @@ public class BaseParser {
 
     protected static String[] linkOp = {KeyWordConstants.AND, KeyWordConstants.OR};
 
-    protected static String[] compareOp = {KeyWordConstants.BETWEEN, KeyWordConstants.GREATERTHAN, KeyWordConstants.LESSTHAN,
+    protected static String[] compareOp = {KeyWordConstants.BETWEEN, KeyWordConstants.GREATERTHAN, KeyWordConstants.GREATERTHANOREQUALTO,
+            KeyWordConstants.LESSTHANOREQUALTO, KeyWordConstants.LESSTHAN,
             KeyWordConstants.ISNOTNULL, KeyWordConstants.ISNULL, KeyWordConstants.NOTNULL, KeyWordConstants.NOTLIKE, KeyWordConstants.LIKE
             , KeyWordConstants.NOTIN, KeyWordConstants.NOT, KeyWordConstants.IN};
 
     protected static String[] order = {KeyWordConstants.ASC, KeyWordConstants.DESC};
 
 
-    public BaseParser(String methodName, List<String> props){
+    public BaseParser(String methodName, List<String> props) {
         this.methodName = methodName;
         this.props = new String[props.size()];
         this.lowerProps = new String[props.size()];
