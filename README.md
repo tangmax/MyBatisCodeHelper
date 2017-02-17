@@ -85,9 +85,12 @@ xml中对应的resultMap为
 
 比较符  | 生成sql                  
 ------- | --------
-between |  prop >={} and prop <={}
+between |  prop > {} and prop <{}
+betweenorequalto | prop >={} and prop <={}
 lessthan  | prop < {}
+lessthanorequalto | prop <={}
 greaterthan | prop > {}
+greaterthanorequalto | prop >={}
 isnull | prop is null
 notnull | prop is not null
 like   | prop like {}
@@ -98,7 +101,7 @@ notlike | prop not like {}
 
 - find方法  
 
-支持获取多字段，by后面可以设置多个字段的条件  
+支持获取多字段，by后面可以设置多个字段的条件 一个字段后面只能跟一个比较符
 支持orderBy,distinct, findFirst
 
 方法名       |  sql  

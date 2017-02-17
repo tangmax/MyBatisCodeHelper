@@ -197,9 +197,18 @@ public class QueryBuilder {
                         ParamInfo max = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(min);
                         info.getParamInfos().add(max);
+                        builder.append(" " + relation.getPropColumn(prop) + cdata(">") + " #{" + min.getParamAnno() + "} and " + relation.getPropColumn(prop) + " " + cdata("<") + " #{" + (max.getParamAnno()) + "}");
+                        break;
+                    }
+                    case KeyWordConstants.BETWEENOREQUALTO: {
+                        ParamInfo min = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("min" + firstCharUpper(prop)).build();
+                        ParamInfo max = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("max" + firstCharUpper(prop)).build();
+                        info.getParamInfos().add(min);
+                        info.getParamInfos().add(max);
                         builder.append(" " + relation.getPropColumn(prop) + cdata(">=") + " #{" + min.getParamAnno() + "} and " + relation.getPropColumn(prop) + " " + cdata("<=") + " #{" + (max.getParamAnno()) + "}");
                         break;
                     }
+
                     case KeyWordConstants.ISNOTNULL: {
                         builder.append(" " + prop + " is not null");
                         break;

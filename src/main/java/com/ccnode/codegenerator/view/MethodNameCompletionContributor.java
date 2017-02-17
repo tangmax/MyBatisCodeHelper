@@ -91,6 +91,7 @@ public class MethodNameCompletionContributor extends CompletionContributor {
             }
             if (lower.endsWith("b")) {
                 afterlower.add("etween");
+                afterlower.add("etweenOrEqualTo");
             }
             if (lower.endsWith("findd") || lower.endsWith("countd")) {
                 afterlower.add("istinct");

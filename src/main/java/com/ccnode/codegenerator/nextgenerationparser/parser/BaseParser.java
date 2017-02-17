@@ -19,7 +19,7 @@ public class BaseParser {
     protected static String[] linkOp = {KeyWordConstants.AND, KeyWordConstants.OR};
 
     protected static String[] compareOp = {KeyWordConstants.BETWEEN, KeyWordConstants.GREATERTHAN, KeyWordConstants.GREATERTHANOREQUALTO,
-            KeyWordConstants.LESSTHANOREQUALTO, KeyWordConstants.LESSTHAN,
+            KeyWordConstants.LESSTHANOREQUALTO, KeyWordConstants.LESSTHAN, KeyWordConstants.BETWEENOREQUALTO,
             KeyWordConstants.ISNOTNULL, KeyWordConstants.ISNULL, KeyWordConstants.NOTNULL, KeyWordConstants.NOTLIKE, KeyWordConstants.LIKE
             , KeyWordConstants.NOTIN, KeyWordConstants.NOT, KeyWordConstants.IN};
 

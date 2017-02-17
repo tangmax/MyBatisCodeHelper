@@ -28,6 +28,9 @@ public class KeyWordConstants {
 
     public static final String BETWEEN = "between";
 
+
+    public static final String BETWEENOREQUALTO = "betweenorequalto";
+
     public static final String LESSTHAN = "lessthan";
 
     public static final String LESSTHANOREQUALTO = "lessthanorequalto";

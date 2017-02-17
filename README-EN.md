@@ -79,9 +79,12 @@ here are the comparator can be used after field.
 
 comparator  | generated sql                  
 ------- | --------
-between |  prop >={} and prop <={}
+between |  prop > {} and prop <{}
+betweenorequalto | prop >={} and prop <={}
 lessthan  | prop < {}
+lessthanorequalto | prop <={}
 greaterthan | prop > {}
+greaterthanorequalto | prop >={}
 isnull | prop is null
 notnull | prop is not null
 like   | prop like {}
