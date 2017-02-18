@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.view;
 
 import com.ccnode.codegenerator.constants.MapperConstants;
+import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
 import com.ccnode.codegenerator.dialog.ChooseXmlToUseDialog;
 import com.ccnode.codegenerator.dialog.GenerateResultMapDialog;
 import com.ccnode.codegenerator.dialog.MapperUtil;
@@ -155,7 +156,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
                             "\n  the table name we found is " + tableName, "table name unknown");
                     return;
                 }
-            } else if (relation == null && tag.getName().equalsIgnoreCase("resultMap")) {
+            } else if (relation == null && tag.getName().equalsIgnoreCase(MyBatisXmlConstants.RESULTMAP)) {
                 String resultMapId;
                 XmlAttribute id = tag.getAttribute("id");
                 if (id != null && id.getValue() != null) {
@@ -204,7 +205,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
                 FieldToColumnRelation relation1 = generateResultMapDialog.getRelation();
                 //use to generate resultMap
                 String allColumnMap = buildAllCoumnMap(relation1.getFiledToColumnMap());
-                XmlTag resultMap = rootTag.createChildTag("resultMap", "", allColumnMap, false);
+                XmlTag resultMap = rootTag.createChildTag(MyBatisXmlConstants.RESULTMAP, "", allColumnMap, false);
                 resultMap.setAttribute("id", relation1.getResultMapId());
                 resultMap.setAttribute("type", pojoClass.getQualifiedName());
                 rootTag.addSubTag(resultMap, true);
@@ -362,9 +363,9 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         XmlTag select = rootTag.createChildTag(info.getType(), "", info.getSql(), false);
         select.setAttribute("id", methodName);
         if (info.getReturnMap() != null) {
-            select.setAttribute("resultMap", info.getReturnMap());
+            select.setAttribute(MyBatisXmlConstants.RESULTMAP, info.getReturnMap());
         } else if (info.getReturnClass() != null) {
-            select.setAttribute("resultType", info.getReturnClass());
+            select.setAttribute(MyBatisXmlConstants.RESULTMAP, info.getReturnClass());
         }
         xmlTagAndInfo.setXmlTag(select);
         return xmlTagAndInfo;

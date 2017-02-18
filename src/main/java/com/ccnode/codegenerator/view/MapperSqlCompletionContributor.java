@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.view;
 
+import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
 import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
@@ -137,7 +138,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
                     xmlFile.getRootTag().getSubTags();
             List<ColumnAndField> columnAndFields = new ArrayList<>();
             for (XmlTag tag : subTags) {
-                if (tag.getName().equals("resultMap")) {
+                if (tag.getName().equals(MyBatisXmlConstants.RESULTMAP)) {
                     columnAndFields.addAll(generateColumnNames(tag));
                 }
             }

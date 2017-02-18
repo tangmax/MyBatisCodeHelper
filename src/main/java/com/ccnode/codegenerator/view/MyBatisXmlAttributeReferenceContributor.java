@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.view;
 
+import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
 import com.ccnode.codegenerator.reference.PsiResultMapSqlReference;
 import com.ccnode.codegenerator.reference.PsiXmlAttributeReference;
 import com.intellij.psi.*;
@@ -24,20 +25,20 @@ import static com.intellij.patterns.XmlPatterns.xmlAttributeValue;
  */
 public class MyBatisXmlAttributeReferenceContributor extends PsiReferenceContributor {
     private static Map<String, String> refTagNameToDeclarationTagName = new HashMap<String, String>() {{
-        put("resultMap", "resultMap");
-        put("refid", "sql");
+        put(MyBatisXmlConstants.RESULTMAP, MyBatisXmlConstants.RESULTMAP);
+        put(MyBatisXmlConstants.REFID, MyBatisXmlConstants.SQL);
     }};
 
 
     private static Map<String, String> declareTagNameToUsageTagName = new HashMap<String, String>() {{
-        put("resultMap", "select");
-        put("sql", "include");
+        put(MyBatisXmlConstants.RESULTMAP, MyBatisXmlConstants.SELECT);
+        put(MyBatisXmlConstants.SQL, MyBatisXmlConstants.INCLUDE);
     }};
 
 
     private static Map<String, String> tagNameToAttributeName = new HashMap<String, String>() {{
-        put("resultMap", "resultMap");
-        put("sql", "refid");
+        put(MyBatisXmlConstants.RESULTMAP, MyBatisXmlConstants.RESULTMAP);
+        put(MyBatisXmlConstants.SQL, MyBatisXmlConstants.REFID);
     }};
 
     @Override
