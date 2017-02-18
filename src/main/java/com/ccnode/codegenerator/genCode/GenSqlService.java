@@ -338,10 +338,15 @@ public class GenSqlService {
         retList.add(String.format("-- auto Generated on %s ", DateUtil.formatLong(new Date())));
         retList.add("-- DROP TABLE IF EXISTS " + newTableName + "; ");
         retList.add("CREATE TABLE " + newTableName + "(");
+        List<String> indexText = Lists.newArrayList();
         for (GenCodeProp field : propList) {
             String fieldSql = genfieldSql(field);
             retList.add(fieldSql);
+            if (field.getIndex()) {
+                indexText.add(GenCodeUtil.ONE_RETRACT + "INDEX(" + field.getColumnName() + "),");
+            }
         }
+        retList.addAll(indexText);
         // TODO: 2016/12/26 InnoDb and utf8 can be later configured
         retList.add(GenCodeUtil.ONE_RETRACT + "PRIMARY KEY (" + GenCodeUtil.wrapComma(primaryKey.getColumnName()) + ")");
         retList.add(String.format(")ENGINE=%s DEFAULT CHARSET=%s COMMENT '%s';", "InnoDB",
@@ -364,7 +369,7 @@ public class GenSqlService {
         if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
             ret.append(" (" + field.getSize() + ")");
         }
-        if(result.isUnsigned()){
+        if (result.isUnsigned()) {
             ret.append(" UNSIGNED");
         }
         if (field.getUnique()) {
@@ -374,7 +379,7 @@ public class GenSqlService {
             ret.append(" NOT NULL");
         }
 
-        if (!field.getPrimaryKey() && org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
+        if (!field.getPrimaryKey() && field.getHasDefaultValue() && org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
             ret.append(" DEFAULT " + field.getDefaultValue());
         }
 

@@ -2,6 +2,7 @@ package com.ccnode.codegenerator.view;
 
 import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.reference.PsiJavaMethodReference;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -67,8 +68,12 @@ public class MyBatisJavaToXmlPsiReferenceContributor extends PsiReferenceContrib
                             return PsiReference.EMPTY_ARRAY;
                         }
                         PsiShortNamesCache shortNamesCache = PsiShortNamesCache.getInstance(element.getProject());
+                        Module moduleForPsiElement = ModuleUtilCore.findModuleForPsiElement(element);
+                        if (moduleForPsiElement == null) {
+                            return PsiReference.EMPTY_ARRAY;
+                        }
                         PsiClass[] classesByName = shortNamesCache.getClassesByName(MapperUtil.extractClassShortName(namespace)
-                                , GlobalSearchScope.moduleScope(ModuleUtilCore.findModuleForPsiElement(element)));
+                                , GlobalSearchScope.moduleScope(moduleForPsiElement));
                         PsiClass findedClass = null;
                         for (PsiClass psiClass : classesByName) {
                             if (psiClass.getQualifiedName().equals(namespace)) {

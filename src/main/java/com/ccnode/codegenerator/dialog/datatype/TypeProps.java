@@ -16,6 +16,26 @@ public class TypeProps {
 
     private Boolean primary;
 
+    private Boolean index;
+
+    private Boolean hasDefaultValue;
+
+
+    public Boolean getIndex() {
+        return index;
+    }
+
+    public void setIndex(Boolean index) {
+        this.index = index;
+    }
+
+    public Boolean getHasDefaultValue() {
+        return hasDefaultValue;
+    }
+
+    public void setHasDefaultValue(Boolean hasDefaultValue) {
+        this.hasDefaultValue = hasDefaultValue;
+    }
 
     public Boolean getPrimary() {
         return primary;
@@ -73,5 +93,7 @@ public class TypeProps {
         this.canBeNull = false;
         this.unique = false;
         this.primary = false;
+        this.index = false;
+        this.hasDefaultValue = true;
     }
 }

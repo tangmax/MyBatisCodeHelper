@@ -190,30 +190,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
         //just go to set the value.
         List<GenCodeProp> props = new ArrayList<>();
         for (int i = 0; i < propFields.size(); i++) {
-            GenCodeProp prop = new GenCodeProp();
-            Object value = propTable.getValueAt(i, MyJTable.FIELDCOLUMNINDEX);
-            prop.setFieldName(MyJTable.formatString(value));
-
-            Object column = propTable.getValueAt(i, MyJTable.COLUMN_NAMECOLUMNINDEX);
-            prop.setColumnName(MyJTable.formatString(column));
-
-            Object type = propTable.getValueAt(i, MyJTable.TYPECOLUMNINDEX);
-            prop.setFiledType(MyJTable.formatString(type));
-
-            Object length = propTable.getValueAt(i, MyJTable.LENGTHCOLUMNINDEX);
-            prop.setSize(MyJTable.formatString(length));
-
-            Object unique = propTable.getValueAt(i, MyJTable.UNIQUECOLUMNINDEX);
-            prop.setUnique(MyJTable.formatBoolean(unique));
-
-            Object primary = propTable.getValueAt(i, MyJTable.PRIMARYCOLUMNINDEX);
-            prop.setPrimaryKey(MyJTable.formatBoolean(primary));
-
-            Object canbenull = propTable.getValueAt(i, MyJTable.CANBENULLCOLUMNINDEX);
-            prop.setCanBeNull(MyJTable.formatBoolean(canbenull));
-
-            Object defaultValue = propTable.getValueAt(i, MyJTable.DEFAULT_VALUECOLUMNINDEX);
-            prop.setDefaultValue(MyJTable.formatString(defaultValue));
+            GenCodeProp prop = MyJTable.getGenCodeProp(i, propTable);
             if (prop.getPrimaryKey()) {
                 toSeeResult.setPrimaryProp(prop);
             }

@@ -21,7 +21,36 @@ public class GenCodeProp {
 
     private Boolean canBeNull;
 
+    private Boolean index;
+
+    private Boolean hasDefaultValue;
+
     private String comment;
+
+
+    public Boolean getIndex() {
+        return index;
+    }
+
+    public void setIndex(Boolean index) {
+        this.index = index;
+    }
+
+    public Boolean getHasDefaultValue() {
+        return hasDefaultValue;
+    }
+
+    public void setHasDefaultValue(Boolean hasDefaultValue) {
+        this.hasDefaultValue = hasDefaultValue;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     public String getFieldName() {
         return fieldName;

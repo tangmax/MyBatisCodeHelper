@@ -7,6 +7,8 @@ import com.ccnode.codegenerator.genCode.GenDaoService;
 import com.ccnode.codegenerator.genCode.GenMapperService;
 import com.ccnode.codegenerator.genCode.GenServiceService;
 import com.ccnode.codegenerator.genCode.GenSqlService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,8 @@ import java.util.concurrent.Executors;
  */
 public class GenerateInsertCodeService {
 
+    private static Logger logger = LoggerFactory.getLogger(GenerateInsertCodeService.class);
+
     public static List<String> generateInsert(InsertDialogResult insertDialogResult) {
         Map<InsertFileType, InsertFileProp> fileProps = insertDialogResult.getFileProps();
         ExecutorService executorService = Executors.newFixedThreadPool(fileProps.size());
@@ -31,6 +35,8 @@ public class GenerateInsertCodeService {
                     generateFiles(fileType, fileProps, insertDialogResult);
                     //need to catch with exception.
                 } catch (Exception e) {
+                    logger.error("generate files catch exception", e);
+                    //todo shall not use with getMessage
                     errorMsgs.add(e.getMessage());
                 } finally {
                     latch.countDown();
@@ -58,7 +64,7 @@ public class GenerateInsertCodeService {
                 break;
             }
             case MAPPER_XML: {
-                GenMapperService.generateMapperXml(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO), insertDialogResult.getTableName(),insertDialogResult.getPrimaryProp());
+                GenMapperService.generateMapperXml(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO), insertDialogResult.getTableName(), insertDialogResult.getPrimaryProp());
                 break;
             }
             case SERVICE: {

@@ -22,6 +22,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiMethod;
@@ -44,9 +45,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.List;
-
-import static com.ccnode.codegenerator.dialog.MyJTable.formatBoolean;
-import static com.ccnode.codegenerator.dialog.MyJTable.formatString;
 
 /**
  * Created by bruce.ge on 2016/12/27.
@@ -109,30 +107,7 @@ public class UpdateDialogMore extends DialogWrapper {
         }
         List<GenCodeProp> newAddedProps = new ArrayList<>();
         for (int i = 0; i < newAddFields.size(); i++) {
-            GenCodeProp prop = new GenCodeProp();
-            Object value = myTable.getValueAt(i, MyJTable.FIELDCOLUMNINDEX);
-            prop.setFieldName(formatString(value));
-
-            Object column = myTable.getValueAt(i, MyJTable.COLUMN_NAMECOLUMNINDEX);
-            prop.setColumnName(formatString(column));
-
-            Object type = myTable.getValueAt(i, MyJTable.TYPECOLUMNINDEX);
-            prop.setFiledType(formatString(type));
-
-            Object length = myTable.getValueAt(i, MyJTable.LENGTHCOLUMNINDEX);
-            prop.setSize(formatString(length));
-
-            Object unique = myTable.getValueAt(i, MyJTable.UNIQUECOLUMNINDEX);
-            prop.setUnique(formatBoolean(unique));
-
-            Object primary = myTable.getValueAt(i, MyJTable.PRIMARYCOLUMNINDEX);
-            prop.setPrimaryKey(formatBoolean(primary));
-
-            Object canbenull = myTable.getValueAt(i, MyJTable.CANBENULLCOLUMNINDEX);
-            prop.setCanBeNull(formatBoolean(canbenull));
-
-            Object defaultValue = myTable.getValueAt(i, MyJTable.DEFAULT_VALUECOLUMNINDEX);
-            prop.setDefaultValue(formatString(defaultValue));
+            GenCodeProp prop = MyJTable.getGenCodeProp(i, myTable);
             newAddedProps.add(prop);
         }
         PsiDocumentManager manager = PsiDocumentManager.getInstance(myProject);
@@ -168,7 +143,7 @@ public class UpdateDialogMore extends DialogWrapper {
             List<String> retList = new ArrayList<>();
             for (GenCodeProp field : newAddedProps) {
                 StringBuilder ret = new StringBuilder();
-                ret.append("ALTER TABLE " + tableName + " ADD " + field.getColumnName());
+                ret.append("ALTER TABLE " + tableName + "\n\tADD " + field.getColumnName());
                 UnsignedCheckResult result = MySqlTypeUtil.checkUnsigned(field.getFiledType());
                 ret.append(" " + result.getType());
                 if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
@@ -184,13 +159,17 @@ public class UpdateDialogMore extends DialogWrapper {
                     ret.append(" NOT NULL");
                 }
 
-                if (org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
+                if (field.getHasDefaultValue() && org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
                     ret.append(" DEFAULT " + field.getDefaultValue());
                 }
                 if (field.getPrimaryKey()) {
                     ret.append(" AUTO_INCREMENT");
                 }
-                ret.append(" COMMENT '" + field.getFieldName() + "';");
+                ret.append(" COMMENT '" + field.getFieldName()+"'");
+                if (field.getIndex()) {
+                    ret.append(",\n\tADD INDEX (" + field.getColumnName() + ")");
+                }
+                ret.append(";");
                 retList.add(ret.toString());
             }
 
@@ -209,9 +188,9 @@ public class UpdateDialogMore extends DialogWrapper {
             } catch (IOException e) {
                 throw new RuntimeException("can't write file " + sqlFileName + " to path " + sqlFileFolder + "/" + sqlFileName);
             }
-
         }
-        // TODO: 2017/2/12 flush to disk and show success
+        VirtualFileManager.getInstance().syncRefresh();
+        Messages.showMessageDialog(myProject, "generate files success", "success", Messages.getInformationIcon());
         super.doOKAction();
     }
 
@@ -261,12 +240,12 @@ public class UpdateDialogMore extends DialogWrapper {
             return;
         } else {
             String finalValue = newValueText.replaceAll("\r", "");
-            finalValue = finalValue.replaceAll("\\t",GenCodeUtil.ONE_RETRACT);
+            finalValue = finalValue.replaceAll("\\t", GenCodeUtil.ONE_RETRACT);
             if (classMapperMethod.getMethodName().equals(MethodName.update.name())) {
                 String oldValue = mapperMethod.getXmlTag().getValue().getText();
                 int where = oldValue.toLowerCase().lastIndexOf("where");
                 if (where != -1) {
-                    finalValue = finalValue+ GenCodeUtil.TWO_RETRACT + oldValue.substring(where);
+                    finalValue = finalValue + GenCodeUtil.TWO_RETRACT + oldValue.substring(where);
                 } else {
                     //todo ask user to input the primary key?
                 }
@@ -361,7 +340,12 @@ public class UpdateDialogMore extends DialogWrapper {
         }
         this.addedFieldTypeMap = GenCodeDialogUtil.extractMap(newAddFields);
         Object[][] datas = MyJTable.getDatas(newAddFields);
-        this.myTable = new MyJTable(datas, this.addedFieldTypeMap);
+        this.myTable = new MyJTable(datas, this.addedFieldTypeMap) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return super.isCellEditable(row, column) && column != MyJTable.PRIMARYCOLUMNINDEX;
+            }
+        };
         addWithCheckBoxs();
     }
 

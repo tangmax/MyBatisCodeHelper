@@ -3,6 +3,7 @@ package com.ccnode.codegenerator.dialog;
 import com.ccnode.codegenerator.dialog.datatype.*;
 import com.ccnode.codegenerator.dialog.exception.NotStringException;
 import com.ccnode.codegenerator.util.GenCodeUtil;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +22,9 @@ class MyJTable extends JTable {
     public static final String PRIMARYCOLUMN = "primary";
     public static final String LENGTHCOLUMN = "length";
     public static final String CANBENULLCOLUMN = "canBeNull";
+    public static final String HAS_DEFAULTVALUE_COLUMN = "hasDefaultValue";
     public static final String DEFAULT_VALUE_COLUMN = "defaultValue";
+    public static final String INDEX_COLUMN = "index";
     public static final int FIELDCOLUMNINDEX = 0;
     public static final int COLUMN_NAMECOLUMNINDEX = 1;
     public static final int TYPECOLUMNINDEX = 2;
@@ -29,8 +32,10 @@ class MyJTable extends JTable {
     public static final int UNIQUECOLUMNINDEX = 4;
     public static final int PRIMARYCOLUMNINDEX = 5;
     public static final int CANBENULLCOLUMNINDEX = 6;
-    public static final int DEFAULT_VALUECOLUMNINDEX = 7;
-    public static String[] columnNames = {FILEDCOLUMN, COLUMN_NAMECOLUMN, TYPECOLUMN, LENGTHCOLUMN, COLUMNUNIQUE, PRIMARYCOLUMN, CANBENULLCOLUMN, DEFAULT_VALUE_COLUMN};
+    public static final int HAS_DEFAULTVALUE_COLUMNINDEX = 7;
+    public static final int DEFAULT_VALUECOLUMNINDEX = 8;
+    public static final int INDEXCOLUMNINDEX = 9;
+    public static String[] columnNames = {FILEDCOLUMN, COLUMN_NAMECOLUMN, TYPECOLUMN, LENGTHCOLUMN, COLUMNUNIQUE, PRIMARYCOLUMN, CANBENULLCOLUMN, HAS_DEFAULTVALUE_COLUMN, DEFAULT_VALUE_COLUMN, INDEX_COLUMN};
 
     public MyJTable(Object[][] propData, Map<String, String> fieldTypeMap) {
         super(propData, columnNames);
@@ -45,6 +50,14 @@ class MyJTable extends JTable {
 
         this.getColumn(MyJTable.CANBENULLCOLUMN).setCellRenderer(new CheckButtonRender());
         this.getColumn(MyJTable.CANBENULLCOLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
+
+
+        this.getColumn(MyJTable.HAS_DEFAULTVALUE_COLUMN).setCellRenderer(new CheckButtonRender());
+        this.getColumn(MyJTable.HAS_DEFAULTVALUE_COLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
+
+
+        this.getColumn(MyJTable.INDEX_COLUMN).setCellRenderer(new CheckButtonRender());
+        this.getColumn(MyJTable.INDEX_COLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
 
 
         this.getColumn(MyJTable.TYPECOLUMN).setCellRenderer(new MyComboBoxRender(fieldTypeMap));
@@ -75,6 +88,8 @@ class MyJTable extends JTable {
             mm[PRIMARYCOLUMNINDEX] = typeProp.getPrimary();
             mm[CANBENULLCOLUMNINDEX] = typeProp.getCanBeNull();
             mm[DEFAULT_VALUECOLUMNINDEX] = typeProp.getDefaultValue();
+            mm[HAS_DEFAULTVALUE_COLUMNINDEX] = typeProp.getHasDefaultValue();
+            mm[INDEXCOLUMNINDEX] = typeProp.getIndex();
             ssList.add(mm);
         }
         Object[][] ss = new Object[ssList.size()][];
@@ -85,6 +100,7 @@ class MyJTable extends JTable {
     private static void customTypeProp(ClassFieldInfo info, TypeProps typeProp) {
         if (info.getFieldName().equals("id")) {
             typeProp.setPrimary(true);
+            typeProp.setHasDefaultValue(false);
         } else if (info.getFieldName().toLowerCase().equals("updatetime")) {
             TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault(MysqlTypeConstants.TIMESTAMP);
             typeProp.setDefaultType(MysqlTypeConstants.TIMESTAMP);
@@ -113,6 +129,42 @@ class MyJTable extends JTable {
             throw new NotStringException();
         }
         return ((String) value).trim();
+    }
+
+
+    @NotNull
+    static GenCodeProp getGenCodeProp(int i, JTable propTable) {
+        GenCodeProp prop = new GenCodeProp();
+        Object value = propTable.getValueAt(i, FIELDCOLUMNINDEX);
+        prop.setFieldName(formatString(value));
+
+        Object column = propTable.getValueAt(i, COLUMN_NAMECOLUMNINDEX);
+        prop.setColumnName(formatString(column));
+
+        Object type = propTable.getValueAt(i, TYPECOLUMNINDEX);
+        prop.setFiledType(formatString(type));
+
+        Object length = propTable.getValueAt(i, LENGTHCOLUMNINDEX);
+        prop.setSize(formatString(length));
+
+        Object unique = propTable.getValueAt(i, UNIQUECOLUMNINDEX);
+        prop.setUnique(formatBoolean(unique));
+
+        Object primary = propTable.getValueAt(i, PRIMARYCOLUMNINDEX);
+        prop.setPrimaryKey(formatBoolean(primary));
+
+        Object canbenull = propTable.getValueAt(i, CANBENULLCOLUMNINDEX);
+        prop.setCanBeNull(formatBoolean(canbenull));
+
+        Object hasDefualtValue = propTable.getValueAt(i, HAS_DEFAULTVALUE_COLUMNINDEX);
+        prop.setHasDefaultValue(formatBoolean(hasDefualtValue));
+
+        Object isIndex = propTable.getValueAt(i, INDEXCOLUMNINDEX);
+        prop.setIndex(formatBoolean(isIndex));
+
+        Object defaultValue = propTable.getValueAt(i, DEFAULT_VALUECOLUMNINDEX);
+        prop.setDefaultValue(formatString(defaultValue));
+        return prop;
     }
 
     @Override
@@ -151,6 +203,10 @@ class MyJTable extends JTable {
                             super.setValueAt(false, i, column);
                         }
                     }
+                    super.setValueAt(false, row, HAS_DEFAULTVALUE_COLUMNINDEX);
+                    super.setValueAt(false, row, INDEXCOLUMNINDEX);
+                } else {
+                    super.setValueAt(true, row, HAS_DEFAULTVALUE_COLUMNINDEX);
                 }
             }
         }
