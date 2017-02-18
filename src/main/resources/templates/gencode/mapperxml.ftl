@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="${mybatisInterfaceFullName}">
+<mapper namespace="${daoFullType}">
     <!--auto generated Code-->
-    <resultMap id="AllColumnMap" type="${domainClassFullName}">
-    <#--<result column="car_id" property="carId"/>-->
-    <#--<result column="price" property="price"/>-->
-    <#--<result column="length" property="length"/>-->
-    <#--<result column="width" property="width"/>-->
-    <#--<result column="nimei" property="nimei"/>-->
-    <#--<result column="bbbbb" property="bbbbb"/>-->
-    <#--<result column="ccccc" property="ccccc"/>-->
+    <resultMap id="AllColumnMap" type="${pojoFullType}">
     <#list fieldAndColumns as fieldAndColumn>
         <result column="${fieldAndColumn.column}" property="${fieldAndColumn.field}"/>
     </#list>
@@ -31,7 +24,31 @@
         INSERT INTO ${tableName}
         (<#list fieldAndColumns as fieldAndColumn><#if fieldAndColumn?is_last>`${fieldAndColumn.column}`<#else>`${fieldAndColumn.column}`,</#if></#list>)
         VALUES
-        (<#list fieldAndColumns as fieldAndColumn><#if fieldAndColumn?is_last>${r"#"}{pojo.`${fieldAndColumn.field}`}<#else>${r"#"}{pojo.`${fieldAndColumn.field}`},</#if></#list>)
+        (<#list fieldAndColumns as fieldAndColumn><#if fieldAndColumn?is_last>${r"#"}{pojo.${fieldAndColumn.field}}<#else>${r"#"}{pojo.${fieldAndColumn.field}},</#if></#list>)
+    </insert>
+
+    <!--auto generated Code-->
+    <insert id="insertSelective">
+        INSERT INTO ${tableName}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+        <#list fieldAndColumns as filedAndColumn>
+            <#if filedAndColumn?is_last>
+                <if test="pojo.${filedAndColumn.field}!=null"> `${filedAndColumn.column}`</if>
+            <#else>
+                <if test="pojo.${filedAndColumn.field}!=null"> `${filedAndColumn.column}`,</if>
+            </#if>
+        </#list>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+        <#list fieldAndColumns as filedAndColumn>
+            <#if filedAndColumn?is_last>
+                <if test="pojo.${filedAndColumn.field}!=null"> ${r"#"}{pojo.${filedAndColumn.field}}</if>
+            <#else>
+                <if test="pojo.${filedAndColumn.field}!=null"> ${r"#"}{pojo.${filedAndColumn.field}},</if>
+            </#if>
+        </#list>
+        </trim>
     </insert>
 
     <!--auto generated Code-->
@@ -43,9 +60,9 @@
             (
         <#list fieldAndColumns as fieldAndColumn>
             <#if fieldAndColumn?is_last>
-            ${r"#"}{pojo.`${fieldAndColumn.field}`}
+            ${r"#"}{pojo.${fieldAndColumn.field}}
             <#else>
-            ${r"#"}{pojo.`${fieldAndColumn.field}`},
+            ${r"#"}{pojo.${fieldAndColumn.field}},
             </#if>
         </#list>
             )
@@ -64,6 +81,6 @@
             </#if>
         </#list>
         </set>
-        WHERE ${primaryColumn} = ${r"#"}{pojo.${primaryField}}
+        WHERE `${primaryColumn}` = ${r"#"}{pojo.${primaryField}}
     </update>
 </mapper>

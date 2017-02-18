@@ -3,6 +3,8 @@ package com.ccnode.codegenerator.genCode;
 import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.enums.FileType;
 import com.ccnode.codegenerator.enums.MethodName;
+import com.ccnode.codegenerator.freemarker.TemplateConstants;
+import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.pojo.ClassInfo;
 import com.ccnode.codegenerator.pojo.GenCodeResponse;
 import com.ccnode.codegenerator.pojo.GeneratedFile;
@@ -12,6 +14,7 @@ import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.util.LoggerWrapper;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -19,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Map;
 
 /**
  * What always stop you is what you always believe.
@@ -155,6 +159,29 @@ public class GenServiceService {
             Files.write(Paths.get(filePath), newLines, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException e) {
             throw new RuntimeException("can't write file " + fileProp.getName() + " to path " + fileProp.getFullPath());
+        }
+    }
+
+
+    //shall never meet here.
+    public static void generateServiceUsingFtl(InsertFileProp fileProp, ClassInfo srcClass, InsertFileProp daoProp) {
+        String daoName = GenCodeUtil.getLowerCamel(daoProp.getName());
+        List<String> retList = Lists.newArrayList();
+        Map<String, Object> root = Maps.newHashMap();
+        root.put(TemplateConstants.SERVICE_PACKAGE, fileProp.getPackageName());
+        root.put(TemplateConstants.POJO_FULL_TYPE, srcClass.getQualifiedName());
+        root.put(TemplateConstants.DAO_FULLTYPE, daoProp.getQutifiedName());
+        root.put(TemplateConstants.SERVICE_TYPE, fileProp.getName());
+        root.put(TemplateConstants.DAO_TYPE, daoProp.getName());
+        root.put(TemplateConstants.DAO_NAME, GenCodeUtil.getLowerCamel(daoProp.getName()));
+        root.put(TemplateConstants.POJO_TYPE, srcClass.getName());
+        String generateServiceString = TemplateUtil.processToString(TemplateConstants.GENCODE_SERVICE, root);
+        retList.add(generateServiceString);
+        try {
+            String filePath = fileProp.getFullPath();
+            Files.write(Paths.get(filePath), retList, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException("can't write file " + fileProp.getName() + " to path " + fileProp.getFullPath(),e);
         }
     }
 }

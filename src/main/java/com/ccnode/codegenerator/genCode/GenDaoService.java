@@ -3,6 +3,8 @@ package com.ccnode.codegenerator.genCode;
 import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.enums.FileType;
 import com.ccnode.codegenerator.enums.MethodName;
+import com.ccnode.codegenerator.freemarker.TemplateConstants;
+import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.pojo.ClassInfo;
 import com.ccnode.codegenerator.pojo.GenCodeResponse;
 import com.ccnode.codegenerator.pojo.GeneratedFile;
@@ -11,6 +13,7 @@ import com.ccnode.codegenerator.pojoHelper.GenCodeResponseHelper;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.util.LoggerWrapper;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -18,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Map;
 
 /**
  * What always stop you is what you always believe.
@@ -30,10 +34,10 @@ public class GenDaoService {
 
     public static void genDAO(GenCodeResponse response) {
         for (OnePojoInfo pojoInfo : response.getPojoInfos()) {
-            try{
+            try {
                 GeneratedFile fileInfo = GenCodeResponseHelper.getByFileType(pojoInfo, FileType.DAO);
-                genDaoFile(pojoInfo,fileInfo,GenCodeResponseHelper.isUseGenericDao(response));
-            }catch(Throwable e){
+                genDaoFile(pojoInfo, fileInfo, GenCodeResponseHelper.isUseGenericDao(response));
+            } catch (Throwable e) {
                 LOGGER.error("GenDaoService genDAO error", e);
                 response.failure("GenDaoService genDAO error");
             }
@@ -42,43 +46,43 @@ public class GenDaoService {
 
     private static void genDaoFile(OnePojoInfo onePojoInfo, GeneratedFile fileInfo, Boolean useGenericDao) {
         String pojoName = onePojoInfo.getPojoName();
-        String pojoNameDao = pojoName+"Dao";
-        if(!fileInfo.getOldLines().isEmpty()){
+        String pojoNameDao = pojoName + "Dao";
+        if (!fileInfo.getOldLines().isEmpty()) {
             fileInfo.setNewLines(fileInfo.getOldLines());
             return;
         }
-        if(useGenericDao){
+        if (useGenericDao) {
             LOGGER.info("genDaoFile useGenericDao true");
             List<String> newLines = Lists.newArrayList();
-            newLines.add("package "+ onePojoInfo.getDaoPackage() + ";");
+            newLines.add("package " + onePojoInfo.getDaoPackage() + ";");
             newLines.add("");
             newLines.add("import java.util.List;");
             newLines.add("import org.apache.ibatis.annotations.Param;");
-            newLines.add("import "+ onePojoInfo.getPojoPackage() + "." +onePojoInfo.getPojoName() + ";");
+            newLines.add("import " + onePojoInfo.getPojoPackage() + "." + onePojoInfo.getPojoName() + ";");
             newLines.add("");
-            newLines.add("public interface "+pojoNameDao +" extends GenericDao<"+pojoName+"> {");
+            newLines.add("public interface " + pojoNameDao + " extends GenericDao<" + pojoName + "> {");
             newLines.add("");
             newLines.add("}");
             fileInfo.setNewLines(newLines);
-        }else{
+        } else {
             LOGGER.info("genDaoFile useGenericDao false");
             List<String> newLines = Lists.newArrayList();
-            newLines.add("package "+ onePojoInfo.getDaoPackage() + ";");
+            newLines.add("package " + onePojoInfo.getDaoPackage() + ";");
             newLines.add("");
             newLines.add("import org.apache.ibatis.annotations.Param;");
             newLines.add("import java.util.List;");
-            newLines.add("import "+ onePojoInfo.getPojoPackage() + "." +onePojoInfo.getPojoName() + ";");
+            newLines.add("import " + onePojoInfo.getPojoPackage() + "." + onePojoInfo.getPojoName() + ";");
             newLines.add("");
-            newLines.add("public interface "+pojoNameDao+" {");
+            newLines.add("public interface " + pojoNameDao + " {");
             newLines.add("");
-            newLines.add(GenCodeUtil.ONE_RETRACT + "int "+ MethodName.insert.name() +"(@Param(\"pojo\") "+pojoName +" pojo);");
+            newLines.add(GenCodeUtil.ONE_RETRACT + "int " + MethodName.insert.name() + "(@Param(\"pojo\") " + pojoName + " pojo);");
             newLines.add("");
-            newLines.add(GenCodeUtil.ONE_RETRACT + "int "+ MethodName.insertList.name() +"(@Param(\"pojos\") List< "+pojoName +"> pojo);");
+            newLines.add(GenCodeUtil.ONE_RETRACT + "int " + MethodName.insertList.name() + "(@Param(\"pojos\") List< " + pojoName + "> pojo);");
             newLines.add("");
 //            newLines.add(
 //                    GenCodeUtil.ONE_RETRACT + "List<"+pojoName+"> "+ MethodName.select.name() +"(@Param(\"pojo\") "+pojoName +" pojo);");
 //            newLines.add("");
-            newLines.add(GenCodeUtil.ONE_RETRACT + "int "+ MethodName.update.name() +"(@Param(\"pojo\") "+pojoName +" pojo);");
+            newLines.add(GenCodeUtil.ONE_RETRACT + "int " + MethodName.update.name() + "(@Param(\"pojo\") " + pojoName + " pojo);");
             newLines.add("");
             newLines.add("}");
             fileInfo.setNewLines(newLines);
@@ -87,22 +91,22 @@ public class GenDaoService {
 
     public static void generateDaoFile(InsertFileProp daoProp, ClassInfo srcClass) {
         List<String> newLines = Lists.newArrayList();
-        newLines.add("package "+ daoProp.getPackageName() + ";");
+        newLines.add("package " + daoProp.getPackageName() + ";");
         newLines.add("");
         newLines.add("import org.apache.ibatis.annotations.Param;");
         newLines.add("import java.util.List;");
-        newLines.add("import "+ srcClass.getQualifiedName() + ";");
+        newLines.add("import " + srcClass.getQualifiedName() + ";");
         newLines.add("");
-        newLines.add("public interface "+daoProp.getName()+" {");
+        newLines.add("public interface " + daoProp.getName() + " {");
         newLines.add("");
-        newLines.add(GenCodeUtil.ONE_RETRACT + "int "+ MethodName.insert.name() +"(@Param(\"pojo\") "+srcClass.getName() +" pojo);");
+        newLines.add(GenCodeUtil.ONE_RETRACT + "int " + MethodName.insert.name() + "(@Param(\"pojo\") " + srcClass.getName() + " pojo);");
         newLines.add("");
-        newLines.add(GenCodeUtil.ONE_RETRACT + "int "+ MethodName.insertList.name() +"(@Param(\"pojos\") List< "+srcClass.getName() +"> pojo);");
+        newLines.add(GenCodeUtil.ONE_RETRACT + "int " + MethodName.insertList.name() + "(@Param(\"pojos\") List< " + srcClass.getName() + "> pojo);");
         newLines.add("");
 //            newLines.add(
 //                    GenCodeUtil.ONE_RETRACT + "List<"+pojoName+"> "+ MethodName.select.name() +"(@Param(\"pojo\") "+pojoName +" pojo);");
 //            newLines.add("");
-        newLines.add(GenCodeUtil.ONE_RETRACT + "int "+ MethodName.update.name() +"(@Param(\"pojo\") "+srcClass.getName() +" pojo);");
+        newLines.add(GenCodeUtil.ONE_RETRACT + "int " + MethodName.update.name() + "(@Param(\"pojo\") " + srcClass.getName() + " pojo);");
         newLines.add("");
         newLines.add("}");
 
@@ -111,6 +115,24 @@ public class GenDaoService {
             Files.write(Paths.get(filePath), newLines, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException e) {
             throw new RuntimeException("can't write file " + daoProp.getName() + " to path " + daoProp.getFullPath());
+        }
+    }
+
+
+    public static void generateDaoFileUsingFtl(InsertFileProp daoProp, ClassInfo srcClass) {
+        Map<String, Object> root = Maps.newHashMap();
+        root.put(TemplateConstants.DAO_PACKAGE_NAME,daoProp.getPackageName());
+        root.put(TemplateConstants.POJO_FULL_TYPE,srcClass.getQualifiedName());
+        root.put(TemplateConstants.DAO_TYPE,daoProp.getName());
+        root.put(TemplateConstants.POJO_TYPE,srcClass.getName());
+        String genDaoString = TemplateUtil.processToString(TemplateConstants.GENCODE_DAO, root);
+        List<String> lines = Lists.newArrayList();
+        lines.add(genDaoString);
+        try {
+            String filePath = daoProp.getFullPath();
+            Files.write(Paths.get(filePath), lines, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException("can't write file " + daoProp.getName() + " to path " + daoProp.getFullPath(),e);
         }
     }
 }

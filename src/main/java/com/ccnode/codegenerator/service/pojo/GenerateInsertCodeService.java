@@ -60,15 +60,15 @@ public class GenerateInsertCodeService {
                 break;
             }
             case DAO: {
-                GenDaoService.generateDaoFile(propMap.get(type), insertDialogResult.getSrcClass());
+                GenDaoService.generateDaoFileUsingFtl(propMap.get(type), insertDialogResult.getSrcClass());
                 break;
             }
             case MAPPER_XML: {
-                GenMapperService.generateMapperXml(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO), insertDialogResult.getTableName(), insertDialogResult.getPrimaryProp());
+                GenMapperService.generateMapperXmlUsingFtl(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO), insertDialogResult.getTableName(), insertDialogResult.getPrimaryProp());
                 break;
             }
             case SERVICE: {
-                GenServiceService.generateService(propMap.get(type), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO));
+                GenServiceService.generateServiceUsingFtl(propMap.get(type), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO));
                 break;
             }
         }

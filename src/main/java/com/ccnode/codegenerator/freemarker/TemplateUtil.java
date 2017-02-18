@@ -42,6 +42,7 @@ public class TemplateUtil {
             return out.toString();
         } catch (Exception e) {
             // TODO: 2017/1/12 add logger
+            e.printStackTrace();
             logger.info("templateUtil process to String catch exception", e);
             return null;
         }

@@ -31,7 +31,7 @@ public class GenCodeMapperXmlTest {
         rootMap.put("tableName", "car");
         rootMap.put("primaryField", "carId");
         rootMap.put("primaryColumn", "car_id");
-        String s = TemplateUtil.processToString("/gencode/mapperxml.ftl", rootMap);
+        String s = TemplateUtil.processToString("gencode/mapperxml.ftl", rootMap);
         System.out.println(s);
     }
 
