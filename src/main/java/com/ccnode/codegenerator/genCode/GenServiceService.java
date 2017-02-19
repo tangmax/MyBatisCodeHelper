@@ -5,10 +5,8 @@ import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.pojo.ClassInfo;
 import com.ccnode.codegenerator.util.GenCodeUtil;
-import com.ccnode.codegenerator.util.LoggerWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,7 +22,6 @@ import java.util.Map;
  */
 public class GenServiceService {
 
-    private final static Logger LOGGER = LoggerWrapper.getLogger(GenServiceService.class);
 
     public static void generateServiceUsingFtl(InsertFileProp fileProp, ClassInfo srcClass, InsertFileProp daoProp) {
         String daoName = GenCodeUtil.getLowerCamel(daoProp.getName());

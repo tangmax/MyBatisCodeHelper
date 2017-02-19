@@ -6,10 +6,8 @@ import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
 import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.pojo.ClassInfo;
-import com.ccnode.codegenerator.util.LoggerWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,7 +24,6 @@ import java.util.stream.Collectors;
  */
 public class GenMapperService {
 
-    private final static Logger LOGGER = LoggerWrapper.getLogger(GenMapperService.class);
 
     public static void generateMapperXmlUsingFtl(InsertFileProp fileProp, List<GenCodeProp> props, ClassInfo srcClass, InsertFileProp daoProp, String tableName, GenCodeProp primaryProp) {
         List<String> retList = Lists.newArrayList();

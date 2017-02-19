@@ -6,9 +6,7 @@ import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
 import com.ccnode.codegenerator.dialog.datatype.UnsignedCheckResult;
 import com.ccnode.codegenerator.util.DateUtil;
 import com.ccnode.codegenerator.util.GenCodeUtil;
-import com.ccnode.codegenerator.util.LoggerWrapper;
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,8 +21,6 @@ import java.util.List;
  * Created by zhengjun.du on 2016/05/17 20:12
  */
 public class GenSqlService {
-
-    private final static Logger LOGGER = LoggerWrapper.getLogger(GenSqlService.class);
 
     public static void generateSqlFile(InsertFileProp prop, List<GenCodeProp> propList, GenCodeProp primaryKey, String tableName) {
         List<String> retList = Lists.newArrayList();

@@ -4,10 +4,7 @@ import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -17,7 +14,6 @@ import java.util.List;
  */
 public class GenCodeUtil {
 
-    private final static Logger LOGGER = LoggerWrapper.getLogger(GenCodeUtil.class);
 
     public static final String ONE_RETRACT = "    ";
     public static final String TWO_RETRACT = "        ";
@@ -47,54 +43,8 @@ public class GenCodeUtil {
         return oldList.subList(startIndex, endIndex + 1);
     }
 
-    public static String getPojoPackage(@NotNull String fullPojoFilePath) {
-        try {
-            List<String> strings = IOUtils.readLines(fullPojoFilePath);
-            for (String string : strings) {
-                if (string.startsWith("package")) {
-                    string = string.replace(";", "");
-                    string = string.replace(" ", "");
-                    string = string.replace("package", "");
-                    return string;
-                }
-            }
-        } catch (Exception e) {
-            return "ERROR_PACKAGE";
-        }
-        return StringUtils.EMPTY;
 
-    }
 
-    public static boolean sqlContain(List<String> lines, @NotNull String word) {
-        lines = PojoUtil.avoidEmptyList(lines);
-        for (String line : lines) {
-            if (sqlContain(line, word)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static String deducePackage(String daoFilePathString, String pojoPackage, String pojoPathString) {
-        //get the path by
-        LOGGER.info("path:{}, pojoPackage:{}", daoFilePathString, pojoPackage);
-        Path realpojoPath = Paths.get(pojoPathString);
-        String[] split = pojoPackage.split("\\.");
-        int len = split.length;
-        Path sourcePath = realpojoPath;
-        while (len >= 0) {
-            sourcePath = sourcePath.getParent();
-            len--;
-        }
-        Path daoFilePath = Paths.get(daoFilePathString);
-        Path daoFolder = daoFilePath.getParent();
-        //shall combine two path
-        Path relativeToSouce = sourcePath.relativize(daoFolder);
-        String relate = relativeToSouce.toString();
-        relate = relate.replace("\\", ".");
-        relate = relate.replace("/", ".");
-        return relate;
-    }
 
     public static String pathToPackage(String path) {
         path = path.replace("/", ".");

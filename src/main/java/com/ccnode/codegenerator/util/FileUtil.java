@@ -6,7 +6,6 @@ package com.ccnode.codegenerator.util;
 import com.google.common.base.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
-import org.slf4j.Logger;
 
 import java.io.*;
 import java.util.Iterator;
@@ -19,7 +18,6 @@ import java.util.zip.ZipOutputStream;
  */
 public class FileUtil {
 
-    private final static Logger LOGGER = LoggerWrapper.getLogger(FileUtil.class);
 
     public static Iterable<String> readFile(String filename) throws IOException {
         return readFile(new File(filename));

@@ -1,20 +1,11 @@
 package com.ccnode.codegenerator.genCode;
 
 import com.ccnode.codegenerator.dialog.InsertFileProp;
-import com.ccnode.codegenerator.enums.FileType;
-import com.ccnode.codegenerator.enums.MethodName;
 import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.pojo.ClassInfo;
-import com.ccnode.codegenerator.pojo.GenCodeResponse;
-import com.ccnode.codegenerator.pojo.GeneratedFile;
-import com.ccnode.codegenerator.pojo.OnePojoInfo;
-import com.ccnode.codegenerator.pojoHelper.GenCodeResponseHelper;
-import com.ccnode.codegenerator.util.GenCodeUtil;
-import com.ccnode.codegenerator.util.LoggerWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,7 +21,6 @@ import java.util.Map;
  */
 public class GenDaoService {
 
-    private final static Logger LOGGER = LoggerWrapper.getLogger(GenDaoService.class);
 
     public static void generateDaoFileUsingFtl(InsertFileProp daoProp, ClassInfo srcClass) {
         Map<String, Object> root = Maps.newHashMap();

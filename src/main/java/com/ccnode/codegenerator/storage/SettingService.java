@@ -2,9 +2,6 @@ package com.ccnode.codegenerator.storage;
 
 import com.ccnode.codegenerator.common.VersionManager;
 import com.ccnode.codegenerator.util.DateUtil;
-import com.ccnode.codegenerator.common.VersionManager;
-import com.ccnode.codegenerator.util.DateUtil;
-import com.ccnode.codegenerator.util.SecurityHelper;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
@@ -75,15 +72,6 @@ public class SettingService implements PersistentStateComponent<SettingDto> {
 
     public void setSettingDto(SettingDto settingDto) {
         this.settingDto = settingDto;
-    }
-
-    public static Boolean notExpired(String eKey) {
-        Date date = SecurityHelper.decryptToDate(eKey);
-        if (date == null || new Date().compareTo(date) > 0) {
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public static boolean showDonateBtn(){
