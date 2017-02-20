@@ -288,6 +288,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
         }
 
         if (serviceFileRaidio.isSelected()) {
+            Validate.isTrue(daoFileRaidio.isSelected(), "you shall select with dao file to generate");
             Validate.notBlank(serviceNameText.getText(), "service name is empty");
             Validate.notBlank(servicePathText.getText(), "service path is empty");
             Validate.isTrue(Paths.get(servicePathText.getText()).startsWith(moduleSrc), "your service path shall be under " + this.moduleSrcPath);

@@ -365,7 +365,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         if (info.getReturnMap() != null) {
             select.setAttribute(MyBatisXmlConstants.RESULTMAP, info.getReturnMap());
         } else if (info.getReturnClass() != null) {
-            select.setAttribute(MyBatisXmlConstants.RESULTMAP, info.getReturnClass());
+            select.setAttribute(MyBatisXmlConstants.RESULT_TYPE, info.getReturnClass());
         }
         xmlTagAndInfo.setXmlTag(select);
         return xmlTagAndInfo;

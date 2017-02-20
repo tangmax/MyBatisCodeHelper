@@ -9,6 +9,9 @@ public class MyBatisXmlConstants {
 
     public static final String RESULTMAP = "resultMap";
 
+
+    public static final String RESULT_TYPE = "resultType";
+
     public static final String SELECT = "select";
 
     public static final String INSERT = "insert";
