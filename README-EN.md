@@ -23,6 +23,9 @@ Intellij code generate plugin. support to generate mybatis dao interface,mapper 
 
 ![refacterMethodName](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/refactor_method_name.gif)  
 
+- auto complete for mybatis xml.
+
+![autocomplete](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/autoComplete.gif) 
 
 
 Installation
@@ -80,11 +83,11 @@ here are the comparator can be used after field.
 comparator  | generated sql                  
 ------- | --------
 between |  prop > {} and prop <{}
-betweenOrEqualto | prop >={} and prop <={}
+betweenOrEqualto | prop >={} and prop <={}  v1.3
 lessThan  | prop < {}
-lessThanOrEqualto | prop <={}
+lessThanOrEqualto | prop <={}  v1.3
 greaterThan | prop > {}
-greaterThanOrEqualto | prop >={}
+greaterThanOrEqualto | prop >={}  v1.3
 isnull | prop is null
 notnull | prop is not null
 like   | prop like {}

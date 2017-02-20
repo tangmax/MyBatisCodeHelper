@@ -23,7 +23,9 @@ Intellij下代码自动生成插件 支持生成mybatis的dao接口,mapper xml,�
 - mybatis接口方法名重构支持  
 ![refacterMethodName](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/refactor_method_name.gif)  
 
+- mybatis xml的自动补全
 
+![autocomplete](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/autoComplete.gif) 
 
 安装
 ----
@@ -86,11 +88,11 @@ xml中对应的resultMap为
 比较符  | 生成sql                  
 ------- | --------
 between |  prop > {} and prop <{}
-betweenOrEqualto | prop >={} and prop <={}
+betweenOrEqualto | prop >={} and prop <={} v1.3
 lessThan  | prop < {}
-lessThanOrEqualto | prop <={}
+lessThanOrEqualto | prop <={}  v1.3
 greaterThan | prop > {}
-greaterThanOrEqualto | prop >={}
+greaterThanOrEqualto | prop >={}  v1.3
 isnull | prop is null
 notnull | prop is not null
 like   | prop like {}
