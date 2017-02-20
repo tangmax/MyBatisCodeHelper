@@ -24,7 +24,7 @@ public class ${serviceType}{
         return ${daoName}.insertList(pojos);
     }
 
-    public int update(Car pojo){
+    public int update(${pojoType} pojo){
         return ${daoName}.update(pojo);
     }
 }
