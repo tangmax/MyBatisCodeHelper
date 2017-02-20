@@ -18,14 +18,13 @@ public class MyBatisXmlConstants {
 
     public static final String UPDATE = "update";
 
-    public static final String SQL = "SQL";
+    public static final String SQL = "sql";
 
     public static final String REFID = "refid";
 
     public static final String INCLUDE = "include";
 
     public static final String ID = "id";
-
 
     public static final String DELETE = "delete";
 }
