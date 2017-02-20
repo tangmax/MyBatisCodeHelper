@@ -158,6 +158,10 @@ feature：
 
 其他
 ----------------------------------
+- 加入qq群
+
+![qqGroup](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/qqgroup.png) 
+
 截图中的项目来自[https://github.com/gejun123456/codehelperPluginDemo](https://github.com/gejun123456/codehelperPluginDemo)  
 
 
