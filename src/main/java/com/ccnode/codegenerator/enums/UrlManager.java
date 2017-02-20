@@ -1,8 +1,5 @@
 package com.ccnode.codegenerator.enums;
 
-import com.ccnode.codegenerator.common.VersionManager;
-import com.ccnode.codegenerator.storage.SettingService;
-
 /**
  * What always stop you is what you always believe.
  * <p>
@@ -16,21 +13,18 @@ public class UrlManager {
     // TODO: 2017/2/3 need fix?
     private static String POST_URL = "http://www.codehelper.me/generator/post";
 
-    public static final String GENERATOR_URL = "https://github.com/zhengjunbase/MyBatisCodeHelper/tree/develop";
-
     public static String getUrlSuffix() {
-        return "?id=" + SettingService.getUUID() + "&version=" + VersionManager.getCurrentVersion();
+        return "";
     }
 
     public static String getMainPage() {
-        return MAIN_PAGE + getUrlSuffix();
+        return MAIN_PAGE;
     }
 
 
     public static String getPostUrl() {
         return POST_URL + getUrlSuffix();
     }
-
 
 
 }
