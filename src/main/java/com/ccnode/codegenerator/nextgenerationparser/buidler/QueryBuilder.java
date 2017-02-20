@@ -117,7 +117,7 @@ public class QueryBuilder {
             if (find.getDistinct()) {
                 builder.append(" distinct(");
                 for (String prop : find.getFetchProps()) {
-                    builder.append(" " + relation.getPropColumn(prop) + ",");
+                    builder.append(relation.getPropColumn(prop) + ",");
                 }
                 builder.deleteCharAt(builder.length() - 1);
                 builder.append(")");
