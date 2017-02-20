@@ -4,6 +4,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -56,6 +57,10 @@ public class GenCodeUpdateDialog extends DialogWrapper {
     private void findXmlFileLocation() {
         PsiSearchHelper searchService = ServiceManager.getService(myProject, PsiSearchHelper.class);
         java.util.List<XmlFile> xmlFiles = new ArrayList<XmlFile>();
+        Module moduleForPsiElement = ModuleUtilCore.findModuleForPsiElement(myClass);
+        if (moduleForPsiElement == null) {
+            return;
+        }
         searchService.processUsagesInNonJavaFiles(myClass.getName(), (file, startOffset, endOffset) -> {
             if (file instanceof XmlFile) {
                 XmlFile xmlFile = (XmlFile) file;
@@ -67,7 +72,7 @@ public class GenCodeUpdateDialog extends DialogWrapper {
                 }
             }
             return true;
-        }, GlobalSearchScope.moduleScope(ModuleUtilCore.findModuleForPsiElement(myClass)));
+        }, GlobalSearchScope.moduleScope(moduleForPsiElement));
         if (xmlFiles.size() > 0) {
             jTextField.setText(xmlFiles.get(0).getVirtualFile().getPath());
             myXmlFile = xmlFiles.get(0);
@@ -87,7 +92,7 @@ public class GenCodeUpdateDialog extends DialogWrapper {
         if (!valid) {
             return;
         }
-        UpdateDialogMore updateDialogMore = new UpdateDialogMore(myProject, myClass, myXmlFile,nameSpaceDaoClass);
+        UpdateDialogMore updateDialogMore = new UpdateDialogMore(myProject, myClass, myXmlFile, nameSpaceDaoClass);
         boolean b = updateDialogMore.showAndGet();
         if (!b) {
             return;
@@ -120,7 +125,7 @@ public class GenCodeUpdateDialog extends DialogWrapper {
 
         XmlAttribute namespaceAttribute =
                 rootTag.getAttribute("namespace");
-        if(namespaceAttribute==null){
+        if (namespaceAttribute == null) {
             Messages.showErrorDialog("the xml file namespaceAttribute is empty", "validate fail");
             return false;
         }

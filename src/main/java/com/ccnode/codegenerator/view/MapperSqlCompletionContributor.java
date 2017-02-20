@@ -12,6 +12,7 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -93,8 +94,8 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             .put("A", "ASC")
             .put("u", "union")
             .put("U", "UNION")
-            .put("r","replace")
-            .put("R","REPLACE")
+            .put("r", "replace")
+            .put("R", "REPLACE")
             .build();
 
 
@@ -219,7 +220,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         if (realStart.length() == 1) {
             ImmutableList<String> recommends = multimap.get(realStart);
             for (String recommend : recommends) {
-                result.addElement(LookupElementBuilder.create(recommend+" "));
+                result.addElement(LookupElementBuilder.create(recommend + " "));
             }
         }
 
@@ -259,7 +260,11 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
     }
 
     private static PsiClass findPsiClass(PsiElement element, String namespace) {
-        PsiClass[] classesByName = PsiShortNamesCache.getInstance(element.getProject()).getClassesByName(MapperUtil.extractClassShortName(namespace), GlobalSearchScope.moduleScope(ModuleUtilCore.findModuleForPsiElement(element)));
+        Module moduleForPsiElement = ModuleUtilCore.findModuleForPsiElement(element);
+        if (moduleForPsiElement == null) {
+            return null;
+        }
+        PsiClass[] classesByName = PsiShortNamesCache.getInstance(element.getProject()).getClassesByName(MapperUtil.extractClassShortName(namespace), GlobalSearchScope.moduleScope(moduleForPsiElement));
         for (PsiClass psiClass : classesByName) {
             if (psiClass.isInterface() && psiClass.getQualifiedName().equals(namespace)) {
                 return psiClass;

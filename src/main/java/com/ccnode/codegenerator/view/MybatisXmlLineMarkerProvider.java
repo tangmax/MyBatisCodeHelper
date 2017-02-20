@@ -5,6 +5,7 @@ import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -59,7 +60,11 @@ public class MybatisXmlLineMarkerProvider extends RelatedItemLineMarkerProvider 
         }
         String[] split = namespace.split("\\.");
         String className = split[split.length - 1];
-        PsiClass[] classesByName = PsiShortNamesCache.getInstance(element.getProject()).getClassesByName(className, GlobalSearchScope.moduleScope(ModuleUtilCore.findModuleForPsiElement(element)));
+        Module moduleForPsiElement = ModuleUtilCore.findModuleForPsiElement(element);
+        if (moduleForPsiElement == null) {
+            return;
+        }
+        PsiClass[] classesByName = PsiShortNamesCache.getInstance(element.getProject()).getClassesByName(className, GlobalSearchScope.moduleScope(moduleForPsiElement));
         PsiClass realClass = null;
         for (PsiClass psiClass : classesByName) {
             if (psiClass.isInterface() && psiClass.getQualifiedName().equals(namespace)) {

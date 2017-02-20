@@ -13,8 +13,6 @@ import com.intellij.codeInsight.generation.OverrideImplementUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -22,8 +20,6 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -59,13 +55,6 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
             }
             Messages.showErrorDialog(project, errorBuilder.toString(), "validate fail");
             return;
-        }
-
-        Module moduleForFile = ModuleUtilCore.findModuleForPsiElement(currentClass);
-        String modulePath = moduleForFile.getModuleFilePath();
-        Path parent = Paths.get(modulePath).getParent();
-        while (parent.toString().contains(".idea")) {
-            parent = parent.getParent();
         }
         VirtualFileManager.getInstance().syncRefresh();
         ApplicationManager.getApplication().saveAll();
