@@ -3,6 +3,7 @@ package com.ccnode.codegenerator.genCode;
 import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
+import com.ccnode.codegenerator.myconfigurable.MyBatisCodeHelperApplicationComponent;
 import com.ccnode.codegenerator.pojo.ClassInfo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -28,6 +29,7 @@ public class GenDaoService {
         root.put(TemplateConstants.POJO_FULL_TYPE,srcClass.getQualifiedName());
         root.put(TemplateConstants.DAO_TYPE,daoProp.getName());
         root.put(TemplateConstants.POJO_TYPE,srcClass.getName());
+        root.put(TemplateConstants.ADD_MAPPER_ANNOTATION, MyBatisCodeHelperApplicationComponent.getInstance().getState().getProfile().getAddMapperAnnotation());
         String genDaoString = TemplateUtil.processToString(TemplateConstants.GENCODE_DAO, root);
         List<String> lines = Lists.newArrayList();
         lines.add(genDaoString);

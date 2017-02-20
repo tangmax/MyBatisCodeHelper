@@ -34,6 +34,8 @@ public class TemplateConstants {
 
     public static final String TABLE_NAME = "tableName";
 
+    public static final String ADD_MAPPER_ANNOTATION = "addMapperAnnotation";
+
     public static final String PRIMARY_FIELD = "primaryField";
 
     public static final String PRIMARY_COLUMN = "primaryColumn";

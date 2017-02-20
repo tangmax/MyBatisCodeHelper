@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import ${pojoFullType};
 
-@Mapper
+<#if addMapperAnnotation>@Mapper</#if>
 public interface ${daoType} {
     int insert(@Param("pojo") ${pojoType} pojo);
 

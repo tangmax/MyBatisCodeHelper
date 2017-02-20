@@ -65,12 +65,14 @@
     </change-notes>
 
     <actions>
-        <group id="com.ccnode.codegenerator.MybatisCodeHelper" text="MybatisCodeHelper" description="MybatisCodeHelper" popup="true">
+        <group id="com.ccnode.codegenerator.MybatisCodeHelper" text="MybatisCodeHelper" description="MybatisCodeHelper"
+               popup="true">
             <separator/>
             <group id="MybatisCodeHelperSubGroup"/>
             <add-to-group group-id="ToolsMenu" relative-to-action="GenerateJavadoc" anchor="before"/>
 
-            <action id="MybatisCodeHelper.LearnMore" class="com.ccnode.codegenerator.view.ShowLearnMoreAction" text="Learn More"
+            <action id="MybatisCodeHelper.LearnMore" class="com.ccnode.codegenerator.view.ShowLearnMoreAction"
+                    text="Learn More"
                     description="Learn_More"/>
             <!--<action id="mybatis.enterLicense" class="com.ccnode.codegenerator.view.EnterLicenseAction" text="Register" description="License"/>-->
 
@@ -100,6 +102,12 @@
     <depends>com.intellij.modules.lang</depends>
     -->
 
+    <application-components>
+        <component>
+            <implementation-class>com.ccnode.codegenerator.myconfigurable.MyBatisCodeHelperApplicationComponent</implementation-class>
+        </component>
+    </application-components>
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <applicationService serviceInterface="com.ccnode.codegenerator.storage.SettingService"
@@ -118,6 +126,8 @@
                 implementation="com.ccnode.codegenerator.view.MyBatisJavaToXmlPsiReferenceContributor"/>
         <psi.referenceContributor
                 implementation="com.ccnode.codegenerator.view.MyBatisXmlAttributeReferenceContributor"/>
+        <applicationConfigurable instance="com.ccnode.codegenerator.myconfigurable.MyConfigurable" id="MyBatisCodeHelper"
+                                 displayName="MyBatisCodeHelper"/>
 
         <!--<renamePsiElementProcessor implementation="com.ccnode.codegenerator.view.rename.RenameResultMapSqlProcessor" order="first"/>-->
 
