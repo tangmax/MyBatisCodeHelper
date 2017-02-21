@@ -27,4 +27,16 @@ public class MyBatisXmlConstants {
     public static final String ID = "id";
 
     public static final String DELETE = "delete";
+
+    public static final String PROPERTY = "property";
+
+    public static final String COLUMN = "column";
+
+    public static final String RESULT = "result";
+
+    public static final String TEST = "test";
+
+    public static final String TYPE = "type";
+
+    public static final String COLLECTION = "collection";
 }

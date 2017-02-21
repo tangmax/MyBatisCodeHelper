@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.view.rename;
 
+import com.ccnode.codegenerator.annotation.Unused;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.xml.XmlAttributeValue;
 import com.intellij.refactoring.listeners.RefactoringElementListener;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * @Date 2017/2/17
  * @Description
  */
+@Unused
 public class RenameResultMapSqlProcessor extends RenamePsiElementProcessor {
     @Override
     public boolean canProcessElement(@NotNull PsiElement element) {

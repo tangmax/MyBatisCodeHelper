@@ -1,4 +1,4 @@
-package com.ccnode.codegenerator.view;
+package com.ccnode.codegenerator.view.completion;
 
 import com.ccnode.codegenerator.util.MethodNameUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;

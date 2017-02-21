@@ -131,10 +131,14 @@
         <codeInsight.lineMarkerProvider language="XML"
                                         implementationClass="com.ccnode.codegenerator.view.MybatisXmlLineMarkerProvider"/>
         <completion.contributor language="JAVA"
-                                implementationClass="com.ccnode.codegenerator.view.MethodNameCompletionContributor"/>
+                                implementationClass="com.ccnode.codegenerator.view.completion.MethodNameCompletionContributor"/>
 
         <completion.contributor language="XML"
-                                implementationClass="com.ccnode.codegenerator.view.MapperSqlCompletionContributor"/>
+                                implementationClass="com.ccnode.codegenerator.view.completion.MapperSqlCompletionContributor"/>
+
+        <completion.contributor language="XML"
+                                implementationClass="com.ccnode.codegenerator.view.completion.MapperXmlTagElementCompletionContributor"/>
+
 
         <psi.referenceContributor
                 implementation="com.ccnode.codegenerator.view.MyBatisJavaToXmlPsiReferenceContributor"/>
