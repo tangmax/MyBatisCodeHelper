@@ -44,7 +44,7 @@
     <update id="updateContent">
         UPDATE content
         <set>
-            <if test="pojo.id != null">id = #{pojo.id},</if>
+            <if test="pojo.id != null and pojo.ss!=null">id = #{pojo.id},</if>
             <if test="pojo.title != null">title = #{pojo.title},</if>
             <if test="pojo.source_content != null">source_content = #{pojo.source_content},</if>
             <if test="pojo.html_content != null">html_content = #{pojo.html_content},</if>

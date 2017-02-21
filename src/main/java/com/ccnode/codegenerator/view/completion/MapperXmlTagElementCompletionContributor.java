@@ -19,6 +19,7 @@ import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -77,6 +78,10 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
         if (!(originalFile instanceof XmlFile)) {
             return;
         }
+        String lastWord = findLastWord(startText);
+        if (lastWord == null) {
+            return;
+        }
         XmlFile xmlFile = (XmlFile) originalFile;
         XmlTag rootTag = xmlFile.getRootTag();
         if (rootTag == null || !(rootTag.getName().equals(MyBatisXmlConstants.MAPPER))) {
@@ -101,11 +106,33 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
             return;
         }
         List<String> myBatisParams = PsiClassUtil.extractMyBatisParam(findedMethod);
+        myBatisParams.add("null");
+        myBatisParams.add("and");
         for (String myBatisParam : myBatisParams) {
-            if (myBatisParam.startsWith(startText)) {
-                result.addElement(LookupElementBuilder.create(myBatisParam));
+            if (myBatisParam.startsWith(lastWord)) {
+                result.addElement(LookupElementBuilder.create(startText + myBatisParam.substring(lastWord.length())));
             }
         }
+    }
+
+    @Nullable
+    private String findLastWord(String startText) {
+        if (StringUtils.isBlank(startText)) {
+            return null;
+        }
+        StringBuilder builder = new StringBuilder();
+        for (int i = startText.length() - 1; i >= 0; i--) {
+            if (Character.isLetterOrDigit(startText.charAt(i)) || startText.charAt(i) == '.') {
+                builder.append(startText.charAt(i));
+            } else {
+                break;
+            }
+        }
+        String s = builder.toString();
+        if (s.length() == 0) {
+            return null;
+        }
+        return StringUtils.reverse(s);
     }
 
     private void handleWithMethodNameId(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result, PsiElement element, XmlAttribute attribute, String startText) {
