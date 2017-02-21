@@ -148,9 +148,17 @@ countDistinctUserNameByIdGreaterThan | select count(distinct(user_name)) from us
 
 CHANGELOG
 ------------------------------------------------
-## latest
+1.3 
+- 生成mybatis文件时可生成索引及选择是否需要默认值
+- 生成mybatis文件加入insertSelective
+- 在配置中可选择mybatis接口是否加上@Mapper注解
+- 方法名生成sql 支持greaterThanOrEqualTo lessThanOrEqualTo betweenOrEqualto
+- 支持resultMap refid跳转至定义及重构
+- 支持xml中的方法名重构
+- 修复module为空的警告
 
-feature： 
+
+1.2 
 - 添加mapper与dao的相互跳转
 - 使用alt+insert来生成dao xml等
 - 添加方法名生成sql
