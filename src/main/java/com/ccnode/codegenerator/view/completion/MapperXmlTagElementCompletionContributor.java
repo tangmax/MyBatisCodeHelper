@@ -3,6 +3,7 @@ package com.ccnode.codegenerator.view.completion;
 import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
 import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
+import com.google.common.collect.Lists;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
@@ -12,10 +13,12 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlAttributeValue;
+import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -54,11 +57,47 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
             //do something
             handleWithPropertyComplete(result, element, attribute, startText);
         } else if (name.equals(MyBatisXmlConstants.REFID)) {
-
+            handleWithRefidComplete(parameters, result, attribute, startText);
         } else if (name.equals(MyBatisXmlConstants.RESULTMAP)) {
-
+            
         } else if (name.equals(MyBatisXmlConstants.TEST)) {
 
+        }
+    }
+
+    private void handleWithRefidComplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result, XmlAttribute attribute, String startText) {
+        XmlTag tag = attribute.getParent();
+        if (tag == null) {
+            return;
+        }
+        if (!(tag.getName().equals(MyBatisXmlConstants.INCLUDE))) {
+            return;
+        }
+        PsiFile originalFile =
+                parameters.getOriginalFile();
+        if (!(originalFile instanceof XmlFile)) {
+            return;
+        }
+        XmlFile xmlFil = (XmlFile) originalFile;
+        XmlTag rootTag = xmlFil.getRootTag();
+        if (rootTag == null) {
+            return;
+        }
+        XmlTag[] subTags = rootTag.getSubTags();
+        List<String> sqls = Lists.newArrayList();
+        for (XmlTag subTag : subTags) {
+            if (subTag.getName().equals(MyBatisXmlConstants.SQL)) {
+                String sqlId = subTag.getAttributeValue(MyBatisXmlConstants.ID);
+                if (StringUtils.isNotBlank(sqlId)) {
+                    sqls.add(sqlId);
+                }
+            }
+        }
+
+        for (String sql : sqls) {
+            if (sql.startsWith(startText)) {
+                result.addElement(LookupElementBuilder.create(sql));
+            }
         }
     }
 
