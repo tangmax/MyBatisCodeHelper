@@ -35,12 +35,6 @@ import java.util.Set;
 public class MapperSqlCompletionContributor extends CompletionContributor {
 
     public static final String PARAM = "@Param(\"";
-    private static Set<String> mapperMethodSet = new HashSet<String>() {{
-        add("update");
-        add("select");
-        add("delete");
-        add("insert");
-    }};
 
 
     private static ImmutableListMultimap<String, String> multimap = ImmutableListMultimap.<String, String>builder()
@@ -250,7 +244,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         while (parent != null) {
             if (parent instanceof XmlTag) {
                 String name = ((XmlTag) parent).getName();
-                if (mapperMethodSet.contains(name)) {
+                if (MyBatisXmlConstants.mapperMethodSet.contains(name)) {
                     return ((XmlTag) parent).getAttributeValue("id");
                 }
             }

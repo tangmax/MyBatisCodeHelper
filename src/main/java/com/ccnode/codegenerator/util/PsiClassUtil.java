@@ -1,9 +1,16 @@
 package com.ccnode.codegenerator.util;
 
+import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.PsiShortNamesCache;
 import com.intellij.psi.util.PsiTypesUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -153,5 +160,45 @@ public class PsiClassUtil {
 
     public static boolean isPrimitiveType(String type) {
         return primitiveToObjectMap.containsKey(type);
+    }
+
+    @Nullable
+    public static PsiClass findClassOfQuatifiedType(PsiElement element, String resultTypeValue) {
+        Module moduleForPsiElement =
+                ModuleUtilCore.findModuleForPsiElement(element);
+        if (moduleForPsiElement == null) {
+            return null;
+        }
+        PsiClass[] classesByName = PsiShortNamesCache.getInstance(element.getProject()).getClassesByName(MapperUtil.extractClassShortName(resultTypeValue)
+                , GlobalSearchScope.moduleScope(moduleForPsiElement));
+        if (classesByName.length == 0) {
+            return null;
+        }
+
+        for (PsiClass psiClass : classesByName) {
+            if (psiClass.getQualifiedName().equals(resultTypeValue)) {
+                return psiClass;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public static PsiClass findClassOfQuatifiedType(@Nullable Module module, @NotNull Project project, @NotNull String resultTypeValue) {
+        if (module == null) {
+            return null;
+        }
+        PsiClass[] classesByName = PsiShortNamesCache.getInstance(project).getClassesByName(MapperUtil.extractClassShortName(resultTypeValue)
+                , GlobalSearchScope.moduleScope(module));
+        if (classesByName.length == 0) {
+            return null;
+        }
+
+        for (PsiClass psiClass : classesByName) {
+            if (psiClass.getQualifiedName().equals(resultTypeValue)) {
+                return psiClass;
+            }
+        }
+        return null;
     }
 }

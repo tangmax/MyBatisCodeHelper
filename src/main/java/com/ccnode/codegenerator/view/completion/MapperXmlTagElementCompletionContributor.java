@@ -1,7 +1,6 @@
 package com.ccnode.codegenerator.view.completion;
 
 import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
-import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.google.common.collect.Lists;
 import com.intellij.codeInsight.completion.CompletionContributor;
@@ -9,13 +8,10 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.PsiShortNamesCache;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlAttributeValue;
 import com.intellij.psi.xml.XmlFile;
@@ -59,9 +55,89 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
         } else if (name.equals(MyBatisXmlConstants.REFID)) {
             handleWithRefidComplete(parameters, result, attribute, startText);
         } else if (name.equals(MyBatisXmlConstants.RESULTMAP)) {
-            
+            handleWithResultMap(parameters, result, attribute, startText);
         } else if (name.equals(MyBatisXmlConstants.TEST)) {
 
+        } else if (name.equals(MyBatisXmlConstants.ID)) {
+            //check if is was insert or select or update, solve it from dao interface methodName.
+            handleWithMethodNameId(parameters, result, element, attribute, startText);
+        }
+    }
+
+    private void handleWithMethodNameId(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result, PsiElement element, XmlAttribute attribute, String startText) {
+        XmlTag tag = attribute.getParent();
+        if (tag == null) {
+            return;
+        }
+        if (!MyBatisXmlConstants.mapperMethodSet.contains(tag.getName())) {
+            return;
+        }
+        //find all the method name from interface method
+        PsiFile originalFile =
+                parameters.getOriginalFile();
+        if (!(originalFile instanceof XmlFile)) {
+            return;
+        }
+        XmlFile xmlFil = (XmlFile) originalFile;
+        XmlTag rootTag = xmlFil.getRootTag();
+        if (rootTag == null) {
+            return;
+        }
+        String namespace = rootTag.getAttributeValue(MyBatisXmlConstants.NAMESPACE);
+        if (StringUtils.isBlank(namespace)) {
+            return;
+        }
+
+        PsiClass classOfQuatifiedType = PsiClassUtil.findClassOfQuatifiedType(element, namespace);
+        if (classOfQuatifiedType == null || !(classOfQuatifiedType.isInterface())) {
+            return;
+        }
+
+        PsiMethod[] allMethods = classOfQuatifiedType.getAllMethods();
+        List<String> methodNames = Lists.newArrayList();
+        for (PsiMethod allMethod : allMethods) {
+            methodNames.add(allMethod.getName());
+        }
+        for (String methodName : methodNames) {
+            if (methodName.startsWith(startText)) {
+                result.addElement(LookupElementBuilder.create(methodName));
+            }
+        }
+    }
+
+    private void handleWithResultMap(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result, XmlAttribute attribute, String startText) {
+        XmlTag tag = attribute.getParent();
+        if (tag == null) {
+            return;
+        }
+        if (!(tag.getName().equals(MyBatisXmlConstants.SELECT))) {
+            return;
+        }
+        PsiFile originalFile =
+                parameters.getOriginalFile();
+        if (!(originalFile instanceof XmlFile)) {
+            return;
+        }
+        XmlFile xmlFil = (XmlFile) originalFile;
+        XmlTag rootTag = xmlFil.getRootTag();
+        if (rootTag == null) {
+            return;
+        }
+        XmlTag[] subTags = rootTag.getSubTags();
+        List<String> reslutMapIds = Lists.newArrayList();
+        for (XmlTag subTag : subTags) {
+            if (subTag.getName().equals(MyBatisXmlConstants.RESULTMAP)) {
+                String resultMapId = subTag.getAttributeValue(MyBatisXmlConstants.ID);
+                if (StringUtils.isNotBlank(resultMapId)) {
+                    reslutMapIds.add(resultMapId);
+                }
+            }
+        }
+
+        for (String resultMapId : reslutMapIds) {
+            if (resultMapId.startsWith(startText)) {
+                result.addElement(LookupElementBuilder.create(resultMapId));
+            }
         }
     }
 
@@ -122,27 +198,8 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
             return;
         }
         //then go search the resultType entity.
-        Module moduleForPsiElement =
-                ModuleUtilCore.findModuleForPsiElement(element);
-        if (moduleForPsiElement == null) {
-            return;
-        }
-        PsiClass[] classesByName = PsiShortNamesCache.getInstance(element.getProject()).getClassesByName(MapperUtil.extractClassShortName(resultTypeValue)
-                , GlobalSearchScope.moduleScope(moduleForPsiElement));
-        if (classesByName.length == 0) {
-            return;
-        }
-        PsiClass findedClass = null;
-        for (PsiClass psiClass : classesByName) {
-            if (psiClass.getQualifiedName().equals(resultTypeValue)) {
-                findedClass = psiClass;
-                break;
-            }
-        }
-        if (findedClass == null) {
-            return;
-        }
-
+        PsiClass findedClass = PsiClassUtil.findClassOfQuatifiedType(element, resultTypeValue);
+        if (findedClass == null) return;
         List<String> props =
                 PsiClassUtil.extractProps(findedClass);
 
@@ -153,4 +210,5 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
             }
         }
     }
+
 }

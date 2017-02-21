@@ -1,11 +1,15 @@
 package com.ccnode.codegenerator.constants;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @Author bruce.ge
  * @Date 2017/2/18
  * @Description
  */
 public class MyBatisXmlConstants {
+
 
     public static final String RESULTMAP = "resultMap";
 
@@ -18,6 +22,8 @@ public class MyBatisXmlConstants {
 
     public static final String UPDATE = "update";
 
+    public static final String DELETE = "delete";
+
     public static final String SQL = "sql";
 
     public static final String REFID = "refid";
@@ -26,7 +32,6 @@ public class MyBatisXmlConstants {
 
     public static final String ID = "id";
 
-    public static final String DELETE = "delete";
 
     public static final String PROPERTY = "property";
 
@@ -39,4 +44,14 @@ public class MyBatisXmlConstants {
     public static final String TYPE = "type";
 
     public static final String COLLECTION = "collection";
+
+
+    public static final String NAMESPACE = "namespace";
+
+    public static Set<String> mapperMethodSet = new HashSet<String>() {{
+        add(INSERT);
+        add(UPDATE);
+        add(DELETE);
+        add(INSERT);
+    }};
 }
