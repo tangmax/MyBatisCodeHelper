@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.view.completion;
 
 import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
+import com.ccnode.codegenerator.util.MyPsiXmlUtils;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.google.common.collect.Lists;
 import com.intellij.codeInsight.completion.CompletionContributor;
@@ -57,10 +58,53 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
         } else if (name.equals(MyBatisXmlConstants.RESULTMAP)) {
             handleWithResultMap(parameters, result, attribute, startText);
         } else if (name.equals(MyBatisXmlConstants.TEST)) {
-
+            hendleWithTestComplete(parameters, result, element, attribute, startText);
         } else if (name.equals(MyBatisXmlConstants.ID)) {
             //check if is was insert or select or update, solve it from dao interface methodName.
             handleWithMethodNameId(parameters, result, element, attribute, startText);
+        }
+    }
+
+    private void hendleWithTestComplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result, PsiElement element, XmlAttribute attribute, String startText) {
+        XmlTag tag = attribute.getParent();
+        if (tag == null) {
+            return;
+        }
+        if (!(tag.getName().equals(MyBatisXmlConstants.IF))) {
+            return;
+        }
+        PsiFile originalFile = parameters.getOriginalFile();
+        if (!(originalFile instanceof XmlFile)) {
+            return;
+        }
+        XmlFile xmlFile = (XmlFile) originalFile;
+        XmlTag rootTag = xmlFile.getRootTag();
+        if (rootTag == null || !(rootTag.getName().equals(MyBatisXmlConstants.MAPPER))) {
+            return;
+        }
+        //get it's method name.
+        String namespace = rootTag.getAttributeValue(MyBatisXmlConstants.NAMESPACE);
+        if (StringUtils.isBlank(namespace)) {
+            return;
+        }
+        PsiClass classOfQuatifiedType = PsiClassUtil.findClassOfQuatifiedType(element, namespace);
+        if (classOfQuatifiedType == null) {
+            return;
+        }
+
+        String interfaceMethodName = MyPsiXmlUtils.findCurrentElementIntefaceMethodName(element);
+        if (StringUtils.isBlank(interfaceMethodName)) {
+            return;
+        }
+        PsiMethod findedMethod = PsiClassUtil.getClassMethodByMethodName(classOfQuatifiedType, interfaceMethodName);
+        if (findedMethod == null) {
+            return;
+        }
+        List<String> myBatisParams = PsiClassUtil.extractMyBatisParam(findedMethod);
+        for (String myBatisParam : myBatisParams) {
+            if (myBatisParam.startsWith(startText)) {
+                result.addElement(LookupElementBuilder.create(myBatisParam));
+            }
         }
     }
 
@@ -202,8 +246,6 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
         if (findedClass == null) return;
         List<String> props =
                 PsiClassUtil.extractProps(findedClass);
-
-
         for (String prop : props) {
             if (prop.startsWith(startText)) {
                 result.addElement(LookupElementBuilder.create(prop));

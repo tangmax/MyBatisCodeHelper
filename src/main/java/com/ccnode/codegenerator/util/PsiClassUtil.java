@@ -2,6 +2,7 @@ package com.ccnode.codegenerator.util;
 
 import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
+import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
@@ -20,6 +21,8 @@ import java.util.*;
 public class PsiClassUtil {
 
 
+    public static final String PARAM = "@Param(\"";
+
     private static Map<String, String> primitiveToObjectMap = new HashMap<String, String>() {
         {
             put("int", "java.lang.Integer");
@@ -32,6 +35,7 @@ public class PsiClassUtil {
         }
     };
 
+    @NotNull
     public static List<String> extractProps(PsiClass pojoClass) {
         PsiField[] allFields = pojoClass.getAllFields();
         List<String> props = new ArrayList<String>();
@@ -163,7 +167,7 @@ public class PsiClassUtil {
     }
 
     @Nullable
-    public static PsiClass findClassOfQuatifiedType(PsiElement element, String resultTypeValue) {
+    public static PsiClass findClassOfQuatifiedType(@NotNull PsiElement element,@NotNull String resultTypeValue) {
         Module moduleForPsiElement =
                 ModuleUtilCore.findModuleForPsiElement(element);
         if (moduleForPsiElement == null) {
@@ -200,5 +204,73 @@ public class PsiClassUtil {
             }
         }
         return null;
+    }
+
+    @NotNull
+    public static List<String> extractMyBatisParam(PsiMethod findMethod) {
+        List<String> lookUpResult = new ArrayList<>();
+        PsiParameter[] parameters1 = findMethod.getParameterList().getParameters();
+        for (PsiParameter parameter : parameters1) {
+            String parameterText = parameter.getText();
+            String param = extractParam(parameterText);
+            String parameterType = parameter.getType().getCanonicalText();
+            parameterType = convertToObjectText(parameterType);
+            //if it's basic type, just add it to the param.
+            if (MySqlTypeUtil.isSupportedType(parameterType)) {
+                if (param == null) {
+                    continue;
+                } else {
+                    lookUpResult.add(param);
+                }
+            } else {
+                PsiClass psiClass = PsiTypesUtil.getPsiClass(parameter.getType());
+                if (psiClass == null) {
+                    continue;
+                }
+                List<String> props = extractProps(psiClass);
+                //means there is no @Param for this, just add it.
+                if (param == null) {
+                    lookUpResult.addAll(props);
+                } else {
+                    for (String prop : props) {
+                        lookUpResult.add(param + "." + prop);
+                    }
+                }
+            }
+        }
+        return lookUpResult;
+    }
+
+    public static String extractParam(String parameterText) {
+        int i = parameterText.indexOf(PARAM);
+        if (i == -1) {
+            return null;
+        }
+        int u = i + PARAM.length();
+        String m = "";
+
+        char c;
+        while (u < parameterText.length() && (c = parameterText.charAt(u)) != '"') {
+            m += c;
+            u++;
+        }
+        if (m.length() > 0) {
+            return m;
+        }
+        return null;
+    }
+
+    @Nullable
+    public static PsiMethod getClassMethodByMethodName(PsiClass namespaceClass, String methodName) {
+        PsiMethod[] methods =
+                namespaceClass.getMethods();
+        PsiMethod findMethod = null;
+        for (PsiMethod method : methods) {
+            if (method.getName().equals(methodName)) {
+                findMethod = method;
+                break;
+            }
+        }
+        return findMethod;
     }
 }

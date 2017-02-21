@@ -32,6 +32,8 @@ public class MyBatisXmlConstants {
 
     public static final String ID = "id";
 
+    public static final String IF = "if";
+
 
     public static final String PROPERTY = "property";
 
@@ -47,6 +49,7 @@ public class MyBatisXmlConstants {
 
 
     public static final String NAMESPACE = "namespace";
+    public static final String MAPPER = "mapper";
 
     public static Set<String> mapperMethodSet = new HashSet<String>() {{
         add(INSERT);

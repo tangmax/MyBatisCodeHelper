@@ -1,9 +1,8 @@
 package com.ccnode.codegenerator.view.completion;
 
 import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
-import com.ccnode.codegenerator.dialog.MapperUtil;
-import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
+import com.ccnode.codegenerator.util.MyPsiXmlUtils;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
@@ -12,12 +11,7 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.*;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.PsiShortNamesCache;
-import com.intellij.psi.util.PsiTypesUtil;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlText;
@@ -33,9 +27,6 @@ import java.util.Set;
  * Created by bruce.ge on 2017/1/3.
  */
 public class MapperSqlCompletionContributor extends CompletionContributor {
-
-    public static final String PARAM = "@Param(\"";
-
 
     private static ImmutableListMultimap<String, String> multimap = ImmutableListMultimap.<String, String>builder()
             .put("s", "select")
@@ -120,7 +111,11 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             return;
         }
         XmlFile xmlFile = (XmlFile) originalFile;
-        if (!xmlFile.getRootTag().getName().equals("mapper")) {
+        XmlTag rootTag1 = xmlFile.getRootTag();
+        if (rootTag1 == null) {
+            return;
+        }
+        if (!rootTag1.getName().equals(MyBatisXmlConstants.MAPPER)) {
             return;
         }
 
@@ -130,7 +125,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
 
             //get all the rootMap for it.
             XmlTag[] subTags =
-                    xmlFile.getRootTag().getSubTags();
+                    rootTag1.getSubTags();
             List<ColumnAndField> columnAndFields = new ArrayList<>();
             for (XmlTag tag : subTags) {
                 if (tag.getName().equals(MyBatisXmlConstants.RESULTMAP)) {
@@ -150,58 +145,23 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         int findFieldIndex = realStart.lastIndexOf("#{");
         if (findFieldIndex != -1 && findFieldIndex > realStart.length() - 10) {
             //find all the prop for it.
-            String namespace = xmlFile.getRootTag().getAttributeValue("namespace");
-            PsiClass namespaceClass = findPsiClass(xmlFile, namespace);
+            String namespace = MyPsiXmlUtils.findCurrentXmlFileNameSpace(xmlFile);
+            PsiClass namespaceClass = PsiClassUtil.findClassOfQuatifiedType(xmlFile, namespace);
             if (namespaceClass == null) {
                 return;
             }
 
             //only for those four method to use.
-            String methodName = findMethods(positionElement);
+            String methodName = MyPsiXmlUtils.findCurrentElementIntefaceMethodName(positionElement);
             //find the corresponding method.
-            if (methodName == null) {
+            if (StringUtils.isBlank(methodName)) {
                 return;
             }
-
-            PsiMethod[] methods =
-                    namespaceClass.getMethods();
-            PsiMethod findMethod = null;
-            for (PsiMethod method : methods) {
-                if (method.getName().equals(methodName)) {
-                    findMethod = method;
-                    break;
-                }
-            }
-
+            PsiMethod findMethod = PsiClassUtil.getClassMethodByMethodName(namespaceClass, methodName);
             if (findMethod == null) {
                 return;
             }
-
-            PsiParameter[] parameters1 = findMethod.getParameterList().getParameters();
-            List<String> lookUpResult = new ArrayList<>();
-            for (PsiParameter parameter : parameters1) {
-                String parameterText = parameter.getText();
-                String param = extractParam(parameterText);
-                String parameterType = parameter.getType().getCanonicalText();
-                parameterType = PsiClassUtil.convertToObjectText(parameterType);
-                if (MySqlTypeUtil.isSupportedType(parameterType)) {
-                    if (param == null) {
-                        continue;
-                    } else {
-                        lookUpResult.add(param);
-                    }
-                } else {
-                    PsiClass psiClass = PsiTypesUtil.getPsiClass(parameter.getType());
-                    List<String> props = PsiClassUtil.extractProps(psiClass);
-                    if (param == null) {
-                        lookUpResult.addAll(props);
-                    } else {
-                        for (String prop : props) {
-                            lookUpResult.add(param + "." + prop);
-                        }
-                    }
-                }
-            }
+            List<String> lookUpResult = PsiClassUtil.extractMyBatisParam(findMethod);
             String remaining = realStart.substring(findFieldIndex + 2);
             int findAlpha = findFindAlpha(realStart);
             for (String s : lookUpResult) {
@@ -218,53 +178,6 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             }
         }
 
-    }
-
-    private static String extractParam(String parameterText) {
-        int i = parameterText.indexOf(PARAM);
-        if (i == -1) {
-            return null;
-        }
-        int u = i + PARAM.length();
-        String m = "";
-
-        char c;
-        while (u < parameterText.length() && (c = parameterText.charAt(u)) != '"') {
-            m += c;
-            u++;
-        }
-        if (m.length() > 0) {
-            return m;
-        }
-        return null;
-    }
-
-    private String findMethods(PsiElement positionElement) {
-        PsiElement parent = positionElement.getParent();
-        while (parent != null) {
-            if (parent instanceof XmlTag) {
-                String name = ((XmlTag) parent).getName();
-                if (MyBatisXmlConstants.mapperMethodSet.contains(name)) {
-                    return ((XmlTag) parent).getAttributeValue("id");
-                }
-            }
-            parent = parent.getParent();
-        }
-        return null;
-    }
-
-    private static PsiClass findPsiClass(PsiElement element, String namespace) {
-        Module moduleForPsiElement = ModuleUtilCore.findModuleForPsiElement(element);
-        if (moduleForPsiElement == null) {
-            return null;
-        }
-        PsiClass[] classesByName = PsiShortNamesCache.getInstance(element.getProject()).getClassesByName(MapperUtil.extractClassShortName(namespace), GlobalSearchScope.moduleScope(moduleForPsiElement));
-        for (PsiClass psiClass : classesByName) {
-            if (psiClass.isInterface() && psiClass.getQualifiedName().equals(namespace)) {
-                return psiClass;
-            }
-        }
-        return null;
     }
 
     private static int findFindAlpha(String realStart) {
@@ -301,8 +214,8 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         if (tag.getSubTags() != null) {
             for (XmlTag subTag : tag.getSubTags()) {
                 ColumnAndField columnAndField = new ColumnAndField();
-                String columnName = subTag.getAttributeValue("column");
-                String field = subTag.getAttributeValue("property");
+                String columnName = subTag.getAttributeValue(MyBatisXmlConstants.COLUMN);
+                String field = subTag.getAttributeValue(MyBatisXmlConstants.PROPERTY);
                 columnAndField.setField(field);
                 columnAndField.setColumn(columnName);
                 column.add(columnAndField);
