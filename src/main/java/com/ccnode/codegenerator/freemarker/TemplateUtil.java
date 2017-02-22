@@ -26,8 +26,7 @@ public class TemplateUtil {
         try {
             configuration.setDirectoryForTemplateLoading(new File(TemplateUtil.class.getClassLoader().getResource("templates").getPath()));
         } catch (IOException e) {
-
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         configuration.setDefaultEncoding("UTF-8");
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
