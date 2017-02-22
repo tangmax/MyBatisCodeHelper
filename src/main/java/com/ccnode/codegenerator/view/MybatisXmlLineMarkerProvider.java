@@ -1,9 +1,9 @@
 package com.ccnode.codegenerator.view;
 
+import com.ccnode.codegenerator.util.IconUtils;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -88,7 +88,7 @@ public class MybatisXmlLineMarkerProvider extends RelatedItemLineMarkerProvider 
         if (findedMethod == null) {
             return;
         }
-        result.add(NavigationGutterIconBuilder.create(AllIcons.Gutter.ImplementedMethod).setAlignment(GutterIconRenderer.Alignment.CENTER)
+        result.add(NavigationGutterIconBuilder.create(IconUtils.useMyBatisIcon()).setAlignment(GutterIconRenderer.Alignment.CENTER)
                 .setTarget(findedMethod).setTooltipTitle("navigation to mapper class").createLineMarkerInfo(element));
 
 

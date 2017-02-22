@@ -1,9 +1,9 @@
 package com.ccnode.codegenerator.view;
 
+import com.ccnode.codegenerator.util.IconUtils;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.module.Module;
@@ -23,6 +23,7 @@ import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -64,12 +65,12 @@ public class MybatisJavaLineMarkerProvider extends RelatedItemLineMarkerProvider
                         }
                     }
                 }
-                if(methodElement==null){
+                if (methodElement == null) {
                     methodElement = handleWithFileNotFound(method, project, qualifiedName, result);
                 }
             }
             if (methodElement != null) {
-                result.add(NavigationGutterIconBuilder.create(AllIcons.Gutter.ImplementedMethod).setAlignment(GutterIconRenderer.Alignment.CENTER)
+                result.add(NavigationGutterIconBuilder.create(IconUtils.useMyBatisIcon()).setAlignment(GutterIconRenderer.Alignment.CENTER)
                         .setTarget(methodElement).setTooltipTitle("navigation to mapper xml").createLineMarkerInfo(method.getNameIdentifier()));
             }
 
