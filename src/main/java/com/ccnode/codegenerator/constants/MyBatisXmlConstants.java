@@ -55,6 +55,6 @@ public class MyBatisXmlConstants {
         add(INSERT);
         add(UPDATE);
         add(DELETE);
-        add(INSERT);
+        add(SELECT);
     }};
 }
