@@ -41,10 +41,7 @@ public class TemplateUtil {
             template.process(root, out);
             return out.toString();
         } catch (Exception e) {
-            // TODO: 2017/1/12 add logger
-            e.printStackTrace();
-            logger.info("templateUtil process to String catch exception", e);
-            return null;
+            throw new RuntimeException("process freemarker template catch exception", e);
         }
     }
 }

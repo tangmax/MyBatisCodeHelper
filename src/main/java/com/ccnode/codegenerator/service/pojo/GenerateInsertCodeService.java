@@ -7,15 +7,13 @@ import com.ccnode.codegenerator.genCode.GenDaoService;
 import com.ccnode.codegenerator.genCode.GenMapperService;
 import com.ccnode.codegenerator.genCode.GenServiceService;
 import com.ccnode.codegenerator.genCode.GenSqlService;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Created by bruce.ge on 2016/12/26.
@@ -24,32 +22,27 @@ public class GenerateInsertCodeService {
 
     private static Logger logger = LoggerFactory.getLogger(GenerateInsertCodeService.class);
 
-    public static List<String> generateInsert(InsertDialogResult insertDialogResult) {
+    public static void generateInsert(InsertDialogResult insertDialogResult) {
         Map<InsertFileType, InsertFileProp> fileProps = insertDialogResult.getFileProps();
         ExecutorService executorService = Executors.newFixedThreadPool(fileProps.size());
-        List<String> errorMsgs = new CopyOnWriteArrayList<>();
-        CountDownLatch latch = new CountDownLatch(fileProps.size());
+        List<Future> futures = Lists.newArrayList();
         for (InsertFileType fileType : fileProps.keySet()) {
-            executorService.submit(() -> {
-                try {
-                    generateFiles(fileType, fileProps, insertDialogResult);
-                    //need to catch with exception.
-                } catch (Exception e) {
-                    logger.error("generate files catch exception", e);
-                    //todo shall not use with getMessage
-                    errorMsgs.add(e.getMessage());
-                } finally {
-                    latch.countDown();
-                }
+            Future<Void> future = executorService.submit((Callable<Void>) () -> {
+                generateFiles(fileType, fileProps, insertDialogResult);
+                return null;
             });
+            futures.add(future);
         }
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        for (Future future : futures) {
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
         }
         executorService.shutdown();
-        return errorMsgs;
     }
 
 

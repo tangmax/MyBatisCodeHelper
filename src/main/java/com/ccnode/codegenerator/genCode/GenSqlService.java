@@ -46,7 +46,7 @@ public class GenSqlService {
             String filePath = prop.getFolderPath() + "/" + prop.getName();
             Files.write(Paths.get(filePath), retList, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException e) {
-            throw new RuntimeException("can't write file " + prop.getName() + " to path " + prop.getFolderPath() + "/" + prop.getName());
+            throw new RuntimeException("can't write file " + prop.getName() + " to path " + prop.getFolderPath() + "/" + prop.getName(),e);
         }
         //then go write to the file.
     }
