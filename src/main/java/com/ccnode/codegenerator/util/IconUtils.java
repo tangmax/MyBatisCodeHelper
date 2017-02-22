@@ -8,10 +8,15 @@ import javax.swing.*;
  * @Description
  */
 public class IconUtils {
-    private static ImageIcon myBatisIcon = new ImageIcon(IconUtils.class.getClassLoader().getResource("icon/mybatis.png"));
+    private static ImageIcon methodIcon = new ImageIcon(IconUtils.class.getClassLoader().getResource("icon/mybatis.png"));
 
+    private static ImageIcon xmlIcon = new ImageIcon(IconUtils.class.getClassLoader().getResource("icon/mybatis-ns.png"));
 
     public static Icon useMyBatisIcon() {
-        return myBatisIcon;
+        return methodIcon;
+    }
+
+    public static Icon useXmlIcon() {
+        return xmlIcon;
     }
 }

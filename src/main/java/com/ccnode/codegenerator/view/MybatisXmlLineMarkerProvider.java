@@ -88,7 +88,7 @@ public class MybatisXmlLineMarkerProvider extends RelatedItemLineMarkerProvider 
         if (findedMethod == null) {
             return;
         }
-        result.add(NavigationGutterIconBuilder.create(IconUtils.useMyBatisIcon()).setAlignment(GutterIconRenderer.Alignment.CENTER)
+        result.add(NavigationGutterIconBuilder.create(IconUtils.useXmlIcon()).setAlignment(GutterIconRenderer.Alignment.CENTER)
                 .setTarget(findedMethod).setTooltipTitle("navigation to mapper class").createLineMarkerInfo(element));
 
 
