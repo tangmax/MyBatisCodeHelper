@@ -55,6 +55,8 @@ How to use
 - method name generated mapper sql will use column name defined in domain class type resultMap in mapper xml.
 
 following are current support for domain object field type.  
+
+
 | java type            |  startSupportVersion|
 |----------------------|-------------------  |
 | java.lang.Integer    |   v1.2              |              
