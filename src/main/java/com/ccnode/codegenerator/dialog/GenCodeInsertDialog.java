@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.dialog;
 
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
+import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -43,7 +44,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
     private String moduleSrcPath;
 
-    private Map<String, String> fieldTypeMap;
+    private Map<String, List<TypeProps>> fieldTypeMap;
 
 
     private List<ClassFieldInfo> propFields;

@@ -1,12 +1,12 @@
 package com.ccnode.codegenerator.dialog;
 
-import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,9 +15,9 @@ import java.util.Map;
 class MyComboBoxRender implements TableCellRenderer {
 
     private Map<Integer, JComboBox> jComboBoxMap = new HashMap<>();
-    private Map<String, String> fieldTypeMap;
+    private Map<String, List<TypeProps>> fieldTypeMap;
 
-    public MyComboBoxRender(Map<String, String> fieldTypeMap) {
+    public MyComboBoxRender(Map<String, List<TypeProps>> fieldTypeMap) {
         this.fieldTypeMap = fieldTypeMap;
     }
 
@@ -26,15 +26,9 @@ class MyComboBoxRender implements TableCellRenderer {
         if (jComboBoxMap.get(row) == null) {
             JComboBox jComboBox = new JComboBox();
             Object fieldName = table.getValueAt(row, 0);
-            String fieldType = fieldTypeMap.get(fieldName);
-            String[] recommendTypes = MySqlTypeUtil.getRecommendTypes(fieldType);
-            TypeProps type = MySqlTypeUtil.getType(fieldType);
-            if (recommendTypes == null) {
-                jComboBox.addItem(type.getDefaultType());
-            } else {
-                for (String recommend : recommendTypes) {
-                    jComboBox.addItem(recommend);
-                }
+            List<TypeProps> typePropsList = fieldTypeMap.get(fieldName);
+            for (TypeProps getType : typePropsList) {
+                jComboBox.addItem(getType.getDefaultType());
             }
             jComboBoxMap.put(row, jComboBox);
         }

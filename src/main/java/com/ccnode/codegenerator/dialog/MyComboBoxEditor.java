@@ -1,11 +1,11 @@
 package com.ccnode.codegenerator.dialog;
 
-import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,9 +14,9 @@ import java.util.Map;
 class MyComboBoxEditor extends DefaultCellEditor {
 
     private Map<Integer, String[]> itemMap = new HashMap<>();
-    private Map<String, String> fieldTypeMap;
+    private Map<String, List<TypeProps>> fieldTypeMap;
 
-    public MyComboBoxEditor(JComboBox comboBox, Map<String, String> fieldTypeMap) {
+    public MyComboBoxEditor(JComboBox comboBox, Map<String, List<TypeProps>> fieldTypeMap) {
         super(comboBox);
         this.fieldTypeMap = fieldTypeMap;
     }
@@ -28,18 +28,11 @@ class MyComboBoxEditor extends DefaultCellEditor {
         editorComponent.removeAllItems();
         if (itemMap.get(row) == null) {
             Object fieldName = table.getValueAt(row, 0);
-            String fieldType = fieldTypeMap.get(fieldName);
-            String[] recommendTypes = MySqlTypeUtil.getRecommendTypes(fieldType);
-            TypeProps type = MySqlTypeUtil.getType(fieldType);
-            if (recommendTypes == null) {
-                editorComponent.addItem(type.getDefaultType());
-                itemMap.put(row, new String[]{type.getDefaultType()});
-            } else {
-                for (String recommend : recommendTypes) {
-                    editorComponent.addItem(recommend);
-                }
-                itemMap.put(row, recommendTypes);
+            List<TypeProps> typePropsList = fieldTypeMap.get(fieldName);
+            for (TypeProps recommend : typePropsList) {
+                editorComponent.addItem(recommend.getDefaultType());
             }
+            itemMap.put(row, typePropsList.stream().map(item -> item.getDefaultType()).toArray(size -> new String[size]));
         } else {
             for (String recommend : itemMap.get(row)) {
                 editorComponent.addItem(recommend);

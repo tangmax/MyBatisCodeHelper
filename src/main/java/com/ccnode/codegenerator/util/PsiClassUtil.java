@@ -102,6 +102,7 @@ public class PsiClassUtil {
                 ClassFieldInfo info = new ClassFieldInfo();
                 info.setFieldName(psiField.getName());
                 info.setFieldType(convertToObjectText(psiField.getType().getCanonicalText()));
+                info.setPsiField(psiField);
                 lists.add(info);
             }
         }
@@ -167,7 +168,7 @@ public class PsiClassUtil {
     }
 
     @Nullable
-    public static PsiClass findClassOfQuatifiedType(@NotNull PsiElement element,@NotNull String resultTypeValue) {
+    public static PsiClass findClassOfQuatifiedType(@NotNull PsiElement element, @NotNull String resultTypeValue) {
         Module moduleForPsiElement =
                 ModuleUtilCore.findModuleForPsiElement(element);
         if (moduleForPsiElement == null) {

@@ -67,7 +67,7 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
     }
 
     @Override
-    public List<TypeProps> getRecommendDatabaseTypeOfFieldType(String fieldType) {
+    public List<TypeProps> getRecommendDatabaseTypeOfFieldType(PsiField psiField) {
         return null;
     }
 

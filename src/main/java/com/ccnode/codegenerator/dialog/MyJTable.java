@@ -37,7 +37,7 @@ class MyJTable extends JTable {
     public static final int INDEXCOLUMNINDEX = 9;
     public static String[] columnNames = {FILEDCOLUMN, COLUMN_NAMECOLUMN, TYPECOLUMN, LENGTHCOLUMN, COLUMNUNIQUE, PRIMARYCOLUMN, CANBENULLCOLUMN, HAS_DEFAULTVALUE_COLUMN, DEFAULT_VALUE_COLUMN, INDEX_COLUMN};
 
-    public MyJTable(Object[][] propData, Map<String, String> fieldTypeMap) {
+    public MyJTable(Object[][] propData, Map<String, List<TypeProps>> fieldTypeMap) {
         super(propData, columnNames);
         this.getTableHeader().setReorderingAllowed(false);
 

@@ -2,6 +2,7 @@ package com.ccnode.codegenerator.dialog;
 
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
 import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
+import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.ccnode.codegenerator.dialog.datatype.UnsignedCheckResult;
 import com.ccnode.codegenerator.dialog.dto.MapperDto;
 import com.ccnode.codegenerator.dialog.dto.mybatis.*;
@@ -74,7 +75,7 @@ public class UpdateDialogMore extends DialogWrapper {
 
     private MapperDto mapperDto;
 
-    private Map<String, String> addedFieldTypeMap;
+    private Map<String, List<TypeProps>> addedFieldTypeMap;
 
     private JTable myTable;
 
