@@ -3,6 +3,7 @@ package com.ccnode.codegenerator.database;
 import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.intellij.psi.PsiClass;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -14,13 +15,12 @@ import java.util.List;
 //shall make it easy to test.
 public interface DatabaseHandler {
 
+    @NotNull
     ClassValidateResult validateCurrentClass(PsiClass psiClass);
 
-    TypeProps getDefaultTypePropsOfFieldType(String fieldTypeName);
+    @NotNull
+    List<TypeProps> getRecommendDatabaseTypeOfFieldType(String fieldType);
 
-    TypeProps getTypePropsOfDatabaseType(String databaseType);
-
-    List<String> getRecommendDatabaseTypeOfFieldType(String fieldType);
-
+    @NotNull
     String generateSql(List<GenCodeProp> propList, GenCodeProp primaryKey, String tableName);
 }

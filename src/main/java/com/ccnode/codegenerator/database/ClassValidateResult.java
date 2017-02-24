@@ -12,9 +12,19 @@ import java.util.List;
 public class ClassValidateResult {
     private List<PsiField> validFields;
 
-    private List<PsiField> invalidField;
-
     private Boolean valid;
+
+    /*the messages display to user when there are invalid fields*/
+    private String invalidMessages;
+
+
+    public String getInvalidMessages() {
+        return invalidMessages;
+    }
+
+    public void setInvalidMessages(String invalidMessages) {
+        this.invalidMessages = invalidMessages;
+    }
 
     public List<PsiField> getValidFields() {
         return validFields;
@@ -22,14 +32,6 @@ public class ClassValidateResult {
 
     public void setValidFields(List<PsiField> validFields) {
         this.validFields = validFields;
-    }
-
-    public List<PsiField> getInvalidField() {
-        return invalidField;
-    }
-
-    public void setInvalidField(List<PsiField> invalidField) {
-        this.invalidField = invalidField;
     }
 
     public Boolean getValid() {

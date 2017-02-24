@@ -40,7 +40,7 @@ public class PsiClassUtil {
         PsiField[] allFields = pojoClass.getAllFields();
         List<String> props = new ArrayList<String>();
         for (PsiField psiField : allFields) {
-            if (isSupportedFieldType(psiField)) {
+            if (isSupprtedModifier(psiField)) {
                 props.add(psiField.getName());
             }
         }
@@ -98,7 +98,7 @@ public class PsiClassUtil {
         List<ClassFieldInfo> lists = new ArrayList<>();
         PsiField[] allFields = psiClass.getAllFields();
         for (PsiField psiField : allFields) {
-            if (isSupportedFieldType(psiField)) {
+            if (isSupprtedModifier(psiField)) {
                 ClassFieldInfo info = new ClassFieldInfo();
                 info.setFieldName(psiField.getName());
                 info.setFieldType(convertToObjectText(psiField.getType().getCanonicalText()));
@@ -108,7 +108,7 @@ public class PsiClassUtil {
         return lists;
     }
 
-    public static boolean isSupportedFieldType(PsiField psiField) {
+    public static boolean isSupprtedModifier(PsiField psiField) {
         return psiField.hasModifierProperty("private") && !psiField.hasModifierProperty("static");
     }
 
@@ -117,7 +117,7 @@ public class PsiClassUtil {
         List<String> lists = new ArrayList<>();
         PsiField[] allFields = psiClass.getAllFields();
         for (PsiField psiField : allFields) {
-            if (isSupportedFieldType(psiField)) {
+            if (isSupprtedModifier(psiField)) {
                 lists.add(psiField.getName());
             }
         }
@@ -129,7 +129,7 @@ public class PsiClassUtil {
         Map<String, String> fieldMap = new HashMap<>();
         PsiField[] allFields = pojoClass.getAllFields();
         for (PsiField f : allFields) {
-            if (isSupportedFieldType(f)) {
+            if (isSupprtedModifier(f)) {
                 String canonicalText = f.getType().getCanonicalText();
                 String objectTypeText = convertToObjectText(canonicalText);
                 fieldMap.put(f.getName(), objectTypeText);
@@ -144,7 +144,7 @@ public class PsiClassUtil {
         Map<String, String> fieldMap = new HashMap<>();
         PsiField[] allFields = pojoClass.getAllFields();
         for (PsiField f : allFields) {
-            if (isSupportedFieldType(f)) {
+            if (isSupprtedModifier(f)) {
                 String canonicalText = f.getType().getCanonicalText();
                 String objectTypeText = canonicalText;
                 fieldMap.put(f.getName(), objectTypeText);

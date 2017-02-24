@@ -31,7 +31,7 @@ public class PsiClassValidateUtils {
             return result;
         }
         for (PsiField psiField : allFields) {
-            if (PsiClassUtil.isSupportedFieldType(psiField)) {
+            if (PsiClassUtil.isSupprtedModifier(psiField)) {
                 String fieldType = psiField.getType().getCanonicalText();
                 if (!MySqlTypeUtil.isSupportedType(psiField.getType())) {
                     InvalidField field = new InvalidField();

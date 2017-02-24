@@ -1,12 +1,11 @@
 package com.ccnode.codegenerator.view;
 
+import com.ccnode.codegenerator.database.ClassValidateResult;
+import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
 import com.ccnode.codegenerator.dialog.GenCodeDialog;
 import com.ccnode.codegenerator.dialog.InsertDialogResult;
 import com.ccnode.codegenerator.pojo.ClassInfo;
 import com.ccnode.codegenerator.service.pojo.GenerateInsertCodeService;
-import com.ccnode.codegenerator.util.valdiate.InvalidField;
-import com.ccnode.codegenerator.util.valdiate.PsiClassValidateUtils;
-import com.ccnode.codegenerator.util.valdiate.ValidateResult;
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.codeInsight.CodeInsightUtilBase;
 import com.intellij.codeInsight.generation.OverrideImplementUtil;
@@ -19,8 +18,6 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 /**
  * Created by bruce.ge on 2016/12/9.
@@ -37,23 +34,9 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
             return;
         }
         final PsiClass currentClass = OverrideImplementUtil.getContextClass(project, editor, file, false);
-        ValidateResult validate =
-                PsiClassValidateUtils.validate(currentClass);
-        if (!validate.getValid()) {
-            List<InvalidField> invalidFieldList =
-                    validate.getInvalidFieldList();
-            StringBuilder errorBuilder = new StringBuilder();
-            switch (validate.getInvalidType()) {
-                case FIELDERROR:
-                    for (InvalidField field : invalidFieldList) {
-                        errorBuilder.append("field name is:" + field.getFieldName() + " field Type is:" + field.getType() + " the reason is:" + field.getReason() + "\n");
-                    }
-                    break;
-
-                case NOFIELD:
-                    errorBuilder.append(" there is no available field in current class");
-            }
-            Messages.showErrorDialog(project, errorBuilder.toString(), "validate fail");
+        ClassValidateResult classValidateResult = DataBaseHandlerFactory.currentHandler().validateCurrentClass(currentClass);
+        if (!classValidateResult.getValid()) {
+            Messages.showErrorDialog(project, classValidateResult.getInvalidMessages(), "validate fail");
             return;
         }
         VirtualFileManager.getInstance().syncRefresh();

@@ -20,6 +20,15 @@ public class TypeProps {
 
     private Boolean hasDefaultValue;
 
+    private Integer order;
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
 
     public Boolean getIndex() {
         return index;
