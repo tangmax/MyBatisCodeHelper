@@ -25,7 +25,7 @@ public class PsiClassValidateUtils {
         List<InvalidField> invalidFields = Lists.newArrayList();
         List<ClassFieldInfo> lists = new ArrayList<>();
         PsiField[] allFields = psiClass.getAllFields();
-        if(allFields.length==0){
+        if (allFields.length == 0) {
             result.setValid(false);
             result.setInvalidType(ValidateResult.InvalidType.NOFIELD);
             return result;
@@ -33,8 +33,7 @@ public class PsiClassValidateUtils {
         for (PsiField psiField : allFields) {
             if (PsiClassUtil.isSupportedFieldType(psiField)) {
                 String fieldType = psiField.getType().getCanonicalText();
-                if (!MySqlTypeUtil.isSupportedType(fieldType)) {
-                    //
+                if (!MySqlTypeUtil.isSupportedType(psiField.getType())) {
                     InvalidField field = new InvalidField();
                     field.setFieldName(psiField.getName());
                     field.setType(fieldType);

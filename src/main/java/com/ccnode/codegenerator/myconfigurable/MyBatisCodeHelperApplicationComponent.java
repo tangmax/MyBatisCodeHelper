@@ -45,7 +45,6 @@ public class MyBatisCodeHelperApplicationComponent implements ApplicationCompone
         return "MyBatisCodeHelper";
     }
 
-    @Nullable
     @Override
     public PluginState getState() {
         if (settings == null) {

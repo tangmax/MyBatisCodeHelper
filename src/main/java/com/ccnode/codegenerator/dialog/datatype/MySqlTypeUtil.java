@@ -1,5 +1,9 @@
 package com.ccnode.codegenerator.dialog.datatype;
 
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiType;
+import com.intellij.psi.util.PsiTypesUtil;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,15 +67,14 @@ public class MySqlTypeUtil {
         typeDefaultMap.put(MysqlTypeConstants.DECIMAL, decimalDefault);
 
 
-
         TypeDefault shortDefault = new TypeDefault("7", "-1");
         javaDefaultMap.put("java.lang.Short", MysqlTypeConstants.MEDIUMINT);
         typeDefaultMap.put(MysqlTypeConstants.MEDIUMINT, shortDefault);
         typeDefaultMap.put(unsigned(MysqlTypeConstants.MEDIUMINT), new TypeDefault("7", "0"));
 
 
-        typeDefaultMap.put(MysqlTypeConstants.SMALLINT,new TypeDefault("5","-1"));
-        typeDefaultMap.put(unsigned(MysqlTypeConstants.SMALLINT),new TypeDefault("5","0"));
+        typeDefaultMap.put(MysqlTypeConstants.SMALLINT, new TypeDefault("5", "-1"));
+        typeDefaultMap.put(unsigned(MysqlTypeConstants.SMALLINT), new TypeDefault("5", "0"));
 
         TypeDefault timeStampDefault = new TypeDefault(null, "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         typeDefaultMap.put(MysqlTypeConstants.TIMESTAMP, timeStampDefault);
@@ -92,7 +95,7 @@ public class MySqlTypeUtil {
         javaRecommendMap.put("java.lang.Boolean", new String[]{MysqlTypeConstants.TINYINT, unsigned(MysqlTypeConstants.TINYINT), MysqlTypeConstants.BIT});
 
         javaRecommendMap.put("java.lang.Short", new String[]{MysqlTypeConstants.SMALLINT, unsigned(MysqlTypeConstants.SMALLINT)
-        ,MysqlTypeConstants.MEDIUMINT,unsigned(MysqlTypeConstants.MEDIUMINT)});
+                , MysqlTypeConstants.MEDIUMINT, unsigned(MysqlTypeConstants.MEDIUMINT)});
 
     }
 
@@ -131,7 +134,30 @@ public class MySqlTypeUtil {
         return javaRecommendMap.get(fieldType);
     }
 
-    public static boolean isSupportedType(String type) {
+/*support with basic type and enum*/
+    public static boolean isSupportedType(PsiType type) {
+        String canonicalText = type.getCanonicalText();
+        if (javaDefaultMap.get(canonicalText) != null) {
+            return true;
+        }
+        PsiClass psiClass =
+                PsiTypesUtil.getPsiClass(type);
+        if (psiClass == null) {
+            return false;
+        }
+        if (psiClass.isEnum()) {
+            return true;
+        }
+        return false;
+    }
+
+
+    public static boolean isBasicType(String type) {
+        return javaDefaultMap.get(type) != null;
+    }
+
+
+    public static boolean isSupportParamType(String type) {
         return javaDefaultMap.get(type) != null;
     }
 }

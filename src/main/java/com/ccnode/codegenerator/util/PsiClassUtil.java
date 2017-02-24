@@ -216,7 +216,7 @@ public class PsiClassUtil {
             String parameterType = parameter.getType().getCanonicalText();
             parameterType = convertToObjectText(parameterType);
             //if it's basic type, just add it to the param.
-            if (MySqlTypeUtil.isSupportedType(parameterType)) {
+            if (MySqlTypeUtil.isSupportParamType(parameterType)) {
                 if (param == null) {
                     continue;
                 } else {
