@@ -2,6 +2,7 @@ package com.ccnode.codegenerator.database;
 
 import com.ccnode.codegenerator.database.handler.DatabaseHandler;
 import com.ccnode.codegenerator.database.handler.mysql.MysqlDatabaseHandler;
+import com.ccnode.codegenerator.database.handler.oracle.OracleDatabaseHandler;
 import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 import com.ccnode.codegenerator.myconfigurable.MyBatisCodeHelperApplicationComponent;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class DataBaseHandlerFactory {
     private static Map<String, DatabaseHandler> databaseHandlerMap = new HashMap<String, DatabaseHandler>() {{
         put(DataBaseConstants.MYSQL, new MysqlDatabaseHandler());
+        put(DataBaseConstants.ORACLE, new OracleDatabaseHandler());
     }};
 
     private static MyBatisCodeHelperApplicationComponent myBatisCodeHelperApplicationComponent = MyBatisCodeHelperApplicationComponent.getInstance();

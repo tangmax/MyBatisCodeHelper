@@ -134,7 +134,7 @@ public class OracleDatabaseHandler implements DatabaseHandler {
             }
         }
         retList.addAll(uniques);
-        retList.add(GenCodeUtil.ONE_RETRACT + "CONSTRAINT " + tableName + "_pk PRIMARY KEY (" + GenCodeUtil.wrapComma(primaryKey.getColumnName()) + ");");
+        retList.add(GenCodeUtil.ONE_RETRACT + "CONSTRAINT " + tableName + "_pk PRIMARY KEY (" + primaryKey.getColumnName() + "));");
         retList.add(generateAutoIncrementAndTrigger(tableName, primaryKey.getColumnName()));
         retList.addAll(indexText);
         return Joiner.on("\n").join(retList);
@@ -155,7 +155,7 @@ public class OracleDatabaseHandler implements DatabaseHandler {
         ret.append(GenCodeUtil.ONE_RETRACT).append(field.getColumnName())
                 .append(" ").append(field.getFiledType());
         if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
-            ret.append(" (" + field.getSize() + ")");
+            ret.append("(" + field.getSize() + ")");
         }
         if (!field.getPrimaryKey() && field.getHasDefaultValue() && org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
             ret.append(" DEFAULT " + field.getDefaultValue());
@@ -163,6 +163,7 @@ public class OracleDatabaseHandler implements DatabaseHandler {
         if (!field.getCanBeNull()) {
             ret.append(" NOT NULL");
         }
+        ret.append(",");
         return ret.toString();
     }
 
