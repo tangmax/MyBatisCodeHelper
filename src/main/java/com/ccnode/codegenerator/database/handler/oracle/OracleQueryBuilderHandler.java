@@ -10,6 +10,8 @@ import com.ccnode.codegenerator.nextgenerationparser.parsedresult.find.ParsedFin
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 
+import java.util.ArrayList;
+
 /**
  * @Author bruce.ge
  * @Date 2017/2/25
@@ -48,6 +50,7 @@ public class OracleQueryBuilderHandler implements QueryBuilderHandler {
     public void handleFindAfterFromTable(QueryInfo info, MethodNameParsedResult parsedResult) {
         ParsedFind find = parsedResult.getParsedFind();
         if (find.getQueryRules() != null) {
+            info.setParamInfos(new ArrayList<>());
             new BaseQueryBuilder(this).buildQuerySqlAndParam(find.getQueryRules(), info, parsedResult.getFieldMap(), parsedResult.getRelation());
         }
         if (find.getOrderByProps() != null) {
@@ -57,7 +60,11 @@ public class OracleQueryBuilderHandler implements QueryBuilderHandler {
             }
         }
         if (find.getLimit() > 0) {
-            info.setSql(info.getSql() + " ROWNUM <=" + find.getLimit());
+            if (find.getQueryRules() != null && find.getQueryRules().size() > 0) {
+                info.setSql(info.getSql() + " and ROWNUM " + BaseQueryBuilder.cdata("<=") + find.getLimit());
+            } else {
+                info.setSql(info.getSql() + " ROWNUM " + BaseQueryBuilder.cdata("<=") + find.getLimit());
+            }
         }
     }
 

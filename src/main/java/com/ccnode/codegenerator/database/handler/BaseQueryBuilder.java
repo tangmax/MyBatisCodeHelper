@@ -1,8 +1,6 @@
 package com.ccnode.codegenerator.database.handler;
 
 import com.ccnode.codegenerator.constants.QueryTypeConstants;
-import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
-import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 import com.ccnode.codegenerator.nextgenerationparser.KeyWordConstants;
 import com.ccnode.codegenerator.nextgenerationparser.buidler.MethodNameParsedResult;
 import com.ccnode.codegenerator.nextgenerationparser.buidler.ParamInfo;
@@ -148,11 +146,11 @@ public class BaseQueryBuilder implements QueryBuilder {
     }
 
 
-    public String cdata(String s) {
+    public static String cdata(String s) {
         return "<![CDATA[" + s + "]]>";
     }
 
-    private String firstCharUpper(String prop) {
+    private static String firstCharUpper(String prop) {
         return prop.substring(0, 1).toUpperCase() + prop.substring(1);
     }
 
@@ -164,13 +162,7 @@ public class BaseQueryBuilder implements QueryBuilder {
             String prop = rule.getProp();
             String operator = rule.getOperator();
             String connector = rule.getConnector();
-            String database = DataBaseHandlerFactory.currentDatabase();
-            String propColumn = "";
-            if (database.equals(DataBaseConstants.MYSQL)) {
-                propColumn = relation.getPropColumn(prop);
-            } else {
-                propColumn = relation.getPropColumn(prop);
-            }
+            String propColumn = relation.getPropColumn(prop);
             if (operator == null) {
                 ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop).withParamType(extractLast(fieldMap.get(prop))).withParamValue(prop).build();
                 info.getParamInfos().add(paramInfo);

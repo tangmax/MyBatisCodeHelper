@@ -10,6 +10,8 @@ import com.ccnode.codegenerator.nextgenerationparser.parsedresult.find.ParsedFin
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 
+import java.util.ArrayList;
+
 /**
  * @Author bruce.ge
  * @Date 2017/2/25
@@ -48,6 +50,7 @@ public class MysqlQueryBuilderHandler implements QueryBuilderHandler {
     public void handleFindAfterFromTable(QueryInfo info, MethodNameParsedResult parsedResult) {
         ParsedFind find = parsedResult.getParsedFind();
         if (find.getQueryRules() != null) {
+            info.setParamInfos(new ArrayList<>());
             new BaseQueryBuilder(this).buildQuerySqlAndParam(find.getQueryRules(), info, parsedResult.getFieldMap(), parsedResult.getRelation());
         }
         if (find.getOrderByProps() != null) {
