@@ -1,7 +1,8 @@
 package com.ccnode.codegenerator.dialog;
 
 import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
-import com.ccnode.codegenerator.dialog.datatype.*;
+import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
+import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.ccnode.codegenerator.dialog.exception.NotStringException;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by bruce.ge on 2016/12/27.
@@ -38,15 +40,14 @@ class MyJTable extends JTable {
     public static final int DEFAULT_VALUECOLUMNINDEX = 8;
     public static final int INDEXCOLUMNINDEX = 9;
     public static String[] columnNames = {FILEDCOLUMN, COLUMN_NAMECOLUMN, TYPECOLUMN, LENGTHCOLUMN, COLUMNUNIQUE, PRIMARYCOLUMN, CANBENULLCOLUMN, HAS_DEFAULTVALUE_COLUMN, DEFAULT_VALUE_COLUMN, INDEX_COLUMN};
+    private Map<String, List<TypeProps>> myFieldTypeMap;
 
-    public MyJTable(Object[][] propData, Map<String, List<TypeProps>> fieldTypeMap) {
-        super(propData, columnNames);
+    public MyJTable(java.util.List<ClassFieldInfo> propFields) {
+        super(getDatas(propFields), columnNames);
+        this.myFieldTypeMap = GenCodeDialogUtil.extractMap(propFields);
         this.getTableHeader().setReorderingAllowed(false);
-
         this.getColumn(MyJTable.COLUMNUNIQUE).setCellRenderer(new CheckButtonRender());
         this.getColumn(MyJTable.COLUMNUNIQUE).setCellEditor(new CheckButtonEditor(new JCheckBox()));
-
-
         this.getColumn(MyJTable.PRIMARYCOLUMN).setCellRenderer(new CheckButtonRender());
         this.getColumn(MyJTable.PRIMARYCOLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
 
@@ -62,9 +63,9 @@ class MyJTable extends JTable {
         this.getColumn(MyJTable.INDEX_COLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
 
 
-        this.getColumn(MyJTable.TYPECOLUMN).setCellRenderer(new MyComboBoxRender(fieldTypeMap));
+        this.getColumn(MyJTable.TYPECOLUMN).setCellRenderer(new MyComboBoxRender(myFieldTypeMap));
 
-        this.getColumn(MyJTable.TYPECOLUMN).setCellEditor(new MyComboBoxEditor(new JComboBox(), fieldTypeMap));
+        this.getColumn(MyJTable.TYPECOLUMN).setCellEditor(new MyComboBoxEditor(new JComboBox(), myFieldTypeMap));
         this.setRowHeight(25);
 
         this.setFillsViewportHeight(true);
@@ -174,15 +175,15 @@ class MyJTable extends JTable {
     public void setValueAt(Object aValue, int row, int column) {
         super.setValueAt(aValue, row, column);
         if (column == TYPECOLUMNINDEX) {
-            //todo need to think a way to control it.
-//            TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault((String) aValue);
-            TypeDefault typeDefault = null;
-            if (typeDefault == null) {
+            List<TypeProps> typePropss = this.myFieldTypeMap.get(getValueAt(row, 0));
+            List<TypeProps> collect = typePropss.stream().filter(typeProps -> typeProps.getDefaultType().equals((String) aValue)).collect(Collectors.toList());
+            if (collect == null || collect.size() == 0) {
                 super.setValueAt(null, row, LENGTHCOLUMNINDEX);
                 super.setValueAt(null, row, DEFAULT_VALUECOLUMNINDEX);
             } else {
-                super.setValueAt(typeDefault.getSize(), row, LENGTHCOLUMNINDEX);
-                super.setValueAt(typeDefault.getDefaultValue(), row, DEFAULT_VALUECOLUMNINDEX);
+                TypeProps props = collect.get(0);
+                super.setValueAt(props.getSize(), row, LENGTHCOLUMNINDEX);
+                super.setValueAt(props.getDefaultValue(), row, DEFAULT_VALUECOLUMNINDEX);
             }
         }
 

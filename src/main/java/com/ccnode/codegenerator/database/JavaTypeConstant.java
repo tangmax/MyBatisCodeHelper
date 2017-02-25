@@ -16,13 +16,13 @@ public class JavaTypeConstant {
 
     public static final String BOOLEAN = "java.lang.Boolean";
 
-    public static final String DATE = "java.lang.Date";
+    public static final String DATE = "java.util.Date";
 
     public static final String STRING = "java.lang.String";
 
     public static final String BYTE = "java.lang.Byte";
 
-    public static final String BIGDECIMAL = "java.lang.BigDecimal";
+    public static final String BIGDECIMAL = "java.math.BigDecimal";
 
     public static final String SHORT = "java.lang.Short";
 

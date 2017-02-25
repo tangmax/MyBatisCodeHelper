@@ -340,9 +340,7 @@ public class UpdateDialogMore extends DialogWrapper {
             message = "there is no field to update or add, please check again with your resultMap";
             return;
         }
-        this.addedFieldTypeMap = GenCodeDialogUtil.extractMap(newAddFields);
-        Object[][] datas = MyJTable.getDatas(newAddFields);
-        this.myTable = new MyJTable(datas, this.addedFieldTypeMap) {
+        this.myTable = new MyJTable(newAddFields) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return super.isCellEditable(row, column) && column != MyJTable.PRIMARYCOLUMNINDEX;

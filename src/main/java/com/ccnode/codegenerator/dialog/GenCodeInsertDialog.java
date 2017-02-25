@@ -1,7 +1,6 @@
 package com.ccnode.codegenerator.dialog;
 
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
-import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -43,9 +42,6 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
 
     private String moduleSrcPath;
-
-    private Map<String, List<TypeProps>> fieldTypeMap;
-
 
     private List<ClassFieldInfo> propFields;
 
@@ -126,15 +122,12 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         this.propFields = PsiClassUtil.buildPropFieldInfo(psiClass);
 
-        this.fieldTypeMap = GenCodeDialogUtil.extractMap(propFields);
-
         if (propFields.size() == 0) {
             // TODO: 2016/12/25
 
         }
         //gonna construct all the values for the table.
 
-        Object[][] propData = MyJTable.getDatas(propFields);
         //init with propList.
         String psiFileFolderPath = psiClass.getContainingFile().getVirtualFile().getParent().getPath();
         String className = psiClass.getName();
@@ -153,9 +146,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
         serviceNameText = new JTextField(className + "Service.java");
 
         daoNameText = new JTextField(className + "Dao.java");
-
-        propTable = new MyJTable(propData, fieldTypeMap);
-
+        propTable = new MyJTable(propFields);
         jScrollPane = new JScrollPane(propTable);
 
 
