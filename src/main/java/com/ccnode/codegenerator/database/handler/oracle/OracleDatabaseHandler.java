@@ -104,6 +104,10 @@ public class OracleDatabaseHandler implements DatabaseHandler {
         List<TypeProps> fromMapTypes = oracleTypeProps.get(canonicalText);
         List<TypeProps> typePropss = TypePropUtils.generateFromDefaultMap(fromMapTypes);
         if (typePropss != null) {
+            if (field.getName().equals("id")) {
+                typePropss.get(0).setPrimary(true);
+                typePropss.get(0).setHasDefaultValue(false);
+            }
             return typePropss;
         }
         PsiClass psiClass = PsiTypesUtil.getPsiClass(field.getType());
