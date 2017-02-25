@@ -38,10 +38,12 @@ public class JavaTypeConstant {
 
     public static final String LOCALTIME = "java.time.LocalTime";
 
-    public static final String  OFFSETDATETIME = "java.time.OffsetDateTime";
+    public static final String OFFSETDATETIME = "java.time.OffsetDateTime";
 
-    public static final String  OFFSETTIME = "java.time.OffsetTime";
+    public static final String OFFSETTIME = "java.time.OffsetTime";
 
-    public static final String  ZONEDDATETIME = "java.time.ZonedDateTime";
+    public static final String ZONEDDATETIME = "java.time.ZonedDateTime";
+
+    public static final String CLOB = "java.sql.Clob";
 
 }

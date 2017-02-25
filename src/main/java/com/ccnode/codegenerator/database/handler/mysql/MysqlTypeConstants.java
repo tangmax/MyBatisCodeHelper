@@ -1,4 +1,4 @@
-package com.ccnode.codegenerator.dialog.datatype;
+package com.ccnode.codegenerator.database.handler.mysql;
 
 /**
  * Created by bruce.ge on 2016/12/25.

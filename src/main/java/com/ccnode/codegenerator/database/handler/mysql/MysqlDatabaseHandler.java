@@ -7,7 +7,6 @@ import com.ccnode.codegenerator.database.handler.FieldValidator;
 import com.ccnode.codegenerator.database.handler.HandlerValidator;
 import com.ccnode.codegenerator.database.handler.utils.TypePropUtils;
 import com.ccnode.codegenerator.dialog.GenCodeProp;
-import com.ccnode.codegenerator.dialog.datatype.MysqlTypeConstants;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.ccnode.codegenerator.util.DateUtil;
 import com.ccnode.codegenerator.util.GenCodeUtil;
