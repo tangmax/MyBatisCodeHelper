@@ -89,13 +89,18 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
 /*------------------------------------------string ect */
         TypeProps VARCHAR = new TypeProps(MysqlTypeConstants.VARCHAR, "50", "\'\'");
         TypeProps TEXT = new TypeProps(MysqlTypeConstants.TEXT, null, null);
-        TypeProps CHAR = new TypeProps(MysqlTypeConstants.CHAR, null, null);
-        mysqlTypeProps.put(JavaTypeConstant.STRING, newArrayListWithOrder(VARCHAR, TEXT, CHAR));
+        TypeProps MEDIUMTEXT = new TypeProps(MysqlTypeConstants.MEDIUMTEXT, null, "\'\'");
+        TypeProps LONGTEXT = new TypeProps(MysqlTypeConstants.LONGTEXT, null, "\'\'");
+        TypeProps TINYTEXT = new TypeProps(MysqlTypeConstants.TINYTEXT, null, "\'\'");
+        TypeProps CHAR = new TypeProps(MysqlTypeConstants.CHAR, "10", null);
+        mysqlTypeProps.put(JavaTypeConstant.STRING, newArrayListWithOrder(VARCHAR, TEXT, CHAR, MEDIUMTEXT, LONGTEXT, TINYTEXT));
 
 
         TypeProps BLOB = new TypeProps(MysqlTypeConstants.BLOB, "", "\'\'");
-        mysqlTypeProps.put(JavaTypeConstant.BYTE, newArrayListWithOrder(BLOB));
-
+        TypeProps TINYBLOB = new TypeProps(MysqlTypeConstants.TINYBLOB, "", "\'\'");
+        TypeProps MEDIUMBLOB = new TypeProps(MysqlTypeConstants.MEDIUMBLOB, "", "\'\'");
+        TypeProps LONGBLOB = new TypeProps(MysqlTypeConstants.LONGBLOB, "", "\'\'");
+        mysqlTypeProps.put(JavaTypeConstant.BYTE, newArrayListWithOrder(BLOB,MEDIUMBLOB,LONGBLOB,TINYBLOB));
     }
 
     @Override
@@ -239,9 +244,7 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         if (field.getPrimaryKey()) {
             ret.append(" AUTO_INCREMENT");
         }
-
         ret.append(" COMMENT '" + field.getFieldName() + "',");
-
         return ret.toString();
     }
 }
