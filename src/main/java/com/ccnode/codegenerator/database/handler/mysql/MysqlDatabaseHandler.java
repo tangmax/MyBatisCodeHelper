@@ -5,6 +5,7 @@ import com.ccnode.codegenerator.database.JavaTypeConstant;
 import com.ccnode.codegenerator.database.handler.DatabaseHandler;
 import com.ccnode.codegenerator.database.handler.FieldValidator;
 import com.ccnode.codegenerator.database.handler.HandlerValidator;
+import com.ccnode.codegenerator.database.handler.utils.TypePropUtils;
 import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.datatype.MysqlTypeConstants;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
@@ -123,25 +124,30 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         return typePropslist;
     }
 
-
     private static String unsigned(String type) {
         return type + "_" + MysqlTypeConstants.UNSIGNED;
     }
-
 
     /*must have data or can't generate*/
     @Override
     @NotNull
     public List<TypeProps> getRecommendDatabaseTypeOfFieldType(PsiField psiField) {
         String canonicalText = psiField.getType().getCanonicalText();
-        List<TypeProps> typePropss = mysqlTypeProps.get(canonicalText);
+        List<TypeProps> fromMapTypes = mysqlTypeProps.get(canonicalText);
+        List<TypeProps> typePropss = TypePropUtils.generateFromDefaultMap(fromMapTypes);
         if (typePropss != null) {
-            //todo try to customize the value for it.
             if (psiField.getName().equals("id")) {
                 typePropss.get(0).setPrimary(true);
                 typePropss.get(0).setHasDefaultValue(false);
+            } else if (psiField.getName().equalsIgnoreCase("updatetime")) {
+                for (TypeProps props : typePropss) {
+                    if (props.getDefaultType().equals(MysqlTypeConstants.TIMESTAMP)) {
+                        props.setOrder(-1);
+                        break;
+                    }
+                }
+                return typePropss;
             }
-
             return typePropss;
         }
         PsiClass psiClass = PsiTypesUtil.getPsiClass(psiField.getType());

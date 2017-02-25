@@ -105,4 +105,7 @@ public class TypeProps {
         this.index = false;
         this.hasDefaultValue = true;
     }
+
+    public TypeProps() {
+    }
 }
