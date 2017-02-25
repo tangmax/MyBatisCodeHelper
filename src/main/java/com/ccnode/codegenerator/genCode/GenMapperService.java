@@ -1,8 +1,9 @@
 package com.ccnode.codegenerator.genCode;
 
+import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
 import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.InsertFileProp;
-import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
+import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndFieldAndFormattedColumn;
 import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.pojo.ClassInfo;
@@ -30,10 +31,11 @@ public class GenMapperService {
         Map<String, Object> root = Maps.newHashMap();
         root.put(TemplateConstants.DAO_FULLTYPE, daoProp.getQutifiedName());
         root.put(TemplateConstants.POJO_FULL_TYPE, srcClass.getQualifiedName());
-        List<ColumnAndField> columnAndFields = props.stream().map((prop) -> {
-            ColumnAndField columnAndField = new ColumnAndField();
+        List<ColumnAndFieldAndFormattedColumn> columnAndFields = props.stream().map((prop) -> {
+            ColumnAndFieldAndFormattedColumn columnAndField = new ColumnAndFieldAndFormattedColumn();
             columnAndField.setColumn(prop.getColumnName());
             columnAndField.setField(prop.getFieldName());
+            columnAndField.setFormattedColumn(DataBaseHandlerFactory.formatColumn(prop.getColumnName()));
             return columnAndField;
         }).collect(Collectors.toList());
         root.put(TemplateConstants.FIELD_AND_COLUMNS, columnAndFields);

@@ -28,4 +28,18 @@ public class DataBaseHandlerFactory {
         String database = myBatisCodeHelperApplicationComponent.getState().getDefaultProfile().getDatabase();
         return databaseHandlerMap.get(database);
     }
+
+
+    public static String currentDatabase() {
+        return myBatisCodeHelperApplicationComponent.getState().getDefaultProfile().getDatabase();
+    }
+
+
+    public static String formatColumn(String column) {
+        if (currentDatabase().equals(DataBaseConstants.MYSQL)) {
+            return "`" + column + "`";
+        } else {
+            return column;
+        }
+    }
 }

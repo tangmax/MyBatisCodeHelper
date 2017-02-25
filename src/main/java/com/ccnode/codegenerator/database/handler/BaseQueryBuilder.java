@@ -1,6 +1,8 @@
 package com.ccnode.codegenerator.database.handler;
 
 import com.ccnode.codegenerator.constants.QueryTypeConstants;
+import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
+import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 import com.ccnode.codegenerator.nextgenerationparser.KeyWordConstants;
 import com.ccnode.codegenerator.nextgenerationparser.buidler.MethodNameParsedResult;
 import com.ccnode.codegenerator.nextgenerationparser.buidler.ParamInfo;
@@ -162,37 +164,43 @@ public class BaseQueryBuilder implements QueryBuilder {
             String prop = rule.getProp();
             String operator = rule.getOperator();
             String connector = rule.getConnector();
-            //mean =
+            String database = DataBaseHandlerFactory.currentDatabase();
+            String propColumn = "";
+            if (database.equals(DataBaseConstants.MYSQL)) {
+                propColumn = relation.getPropColumn(prop);
+            } else {
+                propColumn = relation.getPropColumn(prop);
+            }
             if (operator == null) {
                 ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop).withParamType(extractLast(fieldMap.get(prop))).withParamValue(prop).build();
                 info.getParamInfos().add(paramInfo);
-                builder.append(" " + relation.getPropColumn(prop) + "=#{" + paramInfo.getParamAnno() + "}");
+                builder.append(" " + propColumn + "=#{" + paramInfo.getParamAnno() + "}");
             } else {
                 switch (operator) {
                     case KeyWordConstants.GREATERTHAN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("min" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + cdata(">") + " #{" + paramInfo.getParamAnno() + "}");
+                        builder.append(" " + propColumn + cdata(">") + " #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
 
                     case KeyWordConstants.GREATERTHANOREQUALTO: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("min" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + cdata(">=") + " #{" + paramInfo.getParamAnno() + "}");
+                        builder.append(" " + propColumn + cdata(">=") + " #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
                     case KeyWordConstants.LESSTHAN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + cdata("<") + " #{" + paramInfo.getParamAnno() + "}");
+                        builder.append(" " + propColumn + cdata("<") + " #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
 
                     case KeyWordConstants.LESSTHANOREQUALTO: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + cdata("<=") + " #{" + paramInfo.getParamAnno() + "}");
+                        builder.append(" " + propColumn + cdata("<=") + " #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
                     case KeyWordConstants.BETWEEN: {
@@ -200,7 +208,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                         ParamInfo max = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(min);
                         info.getParamInfos().add(max);
-                        builder.append(" " + relation.getPropColumn(prop) + cdata(">") + " #{" + min.getParamAnno() + "} and " + relation.getPropColumn(prop) + " " + cdata("<") + " #{" + (max.getParamAnno()) + "}");
+                        builder.append(" " + propColumn + cdata(">") + " #{" + min.getParamAnno() + "} and " + propColumn + " " + cdata("<") + " #{" + (max.getParamAnno()) + "}");
                         break;
                     }
                     case KeyWordConstants.BETWEENOREQUALTO: {
@@ -208,7 +216,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                         ParamInfo max = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(min);
                         info.getParamInfos().add(max);
-                        builder.append(" " + relation.getPropColumn(prop) + cdata(">=") + " #{" + min.getParamAnno() + "} and " + relation.getPropColumn(prop) + " " + cdata("<=") + " #{" + (max.getParamAnno()) + "}");
+                        builder.append(" " + propColumn + cdata(">=") + " #{" + min.getParamAnno() + "} and " + propColumn + " " + cdata("<=") + " #{" + (max.getParamAnno()) + "}");
                         break;
                     }
 
@@ -223,13 +231,13 @@ public class BaseQueryBuilder implements QueryBuilder {
                     case KeyWordConstants.NOT: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("not" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("not" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + "<> #{" + paramInfo.getParamAnno() + "}");
+                        builder.append(" " + propColumn + "<> #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
                     case KeyWordConstants.NOTIN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop + "List").withParamType("List<" + extractLast(fieldMap.get(prop)) + ">").withParamValue(prop + "List").build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + " not in \n" + GenCodeUtil.ONE_RETRACT + "<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n" + GenCodeUtil.ONE_RETRACT + "" +
+                        builder.append(" " + propColumn + " not in \n" + GenCodeUtil.ONE_RETRACT + "<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n" + GenCodeUtil.ONE_RETRACT + "" +
                                 "open=\"(\" separator=\",\" close=\")\">\n" + GenCodeUtil.ONE_RETRACT + "" +
                                 "#{item}\n" + GenCodeUtil.ONE_RETRACT + "" +
                                 "</foreach>\n");
@@ -238,7 +246,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                     case KeyWordConstants.IN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop + "List").withParamType("List<" + extractLast(fieldMap.get(prop)) + ">").withParamValue(prop + "List").build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + " in \n" + GenCodeUtil.ONE_RETRACT + "<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n" + GenCodeUtil.ONE_RETRACT + "" +
+                        builder.append(" " + propColumn + " in \n" + GenCodeUtil.ONE_RETRACT + "<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n" + GenCodeUtil.ONE_RETRACT + "" +
                                 "open=\"(\" separator=\",\" close=\")\">\n" + GenCodeUtil.ONE_RETRACT + "" +
                                 "#{item}\n" + GenCodeUtil.ONE_RETRACT + "" +
                                 "</foreach>\n");
@@ -247,13 +255,13 @@ public class BaseQueryBuilder implements QueryBuilder {
                     case KeyWordConstants.NOTLIKE: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("notlike" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("notlike" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + "not like #{" + paramInfo.getParamAnno() + "}");
+                        builder.append(" " + propColumn + "not like #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
                     case KeyWordConstants.LIKE: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("like" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("like" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
-                        builder.append(" " + relation.getPropColumn(prop) + "like #{" + paramInfo.getParamAnno() + "}");
+                        builder.append(" " + propColumn + "like #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
                 }

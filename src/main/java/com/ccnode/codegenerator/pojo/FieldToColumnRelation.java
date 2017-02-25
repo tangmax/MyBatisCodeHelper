@@ -1,5 +1,8 @@
 package com.ccnode.codegenerator.pojo;
 
+import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
+import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
+
 import java.util.Map;
 
 /**
@@ -26,8 +29,11 @@ public class FieldToColumnRelation {
         this.filedToColumnMap = filedToColumnMap;
     }
 
-
     public String getPropColumn(String prop) {
-        return "`" + filedToColumnMap.get(prop.toLowerCase()) + "`";
+        if (DataBaseHandlerFactory.currentDatabase().equals(DataBaseConstants.MYSQL)) {
+            return "`" + filedToColumnMap.get(prop.toLowerCase()) + "`";
+        } else {
+            return filedToColumnMap.get(prop.toLowerCase());
+        }
     }
 }

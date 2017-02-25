@@ -4,9 +4,9 @@ package com.ccnode.codegenerator.dialog.dto.mybatis;
  * Created by bruce.ge on 2016/12/27.
  */
 public class ColumnAndField {
-    private String column;
+    protected String column;
 
-    private String field;
+    protected String field;
 
     public ColumnAndField(){}
 

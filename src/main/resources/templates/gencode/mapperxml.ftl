@@ -12,9 +12,9 @@
     <sql id="all_column">
     <#list fieldAndColumns as fieldAndColumn>
         <#if fieldAndColumn?is_last>
-        `${fieldAndColumn.column}`
+        ${fieldAndColumn.formattedColumn}
         <#else>
-        `${fieldAndColumn.column}`,
+        ${fieldAndColumn.formattedColumn},
         </#if>
     </#list>
     </sql>
@@ -22,7 +22,7 @@
     <!--auto generated Code-->
     <insert id="insert">
         INSERT INTO ${tableName}
-        (<#list fieldAndColumns as fieldAndColumn><#if fieldAndColumn?is_last>`${fieldAndColumn.column}`<#else>`${fieldAndColumn.column}`,</#if></#list>)
+        (<#list fieldAndColumns as fieldAndColumn><#if fieldAndColumn?is_last>${fieldAndColumn.formattedColumn}<#else>${fieldAndColumn.formattedColumn},</#if></#list>)
         VALUES
         (<#list fieldAndColumns as fieldAndColumn><#if fieldAndColumn?is_last>${r"#"}{pojo.${fieldAndColumn.field}}<#else>${r"#"}{pojo.${fieldAndColumn.field}},</#if></#list>)
     </insert>
@@ -33,9 +33,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
         <#list fieldAndColumns as filedAndColumn>
             <#if filedAndColumn?is_last>
-                <if test="pojo.${filedAndColumn.field}!=null"> `${filedAndColumn.column}`</if>
+                <if test="pojo.${filedAndColumn.field}!=null"> ${filedAndColumn.formattedColumn}</if>
             <#else>
-                <if test="pojo.${filedAndColumn.field}!=null"> `${filedAndColumn.column}`,</if>
+                <if test="pojo.${filedAndColumn.field}!=null"> ${filedAndColumn.formattedColumn},</if>
             </#if>
         </#list>
         </trim>
@@ -75,12 +75,12 @@
         <set>
         <#list fieldAndColumns as filedAndColumn>
             <#if filedAndColumn?is_last>
-            <if test="pojo.${filedAndColumn.field} != null"> `${filedAndColumn.column}` = ${r"#"}{pojo.${filedAndColumn.field}}</if>
+            <if test="pojo.${filedAndColumn.field} != null"> ${filedAndColumn.formattedColumn} = ${r"#"}{pojo.${filedAndColumn.field}}</if>
             <#else>
-            <if test="pojo.${filedAndColumn.field} != null"> `${filedAndColumn.column}` = ${r"#"}{pojo.${filedAndColumn.field}},</if>
+            <if test="pojo.${filedAndColumn.field} != null"> ${filedAndColumn.formattedColumn} = ${r"#"}{pojo.${filedAndColumn.field}},</if>
             </#if>
         </#list>
         </set>
-        WHERE `${primaryColumn}` = ${r"#"}{pojo.${primaryField}}
+        WHERE ${primaryColumn} = ${r"#"}{pojo.${primaryField}}
     </update>
 </mapper>
