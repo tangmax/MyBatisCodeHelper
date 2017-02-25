@@ -150,9 +150,9 @@ public class MapperUtil {
         root.put("tableName", tableName);
         String s = null;
         boolean useTest = false;
-        if(useTest) {
-             s= TemplateUtil.processToString(TemplateConstants.insertTemplateName, root);
-        }else {
+        if (useTest) {
+            s = TemplateUtil.processToString(TemplateConstants.insertTemplateName, root);
+        } else {
             s = TemplateUtil.processToString(TemplateConstants.insertWithOutTestTemplateName, root);
         }
         return s;
@@ -210,7 +210,7 @@ public class MapperUtil {
     }
 
     public static String extractClassShortName(String fullName) {
-        String[] split = fullName.split("\\.");
-        return split[split.length - 1];
+        int i = fullName.lastIndexOf(".");
+        return fullName.substring(i + 1);
     }
 }

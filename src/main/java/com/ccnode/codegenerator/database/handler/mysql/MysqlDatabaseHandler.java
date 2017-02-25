@@ -2,12 +2,15 @@ package com.ccnode.codegenerator.database.handler.mysql;
 
 import com.ccnode.codegenerator.database.ClassValidateResult;
 import com.ccnode.codegenerator.database.JavaTypeConstant;
+import com.ccnode.codegenerator.database.handler.BaseQueryBuilder;
 import com.ccnode.codegenerator.database.handler.DatabaseHandler;
 import com.ccnode.codegenerator.database.handler.FieldValidator;
 import com.ccnode.codegenerator.database.handler.HandlerValidator;
 import com.ccnode.codegenerator.database.handler.utils.TypePropUtils;
 import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
+import com.ccnode.codegenerator.nextgenerationparser.buidler.MethodNameParsedResult;
+import com.ccnode.codegenerator.nextgenerationparser.buidler.QueryInfo;
 import com.ccnode.codegenerator.util.DateUtil;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.google.common.base.Joiner;
@@ -31,6 +34,8 @@ import java.util.Map;
 public class MysqlDatabaseHandler implements DatabaseHandler {
 
     private MysqlFieldValidator fieldValidator = new MysqlFieldValidator();
+
+    private BaseQueryBuilder mysqlQueryBuilder = new BaseQueryBuilder(new MysqlQueryBuilderHandler());
 
     private static Map<String, List<TypeProps>> mysqlTypeProps = Maps.newHashMap();
 
@@ -184,6 +189,11 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
     public boolean isSupportedParam(PsiParameter psiParameter) {
         //todo need convert to object type.
         return mysqlTypeProps.get(psiParameter.getType().getCanonicalText()) != null;
+    }
+
+    @Override
+    public QueryInfo buildQueryInfoByMethodNameParsedResult(MethodNameParsedResult result) {
+        return mysqlQueryBuilder.buildQueryInfoByMethodNameParsedResult(result);
     }
 
 

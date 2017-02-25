@@ -21,6 +21,17 @@ public class QueryInfo {
 
     private String type;
 
+    private List<String> importPackages;
+
+
+    public List<String> getImportPackages() {
+        return importPackages;
+    }
+
+    public void setImportPackages(List<String> importPackages) {
+        this.importPackages = importPackages;
+    }
+
     public String getType() {
         return type;
     }

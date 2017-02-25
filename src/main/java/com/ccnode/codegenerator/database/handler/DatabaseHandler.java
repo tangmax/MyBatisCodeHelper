@@ -16,7 +16,7 @@ import java.util.List;
  * @Description
  */
 //shall make it easy to test.
-public interface DatabaseHandler {
+public interface DatabaseHandler extends QueryBuilder{
 
     @NotNull
     ClassValidateResult validateCurrentClass(PsiClass psiClass);

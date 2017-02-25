@@ -11,7 +11,6 @@ public class MethodXmlPsiInfo {
 
     private FieldToColumnRelation relation;
 
-
     private String tableName;
 
     private Map<String, String> fieldMap;

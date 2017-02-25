@@ -2,6 +2,7 @@ package com.ccnode.codegenerator.database.handler.oracle;
 
 import com.ccnode.codegenerator.database.ClassValidateResult;
 import com.ccnode.codegenerator.database.JavaTypeConstant;
+import com.ccnode.codegenerator.database.handler.BaseQueryBuilder;
 import com.ccnode.codegenerator.database.handler.DatabaseHandler;
 import com.ccnode.codegenerator.database.handler.FieldValidator;
 import com.ccnode.codegenerator.database.handler.HandlerValidator;
@@ -9,6 +10,8 @@ import com.ccnode.codegenerator.database.handler.mysql.MysqlTypeConstants;
 import com.ccnode.codegenerator.database.handler.utils.TypePropUtils;
 import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
+import com.ccnode.codegenerator.nextgenerationparser.buidler.MethodNameParsedResult;
+import com.ccnode.codegenerator.nextgenerationparser.buidler.QueryInfo;
 import com.ccnode.codegenerator.util.DateUtil;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.google.common.base.Joiner;
@@ -32,6 +35,9 @@ import java.util.Map;
 public class OracleDatabaseHandler implements DatabaseHandler {
 
     private OracleFieldValidator validator = new OracleFieldValidator();
+
+
+    private BaseQueryBuilder baseQueryBuilder = new BaseQueryBuilder(new OracleQueryBuilderHandler());
 
 
     private static Map<String, List<TypeProps>> oracleTypeProps = Maps.newHashMap();
@@ -144,7 +150,7 @@ public class OracleDatabaseHandler implements DatabaseHandler {
         return Joiner.on("\n").join(retList);
     }
 
-    private String generateAutoIncrementAndTrigger(String tableName, String primaryColumnName) {
+    private static String generateAutoIncrementAndTrigger(String tableName, String primaryColumnName) {
         return "create sequence " + tableName + "_seq start with 1 increment by 1 nomaxvalue;\n" +
                 "create trigger " + tableName + "_trigger\n" +
                 "before insert on " + tableName + "\n" +
@@ -174,6 +180,11 @@ public class OracleDatabaseHandler implements DatabaseHandler {
     @Override
     public boolean isSupportedParam(PsiParameter psiParameter) {
         return oracleTypeProps.get(psiParameter.getType().getCanonicalText()) != null;
+    }
+
+    @Override
+    public QueryInfo buildQueryInfoByMethodNameParsedResult(MethodNameParsedResult result) {
+        return baseQueryBuilder.buildQueryInfoByMethodNameParsedResult(result);
     }
 
     class OracleFieldValidator implements FieldValidator {
