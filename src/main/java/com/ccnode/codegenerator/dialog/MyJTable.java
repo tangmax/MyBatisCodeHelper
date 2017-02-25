@@ -84,7 +84,6 @@ class MyJTable extends JTable {
                 // TODO: 2016/12/25 ask user if ignore.
                 continue;
             }
-            customTypeProp(info, typeProp);
             mm[TYPECOLUMNINDEX] = typeProp.getDefaultType();
             mm[LENGTHCOLUMNINDEX] = typeProp.getSize();
             mm[UNIQUECOLUMNINDEX] = typeProp.getUnique();
@@ -98,18 +97,6 @@ class MyJTable extends JTable {
         Object[][] ss = new Object[ssList.size()][];
         ssList.toArray(ss);
         return ss;
-    }
-
-    private static void customTypeProp(ClassFieldInfo info, TypeProps typeProp) {
-        if (info.getFieldName().equals("id")) {
-            typeProp.setPrimary(true);
-            typeProp.setHasDefaultValue(false);
-        } else if (info.getFieldName().toLowerCase().equals("updatetime")) {
-            TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault(MysqlTypeConstants.TIMESTAMP);
-            typeProp.setDefaultType(MysqlTypeConstants.TIMESTAMP);
-            typeProp.setDefaultValue(typeDefault.getDefaultValue());
-            typeProp.setSize(typeDefault.getSize());
-        }
     }
 
     static Boolean formatBoolean(Object unique) {
@@ -187,7 +174,9 @@ class MyJTable extends JTable {
     public void setValueAt(Object aValue, int row, int column) {
         super.setValueAt(aValue, row, column);
         if (column == TYPECOLUMNINDEX) {
-            TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault((String) aValue);
+            //todo need to think a way to control it.
+//            TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault((String) aValue);
+            TypeDefault typeDefault = null;
             if (typeDefault == null) {
                 super.setValueAt(null, row, LENGTHCOLUMNINDEX);
                 super.setValueAt(null, row, DEFAULT_VALUECOLUMNINDEX);

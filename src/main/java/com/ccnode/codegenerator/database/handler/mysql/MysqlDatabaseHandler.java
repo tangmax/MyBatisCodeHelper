@@ -1,18 +1,21 @@
-package com.ccnode.codegenerator.database;
+package com.ccnode.codegenerator.database.handler.mysql;
 
+import com.ccnode.codegenerator.database.ClassValidateResult;
+import com.ccnode.codegenerator.database.JavaTypeConstant;
+import com.ccnode.codegenerator.database.handler.DatabaseHandler;
+import com.ccnode.codegenerator.database.handler.FieldValidator;
+import com.ccnode.codegenerator.database.handler.HandlerValidator;
 import com.ccnode.codegenerator.dialog.GenCodeProp;
-import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
 import com.ccnode.codegenerator.dialog.datatype.MysqlTypeConstants;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
-import com.ccnode.codegenerator.dialog.datatype.UnsignedCheckResult;
 import com.ccnode.codegenerator.util.DateUtil;
 import com.ccnode.codegenerator.util.GenCodeUtil;
-import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiParameter;
 import com.intellij.psi.util.PsiTypesUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +29,8 @@ import java.util.Map;
  * @Description
  */
 public class MysqlDatabaseHandler implements DatabaseHandler {
+
+    private MysqlFieldValidator fieldValidator = new MysqlFieldValidator();
 
     private static Map<String, List<TypeProps>> mysqlTypeProps = Maps.newHashMap();
 
@@ -100,51 +105,13 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         TypeProps TINYBLOB = new TypeProps(MysqlTypeConstants.TINYBLOB, "", "\'\'");
         TypeProps MEDIUMBLOB = new TypeProps(MysqlTypeConstants.MEDIUMBLOB, "", "\'\'");
         TypeProps LONGBLOB = new TypeProps(MysqlTypeConstants.LONGBLOB, "", "\'\'");
-        mysqlTypeProps.put(JavaTypeConstant.BYTE, newArrayListWithOrder(BLOB,MEDIUMBLOB,LONGBLOB,TINYBLOB));
+        mysqlTypeProps.put(JavaTypeConstant.BYTE, newArrayListWithOrder(BLOB, MEDIUMBLOB, LONGBLOB, TINYBLOB));
     }
 
     @Override
     @NotNull
     public ClassValidateResult validateCurrentClass(PsiClass psiClass) {
-        ClassValidateResult result = new ClassValidateResult();
-        PsiField[] allFields = psiClass.getAllFields();
-        if (allFields.length == 0) {
-            result.setValid(false);
-            result.setInvalidMessages("there is no available field in current class");
-            return result;
-        }
-        List<PsiField> validFields = Lists.newArrayList();
-        List<String> errorMessages = Lists.newArrayList();
-        for (PsiField psiField : allFields) {
-            if (PsiClassUtil.isSupprtedModifier(psiField)) {
-                String fieldType = psiField.getType().getCanonicalText();
-                if (!isValidField(psiField)) {
-                    if (PsiClassUtil.isPrimitiveType(fieldType)) {
-                        errorMessages.add(buildErrorMessage(psiField, " please use with object type"));
-                    } else {
-                        errorMessages.add(buildErrorMessage(psiField, " unsupported field type"));
-                    }
-                } else {
-                    validFields.add(psiField);
-                }
-            } else {
-                errorMessages.add(buildErrorMessage(psiField, " please use with private and not static"));
-            }
-        }
-
-        result.setValidFields(validFields);
-        if (errorMessages.size() > 0) {
-            result.setValid(false);
-            StringBuilder builder = new StringBuilder();
-            for (String errorMessage : errorMessages) {
-                builder.append(errorMessage + "\n");
-            }
-            builder.deleteCharAt(builder.length() - 1);
-            result.setInvalidMessages(builder.toString());
-            return result;
-        }
-        result.setValid(true);
-        return result;
+        return new HandlerValidator(fieldValidator).validateResult(psiClass);
     }
 
     public static List<TypeProps> newArrayListWithOrder(TypeProps... typePropArray) {
@@ -156,9 +123,6 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         return typePropslist;
     }
 
-    private static String buildErrorMessage(PsiField psiField, String reason) {
-        return "field name is:" + psiField.getName() + "  field type is:" + psiField.getType().getCanonicalText() + "  invalid reason is:" + reason;
-    }
 
     private static String unsigned(String type) {
         return type + "_" + MysqlTypeConstants.UNSIGNED;
@@ -172,6 +136,12 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         String canonicalText = psiField.getType().getCanonicalText();
         List<TypeProps> typePropss = mysqlTypeProps.get(canonicalText);
         if (typePropss != null) {
+            //todo try to customize the value for it.
+            if (psiField.getName().equals("id")) {
+                typePropss.get(0).setPrimary(true);
+                typePropss.get(0).setHasDefaultValue(false);
+            }
+
             return typePropss;
         }
         PsiClass psiClass = PsiTypesUtil.getPsiClass(psiField.getType());
@@ -180,19 +150,6 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         }
         //mean this is enum type.
         return newArrayListWithOrder(new TypeProps(MysqlTypeConstants.VARCHAR, "50", "''"), new TypeProps(MysqlTypeConstants.TEXT, null, null));
-    }
-
-    public static boolean isValidField(PsiField psiField) {
-        String canonicalText = psiField.getType().getCanonicalText();
-        List<TypeProps> typePropss = mysqlTypeProps.get(canonicalText);
-        if (typePropss != null) {
-            return true;
-        }
-        PsiClass psiClass = PsiTypesUtil.getPsiClass(psiField.getType());
-        if (psiClass != null && psiClass.isEnum()) {
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -218,10 +175,16 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         return Joiner.on("\n").join(retList);
     }
 
+    @Override
+    public boolean isSupportedParam(PsiParameter psiParameter) {
+        //todo need convert to object type.
+        return mysqlTypeProps.get(psiParameter.getType().getCanonicalText()) != null;
+    }
+
 
     private static String genfieldSql(GenCodeProp field) {
         StringBuilder ret = new StringBuilder();
-        UnsignedCheckResult result = MySqlTypeUtil.checkUnsigned(field.getFiledType());
+        UnsignedCheckResult result = checkUnsigned(field.getFiledType());
         ret.append(GenCodeUtil.ONE_RETRACT).append(GenCodeUtil.wrapComma(field.getColumnName()))
                 .append(" ").append(result.getType());
         if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
@@ -246,5 +209,35 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         }
         ret.append(" COMMENT '" + field.getFieldName() + "',");
         return ret.toString();
+    }
+
+    class MysqlFieldValidator implements FieldValidator {
+        @Override
+        public boolean isValidField(PsiField psiField) {
+            String canonicalText = psiField.getType().getCanonicalText();
+            List<TypeProps> typePropss = mysqlTypeProps.get(canonicalText);
+            if (typePropss != null) {
+                return true;
+            }
+            PsiClass psiClass = PsiTypesUtil.getPsiClass(psiField.getType());
+            if (psiClass != null && psiClass.isEnum()) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    public static UnsignedCheckResult checkUnsigned(String chooseType) {
+        UnsignedCheckResult result = new UnsignedCheckResult();
+        String[] split = chooseType.split("_");
+        result.setType(split[0]);
+        if (split.length == 2 && split[1].equals(MysqlTypeConstants.UNSIGNED)) {
+            result.setUnsigned(true);
+            return result;
+        } else {
+            result.setUnsigned(false);
+            return result;
+        }
     }
 }

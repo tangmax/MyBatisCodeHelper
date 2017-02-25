@@ -1,9 +1,9 @@
 package com.ccnode.codegenerator.dialog;
 
+import com.ccnode.codegenerator.database.handler.mysql.MysqlDatabaseHandler;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
-import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
-import com.ccnode.codegenerator.dialog.datatype.UnsignedCheckResult;
+import com.ccnode.codegenerator.database.handler.mysql.UnsignedCheckResult;
 import com.ccnode.codegenerator.dialog.dto.MapperDto;
 import com.ccnode.codegenerator.dialog.dto.mybatis.*;
 import com.ccnode.codegenerator.enums.MethodName;
@@ -145,7 +145,8 @@ public class UpdateDialogMore extends DialogWrapper {
             for (GenCodeProp field : newAddedProps) {
                 StringBuilder ret = new StringBuilder();
                 ret.append("ALTER TABLE " + tableName + "\n\tADD " + field.getColumnName());
-                UnsignedCheckResult result = MySqlTypeUtil.checkUnsigned(field.getFiledType());
+                //todo need remove to mysql handler.
+                UnsignedCheckResult result = MysqlDatabaseHandler.checkUnsigned(field.getFiledType());
                 ret.append(" " + result.getType());
                 if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
                     ret.append("(" + field.getSize() + ")");
@@ -166,7 +167,7 @@ public class UpdateDialogMore extends DialogWrapper {
                 if (field.getPrimaryKey()) {
                     ret.append(" AUTO_INCREMENT");
                 }
-                ret.append(" COMMENT '" + field.getFieldName()+"'");
+                ret.append(" COMMENT '" + field.getFieldName() + "'");
                 if (field.getIndex()) {
                     ret.append(",\n\tADD INDEX (" + field.getColumnName() + ")");
                 }

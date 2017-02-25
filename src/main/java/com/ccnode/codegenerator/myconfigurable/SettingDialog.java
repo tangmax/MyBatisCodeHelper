@@ -38,8 +38,7 @@ public class SettingDialog {
         rootComponent.add(databaseLabel, bag);
         databaseCombox = new JComboBox();
         databaseCombox.addItem(DataBaseConstants.MYSQL);
-        // TODO: 2017/2/20 need add here later
-//        databaseCombox.addItem(DataBaseConstants.ORACLE);
+        databaseCombox.addItem(DataBaseConstants.ORACLE);
         for (int i = 0; i < databaseCombox.getItemCount(); i++) {
             Object itemAt = databaseCombox.getItemAt(i);
             if(itemAt.equals(profile.getDatabase())){

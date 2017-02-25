@@ -1,8 +1,8 @@
 package com.ccnode.codegenerator.util;
 
+import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
 import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
-import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
@@ -217,7 +217,7 @@ public class PsiClassUtil {
             String parameterType = parameter.getType().getCanonicalText();
             parameterType = convertToObjectText(parameterType);
             //if it's basic type, just add it to the param.
-            if (MySqlTypeUtil.isSupportParamType(parameterType)) {
+            if (DataBaseHandlerFactory.currentHandler().isSupportedParam(parameter)) {
                 if (param == null) {
                     continue;
                 } else {
