@@ -10,6 +10,16 @@ public class Profile extends DomainObject {
 
     private Boolean addMapperAnnotation = true;
 
+    private Boolean useGeneratedKeys = true;
+
+    public Boolean getUseGeneratedKeys() {
+        return useGeneratedKeys;
+    }
+
+    public void setUseGeneratedKeys(Boolean useGeneratedKeys) {
+        this.useGeneratedKeys = useGeneratedKeys;
+    }
+
     public String getDatabase() {
         return database;
     }

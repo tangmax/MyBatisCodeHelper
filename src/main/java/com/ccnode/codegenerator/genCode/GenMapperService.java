@@ -6,6 +6,7 @@ import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndFieldAndFormattedColumn;
 import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
+import com.ccnode.codegenerator.myconfigurable.MyBatisCodeHelperApplicationComponent;
 import com.ccnode.codegenerator.pojo.ClassInfo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -38,6 +39,7 @@ public class GenMapperService {
             columnAndField.setFormattedColumn(DataBaseHandlerFactory.formatColumn(prop.getColumnName()));
             return columnAndField;
         }).collect(Collectors.toList());
+        root.put(TemplateConstants.USE_GENERATED_KEYS, MyBatisCodeHelperApplicationComponent.getInstance().getState().getProfile().getUseGeneratedKeys());
         root.put(TemplateConstants.FIELD_AND_COLUMNS, columnAndFields);
         root.put(TemplateConstants.PRIMARY_COLUMN, primaryProp.getColumnName());
         root.put(TemplateConstants.PRIMARY_FIELD, primaryProp.getFieldName());

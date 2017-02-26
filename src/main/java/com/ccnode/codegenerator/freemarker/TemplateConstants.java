@@ -32,6 +32,8 @@ public class TemplateConstants {
 
     public static final String FIELD_AND_COLUMNS = "fieldAndColumns";
 
+    public static final String USE_GENERATED_KEYS = "useGeneratedKeys";
+
     public static final String TABLE_NAME = "tableName";
 
     public static final String ADD_MAPPER_ANNOTATION = "addMapperAnnotation";

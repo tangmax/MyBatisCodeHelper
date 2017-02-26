@@ -17,11 +17,14 @@ public class SettingDialog {
 
     private JCheckBox addMapperAnnotationCheckBox;
 
+    private JCheckBox useGeneratedKeysCheckBox;
+
     private PluginState settings;
 
     public SettingDialog(PluginState state) {
         init(state);
     }
+
     private void init(PluginState state) {
         this.settings = state;
         Profile profile = state.getProfile();
@@ -41,7 +44,7 @@ public class SettingDialog {
         databaseCombox.addItem(DataBaseConstants.ORACLE);
         for (int i = 0; i < databaseCombox.getItemCount(); i++) {
             Object itemAt = databaseCombox.getItemAt(i);
-            if(itemAt.equals(profile.getDatabase())){
+            if (itemAt.equals(profile.getDatabase())) {
                 databaseCombox.setSelectedIndex(i);
                 break;
             }
@@ -54,7 +57,13 @@ public class SettingDialog {
         bag.weighty = 1;
         addMapperAnnotationCheckBox = new JCheckBox("add @Mapper to mybatis interface", profile.getAddMapperAnnotation());
         rootComponent.add(addMapperAnnotationCheckBox, bag);
+
         bag.gridy = 2;
+        bag.gridx = 0;
+        useGeneratedKeysCheckBox = new JCheckBox("use generated keys", profile.getUseGeneratedKeys());
+        rootComponent.add(useGeneratedKeysCheckBox, bag);
+
+        bag.gridy = 3;
         bag.gridx = 0;
         bag.weighty = 10000;
         rootComponent.add(new JPanel(), bag);
@@ -87,5 +96,6 @@ public class SettingDialog {
     private void getData(Profile defaultProfile) {
         defaultProfile.setAddMapperAnnotation(addMapperAnnotationCheckBox.isSelected());
         defaultProfile.setDatabase((String) databaseCombox.getSelectedItem());
+        defaultProfile.setUseGeneratedKeys(useGeneratedKeysCheckBox.isSelected());
     }
 }

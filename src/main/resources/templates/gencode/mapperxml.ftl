@@ -20,7 +20,7 @@
     </sql>
 
     <!--auto generated Code-->
-    <insert id="insert">
+    <insert id="insert"<#if useGeneratedKeys> useGeneratedKeys="true" keyProperty="pojo.${primaryField}"</#if>>
         INSERT INTO ${tableName}
         (<#list fieldAndColumns as fieldAndColumn><#if fieldAndColumn?is_last>${fieldAndColumn.formattedColumn}<#else>${fieldAndColumn.formattedColumn},</#if></#list>)
         VALUES
@@ -28,7 +28,7 @@
     </insert>
 
     <!--auto generated Code-->
-    <insert id="insertSelective">
+    <insert id="insertSelective"<#if useGeneratedKeys> useGeneratedKeys="true" keyProperty="pojo.${primaryField}"</#if>>
         INSERT INTO ${tableName}
         <trim prefix="(" suffix=")" suffixOverrides=",">
         <#list fieldAndColumns as filedAndColumn>
@@ -52,7 +52,7 @@
     </insert>
 
     <!--auto generated Code-->
-    <insert id="insertList">
+    <insert id="insertList"<#if useGeneratedKeys> useGeneratedKeys="true" keyProperty="pojo.${primaryField}"</#if>>
         INSERT INTO ${tableName} (
         <include refid="all_column"/>
         )VALUES
