@@ -21,7 +21,7 @@ public class HttpClient {
             .readTimeout(5, TimeUnit.SECONDS).build();
 
     private static ExecutorService executorService = Executors.newFixedThreadPool(1);
-    private static String url = "http://localhost:9098/mybatislog/add";
+    private static String url = "http://brucege.com/mybatislog/add";
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
