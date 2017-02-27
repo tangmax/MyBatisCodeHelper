@@ -1,6 +1,6 @@
 package com.ccnode.codegenerator.dialog;
 
-import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.ccnode.codegenerator.dialog.exception.NotStringException;
@@ -79,7 +79,7 @@ class MyJTable extends JTable {
             ClassFieldInfo info = propFields.get(i);
             mm[FIELDCOLUMNINDEX] = info.getFieldName();
             mm[COLUMN_NAMECOLUMNINDEX] = GenCodeUtil.getUnderScore(info.getFieldName());
-            TypeProps typeProp = DataBaseHandlerFactory.currentHandler().getRecommendDatabaseTypeOfFieldType(info.getPsiField()).stream()
+            TypeProps typeProp = DatabaseComponenent.currentHandler().getGenerateFileHandler().getRecommendDatabaseTypeOfFieldType(info.getPsiField()).stream()
                     .min(Comparator.comparingInt(TypeProps::getOrder)).get();
             if (typeProp == null) {
                 // TODO: 2016/12/25 ask user if ignore.

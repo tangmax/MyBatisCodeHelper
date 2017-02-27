@@ -1,6 +1,6 @@
 package com.ccnode.codegenerator.nextgenerationparser.buidler;
 
-import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.nextgenerationparser.QueryParseDto;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.base.ParsedErrorBase;
 import com.ccnode.codegenerator.nextgenerationparser.parsedresult.count.ParsedCount;
@@ -38,7 +38,7 @@ public class QueryBuilder {
 
         List<QueryInfo> queryInfos = new ArrayList<>();
         for (ParsedFind find : parsedFinds) {
-            queryInfos.add(DataBaseHandlerFactory.currentHandler().buildQueryInfoByMethodNameParsedResult(convertFromParsedFind(find, info)));
+            queryInfos.add(DatabaseComponenent.currentHandler().getMethodXmlHandler().buildQueryInfoByMethodNameParsedResult(convertFromParsedFind(find, info)));
         }
         //say this is not an method.
         QueryParseDto dto = new QueryParseDto();
@@ -111,7 +111,7 @@ public class QueryBuilder {
 
         List<QueryInfo> queryInfos = new ArrayList<>();
         for (ParsedUpdate update : updateList) {
-            queryInfos.add(DataBaseHandlerFactory.currentHandler().buildQueryInfoByMethodNameParsedResult(convertFromParsedUpdate(update, info)));
+            queryInfos.add(DatabaseComponenent.currentHandler().getMethodXmlHandler().buildQueryInfoByMethodNameParsedResult(convertFromParsedUpdate(update, info)));
         }
         QueryParseDto dto = new QueryParseDto();
         dto.setQueryInfos(queryInfos);
@@ -133,7 +133,7 @@ public class QueryBuilder {
 
         List<QueryInfo> queryInfos = new ArrayList<>();
         for (ParsedDelete delete : parsedDeletes) {
-            queryInfos.add(DataBaseHandlerFactory.currentHandler().buildQueryInfoByMethodNameParsedResult(convertFromParsedDelete(delete, info)));
+            queryInfos.add(DatabaseComponenent.currentHandler().getMethodXmlHandler().buildQueryInfoByMethodNameParsedResult(convertFromParsedDelete(delete, info)));
         }
         QueryParseDto dto = new QueryParseDto();
         dto.setQueryInfos(queryInfos);
@@ -155,7 +155,7 @@ public class QueryBuilder {
         }
         List<QueryInfo> queryInfos = new ArrayList<>();
         for (ParsedCount count : parsedCounts) {
-            queryInfos.add(DataBaseHandlerFactory.currentHandler().buildQueryInfoByMethodNameParsedResult(convertFromParsedCount(count, info)));
+            queryInfos.add(DatabaseComponenent.currentHandler().getMethodXmlHandler().buildQueryInfoByMethodNameParsedResult(convertFromParsedCount(count, info)));
         }
         QueryParseDto dto = new QueryParseDto();
         dto.setQueryInfos(queryInfos);

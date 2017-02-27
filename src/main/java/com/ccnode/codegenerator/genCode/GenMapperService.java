@@ -1,6 +1,6 @@
 package com.ccnode.codegenerator.genCode;
 
-import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndFieldAndFormattedColumn;
@@ -36,7 +36,7 @@ public class GenMapperService {
             ColumnAndFieldAndFormattedColumn columnAndField = new ColumnAndFieldAndFormattedColumn();
             columnAndField.setColumn(prop.getColumnName());
             columnAndField.setField(prop.getFieldName());
-            columnAndField.setFormattedColumn(DataBaseHandlerFactory.formatColumn(prop.getColumnName()));
+            columnAndField.setFormattedColumn(DatabaseComponenent.formatColumn(prop.getColumnName()));
             return columnAndField;
         }).collect(Collectors.toList());
         root.put(TemplateConstants.USE_GENERATED_KEYS, MyBatisCodeHelperApplicationComponent.getInstance().getState().getProfile().getUseGeneratedKeys());

@@ -1,42 +1,24 @@
 package com.ccnode.codegenerator.database.handler.mysql;
 
-import com.ccnode.codegenerator.database.ClassValidateResult;
 import com.ccnode.codegenerator.database.JavaTypeConstant;
-import com.ccnode.codegenerator.database.handler.BaseQueryBuilder;
-import com.ccnode.codegenerator.database.handler.DatabaseHandler;
-import com.ccnode.codegenerator.database.handler.FieldValidator;
-import com.ccnode.codegenerator.database.handler.HandlerValidator;
 import com.ccnode.codegenerator.database.handler.utils.TypePropUtils;
-import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
-import com.ccnode.codegenerator.nextgenerationparser.buidler.MethodNameParsedResult;
-import com.ccnode.codegenerator.nextgenerationparser.buidler.QueryInfo;
-import com.ccnode.codegenerator.util.DateUtil;
-import com.ccnode.codegenerator.util.GenCodeUtil;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiParameter;
 import com.intellij.psi.util.PsiTypesUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @Author bruce.ge
- * @Date 2017/2/23
+ * @Date 2017/2/27
  * @Description
  */
-public class MysqlDatabaseHandler implements DatabaseHandler {
-
-    private MysqlFieldValidator fieldValidator = new MysqlFieldValidator();
-
-    private BaseQueryBuilder mysqlQueryBuilder = new BaseQueryBuilder(new MysqlQueryBuilderHandler());
-
+public class MysqlHandlerUtils {
     private static Map<String, List<TypeProps>> mysqlTypeProps = Maps.newHashMap();
 
     static {
@@ -113,12 +95,6 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         mysqlTypeProps.put(JavaTypeConstant.BYTE, newArrayListWithOrder(BLOB, MEDIUMBLOB, LONGBLOB, TINYBLOB));
     }
 
-    @Override
-    @NotNull
-    public ClassValidateResult validateCurrentClass(PsiClass psiClass) {
-        return new HandlerValidator(fieldValidator).validateResult(psiClass);
-    }
-
     public static List<TypeProps> newArrayListWithOrder(TypeProps... typePropArray) {
         List<TypeProps> typePropslist = Lists.newArrayList();
         for (int i = 0; i < typePropArray.length; i++) {
@@ -132,10 +108,9 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         return type + "_" + MysqlTypeConstants.UNSIGNED;
     }
 
-    /*must have data or can't generate*/
-    @Override
+
     @NotNull
-    public List<TypeProps> getRecommendDatabaseTypeOfFieldType(PsiField psiField) {
+    public static List<TypeProps> getRecommendDatabaseTypeOfFieldType(PsiField psiField) {
         String canonicalText = psiField.getType().getCanonicalText();
         List<TypeProps> fromMapTypes = mysqlTypeProps.get(canonicalText);
         List<TypeProps> typePropss = TypePropUtils.generateFromDefaultMap(fromMapTypes);
@@ -162,87 +137,6 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
         return newArrayListWithOrder(new TypeProps(MysqlTypeConstants.VARCHAR, "50", "''"), new TypeProps(MysqlTypeConstants.TEXT, null, null));
     }
 
-    @Override
-    public String generateSql(List<GenCodeProp> propList, GenCodeProp primaryKey, String tableName) {
-        List<String> retList = Lists.newArrayList();
-        String newTableName = GenCodeUtil.wrapComma(tableName);
-        retList.add(String.format("-- auto Generated on %s ", DateUtil.formatLong(new Date())));
-        retList.add("-- DROP TABLE IF EXISTS " + newTableName + "; ");
-        retList.add("CREATE TABLE " + newTableName + "(");
-        List<String> indexText = Lists.newArrayList();
-        for (GenCodeProp field : propList) {
-            String fieldSql = genfieldSql(field);
-            retList.add(fieldSql);
-            if (field.getIndex()) {
-                indexText.add(GenCodeUtil.ONE_RETRACT + "INDEX(" + field.getColumnName() + "),");
-            }
-        }
-        retList.addAll(indexText);
-        // TODO: 2016/12/26 InnoDb and utf8 can be later configured
-        retList.add(GenCodeUtil.ONE_RETRACT + "PRIMARY KEY (" + GenCodeUtil.wrapComma(primaryKey.getColumnName()) + ")");
-        retList.add(String.format(")ENGINE=%s DEFAULT CHARSET=%s COMMENT '%s';", "InnoDB",
-                "utf8", newTableName));
-        return Joiner.on("\n").join(retList);
-    }
-
-    @Override
-    public boolean isSupportedParam(PsiParameter psiParameter) {
-        //todo need convert to object type.
-        return mysqlTypeProps.get(psiParameter.getType().getCanonicalText()) != null;
-    }
-
-    @Override
-    public QueryInfo buildQueryInfoByMethodNameParsedResult(MethodNameParsedResult result) {
-        return mysqlQueryBuilder.buildQueryInfoByMethodNameParsedResult(result);
-    }
-
-
-    private static String genfieldSql(GenCodeProp field) {
-        StringBuilder ret = new StringBuilder();
-        UnsignedCheckResult result = checkUnsigned(field.getFiledType());
-        ret.append(GenCodeUtil.ONE_RETRACT).append(GenCodeUtil.wrapComma(field.getColumnName()))
-                .append(" ").append(result.getType());
-        if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
-            ret.append(" (" + field.getSize() + ")");
-        }
-        if (result.isUnsigned()) {
-            ret.append(" UNSIGNED");
-        }
-        if (field.getUnique()) {
-            ret.append(" UNIQUE");
-        }
-        if (!field.getCanBeNull()) {
-            ret.append(" NOT NULL");
-        }
-
-        if (!field.getPrimaryKey() && field.getHasDefaultValue() && org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
-            ret.append(" DEFAULT " + field.getDefaultValue());
-        }
-
-        if (field.getPrimaryKey()) {
-            ret.append(" AUTO_INCREMENT");
-        }
-        ret.append(" COMMENT '" + field.getFieldName() + "',");
-        return ret.toString();
-    }
-
-    class MysqlFieldValidator implements FieldValidator {
-        @Override
-        public boolean isValidField(PsiField psiField) {
-            String canonicalText = psiField.getType().getCanonicalText();
-            List<TypeProps> typePropss = mysqlTypeProps.get(canonicalText);
-            if (typePropss != null) {
-                return true;
-            }
-            PsiClass psiClass = PsiTypesUtil.getPsiClass(psiField.getType());
-            if (psiClass != null && psiClass.isEnum()) {
-                return true;
-            }
-            return false;
-        }
-    }
-
-
     public static UnsignedCheckResult checkUnsigned(String chooseType) {
         UnsignedCheckResult result = new UnsignedCheckResult();
         String[] split = chooseType.split("_");
@@ -254,5 +148,9 @@ public class MysqlDatabaseHandler implements DatabaseHandler {
             result.setUnsigned(false);
             return result;
         }
+    }
+
+    public static List<TypeProps> getTypePropsByQulifiType(String type){
+        return mysqlTypeProps.get(type);
     }
 }

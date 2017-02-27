@@ -20,7 +20,7 @@
       <li><p>refactor for mybatis interface method name</p></li>
       <li><p>jump from refid resultMap to their definition, refactor their name as well</li>
       <li><p>mybatis mapper sql auto completion</p></li>
-      <li><p>Support java + MySQL and later will support more DB.</p></li>
+      <li><p>Support java + MySQL and Oracle and later will support more DB.</p></li>
       <li><a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a> to learn more.</li>
       </ul>
       <p>How to use</p>

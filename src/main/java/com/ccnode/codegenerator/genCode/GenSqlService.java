@@ -1,6 +1,6 @@
 package com.ccnode.codegenerator.genCode;
 
-import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.google.common.collect.Lists;
@@ -19,7 +19,7 @@ import java.util.List;
 public class GenSqlService {
 
     public static void generateSqlFile(InsertFileProp prop, List<GenCodeProp> propList, GenCodeProp primaryKey, String tableName) {
-        String sql = DataBaseHandlerFactory.currentHandler().generateSql(propList, primaryKey, tableName);
+        String sql = DatabaseComponenent.currentHandler().getGenerateFileHandler().generateSql(propList, primaryKey, tableName);
         List<String> retList = Lists.newArrayList(sql);
         try {
             String filePath = prop.getFolderPath() + "/" + prop.getName();

@@ -1,6 +1,6 @@
 package com.ccnode.codegenerator.dialog;
 
-import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 
@@ -15,7 +15,7 @@ public class GenCodeDialogUtil {
     static Map<String, List<TypeProps>> extractMap(List<ClassFieldInfo> propFields) {
         Map<String, List<TypeProps>> fieldTypeMap = new HashMap<>();
         for (ClassFieldInfo info : propFields) {
-            fieldTypeMap.put(info.getFieldName(), DataBaseHandlerFactory.currentHandler().getRecommendDatabaseTypeOfFieldType(info.getPsiField()));
+            fieldTypeMap.put(info.getFieldName(), DatabaseComponenent.currentHandler().getGenerateFileHandler().getRecommendDatabaseTypeOfFieldType(info.getPsiField()));
         }
         return fieldTypeMap;
     }

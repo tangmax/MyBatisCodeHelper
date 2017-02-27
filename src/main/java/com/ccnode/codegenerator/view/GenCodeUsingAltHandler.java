@@ -1,7 +1,7 @@
 package com.ccnode.codegenerator.view;
 
 import com.ccnode.codegenerator.database.ClassValidateResult;
-import com.ccnode.codegenerator.database.DataBaseHandlerFactory;
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.GenCodeDialog;
 import com.ccnode.codegenerator.dialog.InsertDialogResult;
 import com.ccnode.codegenerator.pojo.ClassInfo;
@@ -34,7 +34,7 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
             return;
         }
         final PsiClass currentClass = OverrideImplementUtil.getContextClass(project, editor, file, false);
-        ClassValidateResult classValidateResult = DataBaseHandlerFactory.currentHandler().validateCurrentClass(currentClass);
+        ClassValidateResult classValidateResult = DatabaseComponenent.currentHandler().getGenerateFileHandler().validateCurrentClass(currentClass);
         if (!classValidateResult.getValid()) {
             Messages.showErrorDialog(project, classValidateResult.getInvalidMessages(), "validate fail");
             return;

@@ -1,9 +1,8 @@
 package com.ccnode.codegenerator.dialog;
 
-import com.ccnode.codegenerator.database.handler.mysql.MysqlDatabaseHandler;
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
-import com.ccnode.codegenerator.database.handler.mysql.UnsignedCheckResult;
 import com.ccnode.codegenerator.dialog.dto.MapperDto;
 import com.ccnode.codegenerator.dialog.dto.mybatis.*;
 import com.ccnode.codegenerator.enums.MethodName;
@@ -142,45 +141,8 @@ public class UpdateDialogMore extends DialogWrapper {
         if (this.sqlFileRaidio.isSelected()) {
             //generate sql file base on add prop.
             List<String> retList = new ArrayList<>();
-            for (GenCodeProp field : newAddedProps) {
-                StringBuilder ret = new StringBuilder();
-                ret.append("ALTER TABLE " + tableName + "\n\tADD " + field.getColumnName());
-                //todo need remove to mysql handler.
-                UnsignedCheckResult result = MysqlDatabaseHandler.checkUnsigned(field.getFiledType());
-                ret.append(" " + result.getType());
-                if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
-                    ret.append("(" + field.getSize() + ")");
-                }
-                if (result.isUnsigned()) {
-                    ret.append(" UNSIGNED");
-                }
-                if (field.getUnique()) {
-                    ret.append(" UNIQUE");
-                }
-                if (!field.getCanBeNull()) {
-                    ret.append(" NOT NULL");
-                }
-
-                if (field.getHasDefaultValue() && org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
-                    ret.append(" DEFAULT " + field.getDefaultValue());
-                }
-                if (field.getPrimaryKey()) {
-                    ret.append(" AUTO_INCREMENT");
-                }
-                ret.append(" COMMENT '" + field.getFieldName() + "'");
-                if (field.getIndex()) {
-                    ret.append(",\n\tADD INDEX (" + field.getColumnName() + ")");
-                }
-                ret.append(";");
-                retList.add(ret.toString());
-            }
-
-            for (ColumnAndField deletedField : this.deletedFields) {
-                StringBuilder ret = new StringBuilder();
-                ret.append("ALTER TABLE " + tableName + " DROP COLUMN ");
-                ret.append(deletedField.getColumn() + ";");
-                retList.add(ret.toString());
-            }
+            String updateSql = generateUpdateSql(newAddedProps, tableName, this.deletedFields);
+            retList.add(updateSql);
 
             String sqlFileName = sqlNameText.getText().trim();
             String sqlFileFolder = sqlPathText.getText().trim();
@@ -194,6 +156,10 @@ public class UpdateDialogMore extends DialogWrapper {
         VirtualFileManager.getInstance().syncRefresh();
         Messages.showMessageDialog(myProject, "generate files success", "success", Messages.getInformationIcon());
         super.doOKAction();
+    }
+
+    private String generateUpdateSql(List<GenCodeProp> newAddedProps, String tableName, List<ColumnAndField> deletedFields) {
+        return DatabaseComponenent.currentHandler().getUpdateFieldHandler().generateUpdateSql(newAddedProps, tableName, deletedFields);
     }
 
     private static List<ColumnAndField> extractFinalField(List<ColumnAndField> existingFields, List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields) {
