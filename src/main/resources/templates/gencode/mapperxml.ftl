@@ -52,7 +52,7 @@
     </insert>
 
     <!--auto generated Code-->
-    <insert id="insertList"<#if useGeneratedKeys> useGeneratedKeys="true" keyProperty="pojo.${primaryField}"</#if>>
+    <insert id="insertList">
         INSERT INTO ${tableName} (
         <include refid="all_column"/>
         )VALUES

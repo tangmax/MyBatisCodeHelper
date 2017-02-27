@@ -24,7 +24,7 @@ apply plugin: 'java'
 
 intellij {
 //    IC-2016.1  IC-14.1.4 IC-2016.3  IU-2016.1
-    version 'IU-2016.1' //IntelliJ IDEA dependency
+    version 'IC-14.1.4' //IntelliJ IDEA dependency
     plugins 'coverage' //Bundled plugin dependencies
     pluginName 'MyBatisCodeHelper'
     updateSinceUntilBuild false
@@ -39,6 +39,7 @@ dependencies{
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.23'
+    compile "mysql:mysql-connector-java:5.1.40"
     compile group: 'uk.com.robust-it', name: 'cloning', version: '1.9.3'
     testCompile "org.assertj:assertj-core:2.2.0"
 }
