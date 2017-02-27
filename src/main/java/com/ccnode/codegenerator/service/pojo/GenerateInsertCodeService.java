@@ -7,9 +7,9 @@ import com.ccnode.codegenerator.genCode.GenDaoService;
 import com.ccnode.codegenerator.genCode.GenMapperService;
 import com.ccnode.codegenerator.genCode.GenServiceService;
 import com.ccnode.codegenerator.genCode.GenSqlService;
+import com.ccnode.codegenerator.log.Log;
+import com.ccnode.codegenerator.log.LogFactory;
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.concurrent.*;
  */
 public class GenerateInsertCodeService {
 
-    private static Logger logger = LoggerFactory.getLogger(GenerateInsertCodeService.class);
+    private static Log log = LogFactory.getLogger(GenerateInsertCodeService.class);
 
     public static void generateInsert(InsertDialogResult insertDialogResult) {
         Map<InsertFileType, InsertFileProp> fileProps = insertDialogResult.getFileProps();
@@ -39,6 +39,7 @@ public class GenerateInsertCodeService {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } catch (ExecutionException e) {
+                log.error("generate insert file catch exception", e);
                 throw new RuntimeException(e);
             }
         }

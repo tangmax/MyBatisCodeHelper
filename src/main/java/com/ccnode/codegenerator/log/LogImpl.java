@@ -1,7 +1,5 @@
 package com.ccnode.codegenerator.log;
 
-import com.ccnode.codegenerator.log.handler.ErrorHandler;
-import com.ccnode.codegenerator.log.handler.InfoHandler;
 import com.ccnode.codegenerator.log.handler.LoggerHandler;
 
 /**
@@ -15,13 +13,12 @@ public class LogImpl implements Log {
 
     private LoggerHandler chain;
 
-    public LogImpl(String name) {
+    public LogImpl(String name,LoggerHandler chain) {
         this.name = name;
+        this.chain = chain;
     }
 
-    private void buildChain() {
-        chain = new InfoHandler(new ErrorHandler(null));
-    }
+
 
     @Override
     public String getName() {

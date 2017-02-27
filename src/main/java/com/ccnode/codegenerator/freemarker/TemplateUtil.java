@@ -1,12 +1,14 @@
 package com.ccnode.codegenerator.freemarker;
 
+import com.ccnode.codegenerator.log.Log;
+import com.ccnode.codegenerator.log.LogFactory;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Map;
 
 /**
@@ -16,8 +18,7 @@ import java.util.Map;
  */
 public class TemplateUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(TemplateUtil.class);
-
+    private static Log log = LogFactory.getLogger(TemplateUtil.class);
     private static Configuration configuration;
 
 
@@ -40,6 +41,7 @@ public class TemplateUtil {
             template.process(root, out);
             return out.toString();
         } catch (Exception e) {
+            log.error("template process catch exception",e);
             throw new RuntimeException("process freemarker template catch exception", e);
         }
     }
