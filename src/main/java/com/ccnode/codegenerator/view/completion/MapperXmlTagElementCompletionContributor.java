@@ -59,6 +59,38 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
         } else if (name.equals(MyBatisXmlConstants.ID)) {
             //check if is was insert or select or update, solve it from dao interface methodName.
             handleWithMethodNameId(parameters, result, element, attribute, startText);
+        } else if (name.equals(MyBatisXmlConstants.KEY_PROPERTY)) {
+            handleWithKeyPropertyComplete(parameters, result, attribute, startText);
+        }
+    }
+
+    private void handleWithKeyPropertyComplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result, XmlAttribute attribute, String startText) {
+        XmlTag tag = attribute.getParent();
+        if (tag == null) {
+            return;
+        }
+        if (!tag.getName().equals(MyBatisXmlConstants.INSERT) && !tag.getName().equals(MyBatisXmlConstants.UPDATE)) {
+            return;
+        }
+        String tagId = tag.getAttributeValue(MyBatisXmlConstants.ID);
+        if (StringUtils.isBlank(tagId)) {
+            return;
+        }
+        XmlFile xmlFile = (XmlFile) parameters.getOriginalFile();
+        String namespace = MyPsiXmlUtils.findCurrentXmlFileNameSpace(xmlFile);
+        PsiClass namespaceClass = PsiClassUtil.findClassOfQuatifiedType(xmlFile, namespace);
+        if (namespaceClass == null) {
+            return;
+        }
+        PsiMethod findMethod = PsiClassUtil.getClassMethodByMethodName(namespaceClass, tagId);
+        if (findMethod == null) {
+            return;
+        }
+        List<String> lookUpResult = PsiClassUtil.extractMyBatisParam(findMethod);
+        for (String s : lookUpResult) {
+            if (startText.equals("\"") || s.startsWith(startText)) {
+                result.addElement(LookupElementBuilder.create(s));
+            }
         }
     }
 
