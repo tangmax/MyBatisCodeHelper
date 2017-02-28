@@ -141,6 +141,7 @@ public class MapperUtil {
         Map<String, Object> root = Maps.newHashMap();
         root.put("finalFields", finalFields);
         root.put("tableName", tableName);
+        root.put(TemplateConstants.CURRENTDATABASE,DatabaseComponenent.currentDatabase());
         return TemplateUtil.processToString(TemplateConstants.insertListTemplateName, root);
     }
 
