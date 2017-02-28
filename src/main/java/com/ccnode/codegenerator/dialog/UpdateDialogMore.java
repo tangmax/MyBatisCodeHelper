@@ -52,7 +52,7 @@ import java.util.List;
 public class UpdateDialogMore extends DialogWrapper {
 
 
-    private final Set<String> defaultMethodSet = Sets.newHashSet(MethodName.insert.name(), MethodName.insertList.name(), MethodName.update.name());
+    private final Set<String> defaultMethodSet = Sets.newHashSet(MethodName.insert.name(), MethodName.insertList.name(), MethodName.update.name(), MethodName.insertSelective.name());
     public static final String PARAMANNOSTART = "@Param(\"";
     private Project myProject;
 

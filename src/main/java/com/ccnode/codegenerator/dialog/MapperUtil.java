@@ -119,12 +119,16 @@ public class MapperUtil {
         }
         String methodName = classMapperMethod.getMethodName();
         if (methodName.equals(MethodName.insert.name())) {
-            return genAddMethod(finalFields, tableName);
+            return genInsert(finalFields, tableName);
 
         } else if (methodName.equals(MethodName.insertList.name())) {
-            return genAddsMethod(finalFields, tableName);
-        } else if (methodName.equals(MethodName.update.name())) {
-            return genUpdateMethod(finalFields, tableName);
+            return genInsertList(finalFields, tableName);
+        } else if (methodName.equals(MethodName.insertSelective.name())) {
+            return genInsertSelective(finalFields, tableName);
+        } else {
+            if (methodName.equals(MethodName.update.name())) {
+                return genUpdateMethod(finalFields, tableName);
+            }
         }
         return null;
     }
@@ -137,19 +141,34 @@ public class MapperUtil {
         return TemplateUtil.processToString(TemplateConstants.updateTemplateName, root);
     }
 
-    private static String genAddsMethod(List<ColumnAndField> finalFields, String tableName) {
+    private static String genInsertList(List<ColumnAndField> finalFields, String tableName) {
         Map<String, Object> root = Maps.newHashMap();
         root.put("finalFields", finalFields);
         root.put("tableName", tableName);
         return TemplateUtil.processToString(TemplateConstants.insertListTemplateName, root);
     }
 
-    private static String genAddMethod(List<ColumnAndField> finalFields, String tableName) {
+    private static String genInsert(List<ColumnAndField> finalFields, String tableName) {
         Map<String, Object> root = Maps.newHashMap();
         root.put("finalFields", finalFields);
         root.put("tableName", tableName);
         String s = null;
         boolean useTest = false;
+        if (useTest) {
+            s = TemplateUtil.processToString(TemplateConstants.insertTemplateName, root);
+        } else {
+            s = TemplateUtil.processToString(TemplateConstants.insertWithOutTestTemplateName, root);
+        }
+        return s;
+    }
+
+
+    private static String genInsertSelective(List<ColumnAndField> finalFields, String tableName) {
+        Map<String, Object> root = Maps.newHashMap();
+        root.put("finalFields", finalFields);
+        root.put("tableName", tableName);
+        String s = null;
+        boolean useTest = true;
         if (useTest) {
             s = TemplateUtil.processToString(TemplateConstants.insertTemplateName, root);
         } else {
