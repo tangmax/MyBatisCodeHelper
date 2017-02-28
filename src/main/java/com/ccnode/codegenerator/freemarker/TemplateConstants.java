@@ -48,6 +48,9 @@ public class TemplateConstants {
 
     public static final String DAO_NAME = "daoName";
 
+
+    public static final String CURRENTDATABASE = "currentDatabase";
+
     public static final String DAO_FULLTYPE = "daoFullType";
 
 }

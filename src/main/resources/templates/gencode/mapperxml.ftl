@@ -63,6 +63,7 @@
     </insert>
 
     <!--auto generated Code-->
+    <#if currentDatabase=="Mysql">
     <insert id="insertList">
         INSERT INTO ${tableName} (
         <include refid="all_column"/>
@@ -79,6 +80,26 @@
             )
         </foreach>
     </insert>
+    </#if>
+    <#if currentDatabase=="Oracle">
+    <insert id="insertList">
+        INSERT ALL
+        <foreach collection="pojos" item="pojo">
+            INTO ${tableName} (
+            <include refid="all_column"/>
+            )VALUES(
+        <#list fieldAndColumns as fieldAndColumn>
+            <#if fieldAndColumn?is_last>
+            ${r"#"}{pojo.${fieldAndColumn.field}}
+            <#else>
+            ${r"#"}{pojo.${fieldAndColumn.field}},
+            </#if>
+        </#list>
+            )
+        </foreach>
+        select * from dual
+    </insert>
+    </#if>
 
     <!--auto generated Code-->
     <update id="update">

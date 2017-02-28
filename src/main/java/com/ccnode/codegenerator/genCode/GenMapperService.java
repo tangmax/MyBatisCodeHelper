@@ -44,6 +44,7 @@ public class GenMapperService {
         root.put(TemplateConstants.PRIMARY_COLUMN, primaryProp.getColumnName());
         root.put(TemplateConstants.PRIMARY_FIELD, primaryProp.getFieldName());
         root.put(TemplateConstants.TABLE_NAME, tableName);
+        root.put(TemplateConstants.CURRENTDATABASE, DatabaseComponenent.currentDatabase());
         String generateMapperString = TemplateUtil.processToString(TemplateConstants.GENCODE_MAPPERXML, root);
         retList.add(generateMapperString);
         try {
