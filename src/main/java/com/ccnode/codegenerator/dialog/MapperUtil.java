@@ -27,6 +27,7 @@ public class MapperUtil {
 
     @Nullable
     static String generateSql(List<GenCodeProp> newAddedProps, List<ColumnAndField> deleteFields, String sqlText, List<ColumnAndField> existingFields) {
+        sqlText = deleteEndEmptyChar(sqlText);
         String beforeWhere = sqlText;
         //text before where make it on it.
         int start = 0;
@@ -71,16 +72,11 @@ public class MapperUtil {
                 beforeInsert += ",";
             }
         }
-
         String newAddInsert = "";
-
         for (int i = 0; i < newAddedProps.size(); i++) {
-            newAddInsert += ",";
-            newAddInsert += GenCodeUtil.wrapComma(newAddedProps.get(i).getColumnName());
-            newAddInsert += "\n" + GenCodeUtil.TWO_RETRACT;
+            newAddInsert += ",\n" +GenCodeUtil.wrapComma(newAddedProps.get(i).getColumnName());
         }
-
-        String newValueText = sqlText.substring(0, start) + beforeInsert + newAddInsert + sqlText.substring(end);
+        String newValueText = sqlText.substring(0, start) + beforeInsert + newAddInsert + sqlText.substring(end)+"\n";
         return newValueText;
     }
 
@@ -231,5 +227,18 @@ public class MapperUtil {
     public static String extractClassShortName(String fullName) {
         int i = fullName.lastIndexOf(".");
         return fullName.substring(i + 1);
+    }
+
+    public static String deleteEndEmptyChar(String text) {
+        int end = text.length();
+        int useEnd = end - 1;
+        for (int j = end - 1; j >= 0; j--) {
+            char c = text.charAt(j);
+            if (c != '\n' && c != '\t' && c != ' ') {
+                useEnd = j;
+                break;
+            }
+        }
+        return text.substring(0, useEnd + 1);
     }
 }

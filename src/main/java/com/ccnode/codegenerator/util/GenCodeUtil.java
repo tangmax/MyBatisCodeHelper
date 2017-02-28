@@ -1,5 +1,7 @@
 package com.ccnode.codegenerator.util;
 
+import com.ccnode.codegenerator.database.DatabaseComponenent;
+import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -44,8 +46,6 @@ public class GenCodeUtil {
     }
 
 
-
-
     public static String pathToPackage(String path) {
         path = path.replace("/", ".");
         path = path.replace("\\", ".");
@@ -84,7 +84,11 @@ public class GenCodeUtil {
 
 
     public static String wrapComma(String value) {
-        return "`" + value + "`";
+        if (DatabaseComponenent.currentDatabase().equals(DataBaseConstants.MYSQL)) {
+            return "`" + value + "`";
+        } else {
+            return value;
+        }
     }
 
 

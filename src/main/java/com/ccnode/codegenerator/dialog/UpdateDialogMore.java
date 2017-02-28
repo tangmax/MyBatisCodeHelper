@@ -257,7 +257,7 @@ public class UpdateDialogMore extends DialogWrapper {
         //maybe the new prop exist in the xmlTag
 
         for (GenCodeProp prop : newAddedProps) {
-            XmlTag result = resultMap.getTag().createChildTag("result", "", "", false);
+            XmlTag result = resultMap.getTag().createChildTag("result", "", null, false);
             result.setAttribute("column", prop.getColumnName());
             result.setAttribute("property", prop.getFieldName());
             WriteCommandAction.runWriteCommandAction(myProject, () -> {
