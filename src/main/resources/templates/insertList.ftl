@@ -8,7 +8,7 @@
             <#if filedAndColumn?is_last>
             ${r"#"}{pojo.${filedAndColumn.field}}
             <#else>
-            ${r"#"}pojo.${filedAndColumn.field}},
+            ${r"#"}{pojo.${filedAndColumn.field}},
             </#if>
         </#list>
             )

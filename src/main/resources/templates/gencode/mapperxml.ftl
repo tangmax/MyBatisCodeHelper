@@ -21,10 +21,21 @@
 
     <!--auto generated Code-->
     <insert id="insert"<#if useGeneratedKeys> useGeneratedKeys="true" keyProperty="pojo.${primaryField}"</#if>>
-        INSERT INTO ${tableName}
-        (<#list fieldAndColumns as fieldAndColumn><#if fieldAndColumn?is_last>${fieldAndColumn.formattedColumn}<#else>${fieldAndColumn.formattedColumn},</#if></#list>)
-        VALUES
-        (<#list fieldAndColumns as fieldAndColumn><#if fieldAndColumn?is_last>${r"#"}{pojo.${fieldAndColumn.field}}<#else>${r"#"}{pojo.${fieldAndColumn.field}},</#if></#list>)
+        INSERT INTO ${tableName} (
+    <#list fieldAndColumns as fieldAndColumn>
+        <#if fieldAndColumn?is_last>
+            ${fieldAndColumn.formattedColumn}
+        <#else>
+            ${fieldAndColumn.formattedColumn},
+        </#if></#list>
+        ) VALUES (
+    <#list fieldAndColumns as fieldAndColumn>
+        <#if fieldAndColumn?is_last>
+            ${r"#"}{pojo.${fieldAndColumn.field}}
+        <#else>
+            ${r"#"}{pojo.${fieldAndColumn.field}},
+        </#if></#list>
+        )
     </insert>
 
     <!--auto generated Code-->
@@ -33,9 +44,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
         <#list fieldAndColumns as filedAndColumn>
             <#if filedAndColumn?is_last>
-                <if test="pojo.${filedAndColumn.field}!=null"> ${filedAndColumn.formattedColumn}</if>
+            <if test="pojo.${filedAndColumn.field}!=null"> ${filedAndColumn.formattedColumn}</if>
             <#else>
-                <if test="pojo.${filedAndColumn.field}!=null"> ${filedAndColumn.formattedColumn},</if>
+            <if test="pojo.${filedAndColumn.field}!=null"> ${filedAndColumn.formattedColumn},</if>
             </#if>
         </#list>
         </trim>

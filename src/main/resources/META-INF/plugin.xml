@@ -8,8 +8,28 @@
       <div>
       <p><a href="https://github.com/gejun123456/MyBatisCodeHelper">GitHub</a>
       |&nbsp<a href="https://github.com/gejun123456/MyBatisCodeHelper/issues">Issues</a></p>
-
+      <p>特性</p>
+      <ul>
+      <li>支持mysql和oracle</li>
+      <li><p>根据数据库对象生成mybatis crud代码和建表sql</p></li>
+      <li><p><b>根据mybatis接口中的方法名生成mybatis的sql
+            支持find,update,delete,count方法 只需定义一个方法名就可以得到完整mybatis xml代码 可生成大部分单表操作sql 极大提升效率</b></p></li>
+      <li><p>mybatis接口文件的mapper xml之间的相互跳转</p></li>
+      <li><p>数据库对象更新后一键更新对应的Sql和mybatis xml文件</p></li>
+      <li><p>默认提供insert，insertSelective，insertList，update。因为delete可以由方法名生成 默认不提供</p></li>
+      <li><p>提供mybatis接口方法名的重构</p></li>
+      <li>refid, resultMap跳转到到定义，支持重命名</li>
+      <li>refid,resultMap,keyProperty,property的自动补全</li>
+      <li><p>mybatis mapper xml文件sql的自动补全</p></li>
       </ul>
+      <p>使用方法</p>
+      <ul>
+      <li><p>在数据库对象上使用alt+insert (generate mybatis files)来生成crud代码和建表sql(mac上使用ctrl+N)</p></li>
+      <li><p>数据库对象添加字段后使用alt+insert (generate mybatis files) 来生成更新sql,mapper xml中的字段</p></li>
+      <li><p>在mybatis接口的方法名上使用alt+enter来生成对应的mapper sql</p></li>
+      <li><p>详细配置: <a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a></p></li>
+      </ul>
+
       <p>Features</p>
       <ul>
       <li>Generate mybatis crud and create table sql according to domain class</li>
@@ -20,6 +40,7 @@
       <li><p>refactor for mybatis interface method name</p></li>
       <li><p>jump from refid resultMap to their definition, refactor their name as well</li>
       <li><p>mybatis mapper sql auto completion</p></li>
+      <li>refid,resultMap,keyProperty,property auto complete</li>
       <li><p>Support java + MySQL and Oracle and later will support more DB.</p></li>
       <li><a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a> to learn more.</li>
       </ul>
@@ -31,25 +52,7 @@
       <li>view more on <a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a></li>
       </ul>
 
-      <p>特性</p>
-      <ul>
-      <li><p>根据数据库对象生成mybatis crud代码和建表sql</p></li>
-      <li><p>根据mybatis接口中的方法名生成mybatis的sql
-            支持find,update,delete,count方法 只需定义一个方法名就可以得到完整mybatis xml代码 可生成大部分单表操作sql 极大提升效率</p></li>
-      <li><p>mybatis接口文件的mapper xml之间的相互跳转</p></li>
-      <li><p>数据库对象更新后一键更新对应的Sql和mybatis xml文件</p></li>
-      <li><p>默认提供insert，insertSelective，insertList，update。因为delete可以由方法名生成 默认不提供</p></li>
-      <li><p>提供mybatis接口方法名的重构</p></li>
-      <li>refid, resultMap跳转到到定义，支持重命名</li>
-      <li><p>mybatis mapper xml文件sql的自动补全</p></li>
-      </ul>
-      <p>使用方法</p>
-      <ul>
-      <li><p>在数据库对象上使用alt+insert (generate mybatis files)来生成crud代码和建表sql(mac上使用ctrl+N)</p></li>
-      <li><p>数据库对象添加字段后使用alt+insert (generate mybatis files) 来生成更新sql,mapper xml中的字段</p></li>
-      <li><p>在mybatis接口的方法名上使用alt+enter来生成对应的mapper sql</p></li>
-      <li><p>详细配置: <a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a></p></li>
-      </ul>
+
       </div>
     ]]></description>
 
