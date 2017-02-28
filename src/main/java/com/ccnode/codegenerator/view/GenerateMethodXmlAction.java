@@ -2,6 +2,7 @@ package com.ccnode.codegenerator.view;
 
 import com.ccnode.codegenerator.constants.MapperConstants;
 import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.ChooseXmlToUseDialog;
 import com.ccnode.codegenerator.dialog.GenerateResultMapDialog;
 import com.ccnode.codegenerator.dialog.MapperUtil;
@@ -323,7 +324,8 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         PsiDocumentUtils.addImportToFile(psiDocumentManager, (PsiJavaFile) srcClass.getContainingFile(), psiDocumentManager.getDocument(srcClass.getContainingFile()), importList);
         CodeInsightUtil.positionCursor(project, psixml, rootTag.getSubTags()[rootTag.getSubTags().length - 1]);
         long elapsed = started.elapsed(TimeUnit.MILLISECONDS);
-        log.info("generate dao xml use with time in mill second is:" + elapsed + " and the method name is:" + methodInfo.getMethodName());
+        log.info("generate dao xml use with time in mill second is:" + elapsed + " and the method name is:" + methodInfo.getMethodName()
+                + "the user database is:" + DatabaseComponenent.currentDatabase());
     }
 
     private FieldToColumnRelation convertToRelation(FieldToColumnRelation relation1) {
