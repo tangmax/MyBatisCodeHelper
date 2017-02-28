@@ -4,10 +4,10 @@ import com.ccnode.codegenerator.constants.MapperConstants;
 import com.ccnode.codegenerator.database.handler.BaseQueryBuilder;
 import com.ccnode.codegenerator.database.handler.GenerateMethodXmlHandler;
 import com.ccnode.codegenerator.database.handler.QueryBuilderHandler;
-import com.ccnode.codegenerator.nextgenerationparser.buidler.MethodNameParsedResult;
-import com.ccnode.codegenerator.nextgenerationparser.buidler.QueryInfo;
-import com.ccnode.codegenerator.nextgenerationparser.parsedresult.find.OrderByRule;
-import com.ccnode.codegenerator.nextgenerationparser.parsedresult.find.ParsedFind;
+import com.ccnode.codegenerator.methodnameparser.buidler.MethodNameParsedResult;
+import com.ccnode.codegenerator.methodnameparser.buidler.QueryInfo;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.find.OrderByRule;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFind;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 

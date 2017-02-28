@@ -2,8 +2,8 @@ package com.ccnode.codegenerator.database.handler.oracle;
 
 import com.ccnode.codegenerator.database.handler.BaseQueryBuilder;
 import com.ccnode.codegenerator.database.handler.GenerateMethodXmlHandler;
-import com.ccnode.codegenerator.nextgenerationparser.buidler.MethodNameParsedResult;
-import com.ccnode.codegenerator.nextgenerationparser.buidler.QueryInfo;
+import com.ccnode.codegenerator.methodnameparser.buidler.MethodNameParsedResult;
+import com.ccnode.codegenerator.methodnameparser.buidler.QueryInfo;
 
 /**
  * @Author bruce.ge

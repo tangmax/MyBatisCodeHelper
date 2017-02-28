@@ -39,6 +39,8 @@ public class MyBatisXmlConstants {
 
     public static final String COLUMN = "column";
 
+    public static final String KEY_PROPERTY = "keyProperty";
+
     public static final String RESULT = "result";
 
     public static final String TEST = "test";

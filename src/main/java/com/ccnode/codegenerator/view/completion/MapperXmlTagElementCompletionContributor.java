@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
-import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -34,9 +33,6 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
 
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
-        if (parameters.getCompletionType() != CompletionType.BASIC) {
-            return;
-        }
         PsiElement element = parameters.getPosition();
         PsiElement parent = element.getParent();
         if (parent == null || !(parent instanceof XmlAttributeValue)) {
@@ -96,7 +92,6 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
         if (classOfQuatifiedType == null) {
             return;
         }
-
         String interfaceMethodName = MyPsiXmlUtils.findCurrentElementIntefaceMethodName(element);
         if (StringUtils.isBlank(interfaceMethodName)) {
             return;
@@ -158,19 +153,18 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
         if (StringUtils.isBlank(namespace)) {
             return;
         }
-
         PsiClass classOfQuatifiedType = PsiClassUtil.findClassOfQuatifiedType(element, namespace);
         if (classOfQuatifiedType == null || !(classOfQuatifiedType.isInterface())) {
             return;
         }
 
-        PsiMethod[] allMethods = classOfQuatifiedType.getAllMethods();
+        PsiMethod[] allMethods = classOfQuatifiedType.getMethods();
         List<String> methodNames = Lists.newArrayList();
         for (PsiMethod allMethod : allMethods) {
             methodNames.add(allMethod.getName());
         }
         for (String methodName : methodNames) {
-            if (methodName.startsWith(startText)) {
+            if (startText.equals("\"") || methodName.startsWith(startText)) {
                 result.addElement(LookupElementBuilder.create(methodName));
             }
         }
@@ -206,7 +200,7 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
         }
 
         for (String resultMapId : reslutMapIds) {
-            if (resultMapId.startsWith(startText)) {
+            if (startText.equals("\"") || resultMapId.startsWith(startText)) {
                 result.addElement(LookupElementBuilder.create(resultMapId));
             }
         }
@@ -242,7 +236,7 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
         }
 
         for (String sql : sqls) {
-            if (sql.startsWith(startText)) {
+            if (startText.equals("\"") || sql.startsWith(startText)) {
                 result.addElement(LookupElementBuilder.create(sql));
             }
         }
@@ -274,7 +268,7 @@ public class MapperXmlTagElementCompletionContributor extends CompletionContribu
         List<String> props =
                 PsiClassUtil.extractProps(findedClass);
         for (String prop : props) {
-            if (prop.startsWith(startText)) {
+            if (startText.equals("\"") || prop.startsWith(startText)) {
                 result.addElement(LookupElementBuilder.create(prop));
             }
         }

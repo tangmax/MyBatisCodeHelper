@@ -13,7 +13,10 @@ import com.intellij.psi.util.PsiTypesUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by bruce.ge on 2016/12/9.
@@ -189,6 +192,20 @@ public class PsiClassUtil {
             }
         }
         return null;
+    }
+
+
+    @Nullable
+    public static PsiClass findClassOfQuatifiedTypeUsingType(@NotNull PsiElement element, @NotNull String resultTypeValue) {
+
+        Module moduleForPsiElement =
+                ModuleUtilCore.findModuleForPsiElement(element);
+        if (moduleForPsiElement == null) {
+            return null;
+        }
+        PsiClassType typeByName = PsiType.getTypeByName(resultTypeValue, element.getProject(), GlobalSearchScope.moduleScope(moduleForPsiElement));
+        PsiClass psiClass = PsiTypesUtil.getPsiClass(typeByName);
+        return psiClass;
     }
 
     @Nullable

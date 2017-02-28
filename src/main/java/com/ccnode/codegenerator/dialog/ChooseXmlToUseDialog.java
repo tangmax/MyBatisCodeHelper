@@ -1,6 +1,6 @@
 package com.ccnode.codegenerator.dialog;
 
-import com.ccnode.codegenerator.nextgenerationparser.tag.XmlTagAndInfo;
+import com.ccnode.codegenerator.methodnameparser.tag.XmlTagAndInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;

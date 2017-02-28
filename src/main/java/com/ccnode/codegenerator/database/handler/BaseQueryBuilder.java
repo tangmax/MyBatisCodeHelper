@@ -1,15 +1,15 @@
 package com.ccnode.codegenerator.database.handler;
 
 import com.ccnode.codegenerator.constants.QueryTypeConstants;
-import com.ccnode.codegenerator.nextgenerationparser.KeyWordConstants;
-import com.ccnode.codegenerator.nextgenerationparser.buidler.MethodNameParsedResult;
-import com.ccnode.codegenerator.nextgenerationparser.buidler.ParamInfo;
-import com.ccnode.codegenerator.nextgenerationparser.buidler.QueryInfo;
-import com.ccnode.codegenerator.nextgenerationparser.parsedresult.base.QueryRule;
-import com.ccnode.codegenerator.nextgenerationparser.parsedresult.count.ParsedCount;
-import com.ccnode.codegenerator.nextgenerationparser.parsedresult.delete.ParsedDelete;
-import com.ccnode.codegenerator.nextgenerationparser.parsedresult.find.ParsedFind;
-import com.ccnode.codegenerator.nextgenerationparser.parsedresult.update.ParsedUpdate;
+import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
+import com.ccnode.codegenerator.methodnameparser.buidler.MethodNameParsedResult;
+import com.ccnode.codegenerator.methodnameparser.buidler.ParamInfo;
+import com.ccnode.codegenerator.methodnameparser.buidler.QueryInfo;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.base.QueryRule;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.count.ParsedCount;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.delete.ParsedDelete;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFind;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.update.ParsedUpdate;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 
