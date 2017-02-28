@@ -83,15 +83,6 @@ public class GenCodeUtil {
     }
 
 
-    public static String wrapComma(String value) {
-        if (DatabaseComponenent.currentDatabase().equals(DataBaseConstants.MYSQL)) {
-            return "`" + value + "`";
-        } else {
-            return value;
-        }
-    }
-
-
     public static String getUnderScore(String value) {
         if (value == null) {
             return StringUtils.EMPTY;

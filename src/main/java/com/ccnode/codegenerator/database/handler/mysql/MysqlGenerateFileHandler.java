@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.database.handler.mysql;
 
 import com.ccnode.codegenerator.database.ClassValidateResult;
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.database.handler.FieldValidator;
 import com.ccnode.codegenerator.database.handler.GenerateFileHandler;
 import com.ccnode.codegenerator.database.handler.HandlerValidator;
@@ -57,7 +58,7 @@ public class MysqlGenerateFileHandler implements GenerateFileHandler {
     @Override
     public String generateSql(List<GenCodeProp> propList, GenCodeProp primaryKey, String tableName) {
         List<String> retList = Lists.newArrayList();
-        String newTableName = GenCodeUtil.wrapComma(tableName);
+        String newTableName = DatabaseComponenent.formatColumn(tableName);
         retList.add(String.format("-- auto Generated on %s ", DateUtil.formatLong(new Date())));
         retList.add("-- DROP TABLE IF EXISTS " + newTableName + "; ");
         retList.add("CREATE TABLE " + newTableName + "(");
@@ -71,7 +72,7 @@ public class MysqlGenerateFileHandler implements GenerateFileHandler {
         }
         retList.addAll(indexText);
         // TODO: 2016/12/26 InnoDb and utf8 can be later configured
-        retList.add(GenCodeUtil.ONE_RETRACT + "PRIMARY KEY (" + GenCodeUtil.wrapComma(primaryKey.getColumnName()) + ")");
+        retList.add(GenCodeUtil.ONE_RETRACT + "PRIMARY KEY (" + DatabaseComponenent.formatColumn(primaryKey.getColumnName()) + ")");
         retList.add(String.format(")ENGINE=%s DEFAULT CHARSET=%s COMMENT '%s';", "InnoDB",
                 "utf8", newTableName));
         return Joiner.on("\n").join(retList);
@@ -80,7 +81,7 @@ public class MysqlGenerateFileHandler implements GenerateFileHandler {
     private static String genfieldSql(GenCodeProp field) {
         StringBuilder ret = new StringBuilder();
         UnsignedCheckResult result = MysqlHandlerUtils.checkUnsigned(field.getFiledType());
-        ret.append(GenCodeUtil.ONE_RETRACT).append(GenCodeUtil.wrapComma(field.getColumnName()))
+        ret.append(GenCodeUtil.ONE_RETRACT).append(DatabaseComponenent.formatColumn(field.getColumnName()))
                 .append(" ").append(result.getType());
         if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
             ret.append(" (" + field.getSize() + ")");

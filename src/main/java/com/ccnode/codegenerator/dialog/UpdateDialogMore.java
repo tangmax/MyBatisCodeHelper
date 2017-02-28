@@ -180,7 +180,7 @@ public class UpdateDialogMore extends DialogWrapper {
         }
         for (GenCodeProp newAddedProp : newAddedProps) {
             ColumnAndField e = new ColumnAndField();
-            e.setColumn(newAddedProp.getColumnName());
+            e.setColumn(DatabaseComponenent.formatColumn(newAddedProp.getColumnName()));
             e.setField(newAddedProp.getFieldName());
             finalFields.add(e);
         }

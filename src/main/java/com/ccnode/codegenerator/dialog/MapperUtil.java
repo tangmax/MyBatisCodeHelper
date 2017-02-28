@@ -1,12 +1,12 @@
 package com.ccnode.codegenerator.dialog;
 
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ClassMapperMethod;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
 import com.ccnode.codegenerator.dialog.dto.mybatis.MapperMethodEnum;
 import com.ccnode.codegenerator.enums.MethodName;
 import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
-import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.view.GenerateMethodXmlAction;
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.Nullable;
@@ -74,9 +74,9 @@ public class MapperUtil {
         }
         String newAddInsert = "";
         for (int i = 0; i < newAddedProps.size(); i++) {
-            newAddInsert += ",\n" +GenCodeUtil.wrapComma(newAddedProps.get(i).getColumnName());
+            newAddInsert += ",\n" + DatabaseComponenent.formatColumn(newAddedProps.get(i).getColumnName());
         }
-        String newValueText = sqlText.substring(0, start) + beforeInsert + newAddInsert + sqlText.substring(end)+"\n";
+        String newValueText = sqlText.substring(0, start) + beforeInsert + newAddInsert + sqlText.substring(end) + "\n";
         return newValueText;
     }
 
