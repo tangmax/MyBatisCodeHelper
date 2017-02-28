@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.service.pojo;
 
+import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.InsertDialogResult;
 import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.dialog.InsertFileType;
@@ -9,6 +10,7 @@ import com.ccnode.codegenerator.genCode.GenServiceService;
 import com.ccnode.codegenerator.genCode.GenSqlService;
 import com.ccnode.codegenerator.log.Log;
 import com.ccnode.codegenerator.log.LogFactory;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class GenerateInsertCodeService {
     private static Log log = LogFactory.getLogger(GenerateInsertCodeService.class);
 
     public static void generateInsert(InsertDialogResult insertDialogResult) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
         Map<InsertFileType, InsertFileProp> fileProps = insertDialogResult.getFileProps();
         ExecutorService executorService = Executors.newFixedThreadPool(fileProps.size());
         List<Future> futures = Lists.newArrayList();
@@ -43,6 +46,7 @@ public class GenerateInsertCodeService {
                 throw new RuntimeException(e);
             }
         }
+        log.info("generate files cost in milli seconds:" + stopwatch.elapsed(TimeUnit.MILLISECONDS) + " the use db is:" + DatabaseComponenent.currentDatabase());
         executorService.shutdown();
     }
 

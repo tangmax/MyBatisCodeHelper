@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.log.handler;
 
+import com.ccnode.codegenerator.common.VersionManager;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -23,6 +24,7 @@ public class MessageBuilder {
                 throwable = throwable.getCause();
             }
         }
+        builder.append(" the currentVersion are:" + VersionManager.getCurrentVersion());
         return builder.toString();
     }
 }
