@@ -125,13 +125,13 @@ public class UpdateDialogMore extends DialogWrapper {
         });
 
 
-        List<ColumnAndField> finalFields = extractFinalField(existingFields, newAddedProps, deletedFields);
+        List<ColumnAndField> finalDisplayFieldAndFormatedColumn = extractFinalField(existingFields, newAddedProps, deletedFields);
 
         String tableName = extractTableName();
 
         this.jcheckWithMapperMethods.forEach((item) -> {
             if (item.getjCheckBox().isSelected()) {
-                handleWithMapperMethod(finalFields, tableName, item.getMapperMethod(), item.getClassMapperMethod(), manager);
+                handleWithMapperMethod(finalDisplayFieldAndFormatedColumn, tableName, item.getMapperMethod(), item.getClassMapperMethod(), manager);
                 PsiDocumentUtils.commitAndSaveDocument(manager, manager.getDocument(myXmlFile));
             }
         });
@@ -180,9 +180,12 @@ public class UpdateDialogMore extends DialogWrapper {
         }
         for (GenCodeProp newAddedProp : newAddedProps) {
             ColumnAndField e = new ColumnAndField();
-            e.setColumn(DatabaseComponenent.formatColumn(newAddedProp.getColumnName()));
+            e.setColumn(newAddedProp.getColumnName());
             e.setField(newAddedProp.getFieldName());
             finalFields.add(e);
+        }
+        for (ColumnAndField finalField : finalFields) {
+            finalField.setColumn(DatabaseComponenent.formatColumn(finalField.getColumn()));
         }
         return finalFields;
     }
