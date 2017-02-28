@@ -1,10 +1,7 @@
 package com.ccnode.codegenerator.log.handler;
 
 import com.google.gson.Gson;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import okhttp3.*;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -35,11 +32,13 @@ public class HttpClient {
                     .url(url)
                     .post(body)
                     .build();
+            Response response = null;
             try {
-                client.newCall(request).execute();
+                response = client.newCall(request).execute();
             } catch (IOException e) {
                 //ignore
-                e.printStackTrace();
+            }finally {
+                response.close();
             }
         });
     }

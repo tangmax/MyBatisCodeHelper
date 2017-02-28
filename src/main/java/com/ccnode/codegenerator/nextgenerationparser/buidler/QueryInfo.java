@@ -2,6 +2,7 @@ package com.ccnode.codegenerator.nextgenerationparser.buidler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by bruce.ge on 2016/12/12.
@@ -21,15 +22,14 @@ public class QueryInfo {
 
     private String type;
 
-    private List<String> importPackages;
+    private Set<String> importList;
 
-
-    public List<String> getImportPackages() {
-        return importPackages;
+    public Set<String> getImportList() {
+        return importList;
     }
 
-    public void setImportPackages(List<String> importPackages) {
-        this.importPackages = importPackages;
+    public void setImportList(Set<String> importList) {
+        this.importList = importList;
     }
 
     public String getType() {

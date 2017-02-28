@@ -83,6 +83,9 @@ public class PsiClassUtil {
             if (parameters.length == 1) {
                 PsiType type = parameters[0].getType();
                 PsiClass psiClass = PsiTypesUtil.getPsiClass(type);
+                if (psiClass == null) {
+                    return null;
+                }
                 PsiField[] allFields = psiClass.getAllFields();
                 //// TODO: 2016/12/15 maybe need check if exist id property.
                 if (allFields != null && allFields.length > 0) {

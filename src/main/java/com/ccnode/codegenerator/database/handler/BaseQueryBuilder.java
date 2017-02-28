@@ -14,6 +14,7 @@ import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -49,16 +50,18 @@ public class BaseQueryBuilder implements QueryBuilder {
     }
 
     private QueryInfo buildWithCount(MethodNameParsedResult result) {
+        QueryInfo info = new QueryInfo();
+        info.setImportList(new HashSet<>());
         ParsedCount count = result.getParsedCount();
         Map<String, String> fieldMap = result.getFieldMap();
         FieldToColumnRelation relation = result.getRelation();
         String tableName = result.getTableName();
-        QueryInfo info = new QueryInfo();
         info.setType(QueryTypeConstants.SELECT);
         String idType = fieldMap.get("id");
         if (idType != null) {
             info.setReturnClass(idType);
             String returnType = extractLast(idType);
+            info.getImportList().add(idType);
             info.setMethodReturnType(returnType);
         } else {
             info.setReturnClass("java.lang.Integer");
@@ -99,12 +102,14 @@ public class BaseQueryBuilder implements QueryBuilder {
     }
 
     private QueryInfo buildWithDelete(MethodNameParsedResult result) {
+        QueryInfo info = new QueryInfo();
+        info.setImportList(new HashSet<>());
         ParsedDelete delete =
                 result.getParsedDelete();
         String tableName = result.getTableName();
         FieldToColumnRelation relation = result.getRelation();
         Map<String, String> fieldMap = result.getFieldMap();
-        QueryInfo info = new QueryInfo();
+
         info.setType(QueryTypeConstants.DELETE);
         info.setMethodReturnType("int");
         StringBuilder builder = new StringBuilder();
@@ -118,11 +123,12 @@ public class BaseQueryBuilder implements QueryBuilder {
     }
 
     private QueryInfo buildWithUpdate(MethodNameParsedResult result) {
+        QueryInfo info = new QueryInfo();
+        info.setImportList(new HashSet<>());
         ParsedUpdate update = result.getParsedUpdate();
         String tableName = result.getTableName();
         Map<String, String> fieldMap = result.getFieldMap();
         FieldToColumnRelation relation = result.getRelation();
-        QueryInfo info = new QueryInfo();
         info.setType(QueryTypeConstants.UPDATE);
         info.setMethodReturnType("int");
         StringBuilder builder = new StringBuilder();
@@ -163,49 +169,52 @@ public class BaseQueryBuilder implements QueryBuilder {
             String operator = rule.getOperator();
             String connector = rule.getConnector();
             String propColumn = relation.getPropColumn(prop);
+            String paramQualtifyType = fieldMap.get(prop);
+            info.getImportList().add(paramQualtifyType);
+            String paramShortType = extractLast(paramQualtifyType);
             if (operator == null) {
-                ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop).withParamType(extractLast(fieldMap.get(prop))).withParamValue(prop).build();
+                ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop).withParamType(paramShortType).withParamValue(prop).build();
                 info.getParamInfos().add(paramInfo);
                 builder.append(" " + propColumn + "=#{" + paramInfo.getParamAnno() + "}");
             } else {
                 switch (operator) {
                     case KeyWordConstants.GREATERTHAN: {
-                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("min" + firstCharUpper(prop)).build();
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("min" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + cdata(">") + " #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
 
                     case KeyWordConstants.GREATERTHANOREQUALTO: {
-                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("min" + firstCharUpper(prop)).build();
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("min" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + cdata(">=") + " #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
                     case KeyWordConstants.LESSTHAN: {
-                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("max" + firstCharUpper(prop)).build();
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + cdata("<") + " #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
 
                     case KeyWordConstants.LESSTHANOREQUALTO: {
-                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("max" + firstCharUpper(prop)).build();
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + cdata("<=") + " #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
                     case KeyWordConstants.BETWEEN: {
-                        ParamInfo min = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("min" + firstCharUpper(prop)).build();
-                        ParamInfo max = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("max" + firstCharUpper(prop)).build();
+                        ParamInfo min = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("min" + firstCharUpper(prop)).build();
+                        ParamInfo max = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(min);
                         info.getParamInfos().add(max);
                         builder.append(" " + propColumn + cdata(">") + " #{" + min.getParamAnno() + "} and " + propColumn + " " + cdata("<") + " #{" + (max.getParamAnno()) + "}");
                         break;
                     }
                     case KeyWordConstants.BETWEENOREQUALTO: {
-                        ParamInfo min = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("min" + firstCharUpper(prop)).build();
-                        ParamInfo max = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("max" + firstCharUpper(prop)).build();
+                        ParamInfo min = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("min" + firstCharUpper(prop)).build();
+                        ParamInfo max = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(min);
                         info.getParamInfos().add(max);
                         builder.append(" " + propColumn + cdata(">=") + " #{" + min.getParamAnno() + "} and " + propColumn + " " + cdata("<=") + " #{" + (max.getParamAnno()) + "}");
@@ -221,13 +230,13 @@ public class BaseQueryBuilder implements QueryBuilder {
                         break;
                     }
                     case KeyWordConstants.NOT: {
-                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("not" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("not" + firstCharUpper(prop)).build();
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("not" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("not" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + "<> #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
                     case KeyWordConstants.NOTIN: {
-                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop + "List").withParamType("List<" + extractLast(fieldMap.get(prop)) + ">").withParamValue(prop + "List").build();
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop + "List").withParamType("List<" + paramShortType + ">").withParamValue(prop + "List").build();
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + " not in \n" + GenCodeUtil.ONE_RETRACT + "<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n" + GenCodeUtil.ONE_RETRACT + "" +
                                 "open=\"(\" separator=\",\" close=\")\">\n" + GenCodeUtil.ONE_RETRACT + "" +
@@ -236,7 +245,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                         break;
                     }
                     case KeyWordConstants.IN: {
-                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop + "List").withParamType("List<" + extractLast(fieldMap.get(prop)) + ">").withParamValue(prop + "List").build();
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop + "List").withParamType("List<" + paramShortType + ">").withParamValue(prop + "List").build();
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + " in \n" + GenCodeUtil.ONE_RETRACT + "<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n" + GenCodeUtil.ONE_RETRACT + "" +
                                 "open=\"(\" separator=\",\" close=\")\">\n" + GenCodeUtil.ONE_RETRACT + "" +
@@ -245,13 +254,13 @@ public class BaseQueryBuilder implements QueryBuilder {
                         break;
                     }
                     case KeyWordConstants.NOTLIKE: {
-                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("notlike" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("notlike" + firstCharUpper(prop)).build();
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("notlike" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("notlike" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + "not like #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
                     case KeyWordConstants.LIKE: {
-                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("like" + firstCharUpper(prop)).withParamType(extractLast(fieldMap.get(prop))).withParamValue("like" + firstCharUpper(prop)).build();
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("like" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("like" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + "like #{" + paramInfo.getParamAnno() + "}");
                         break;
@@ -267,6 +276,7 @@ public class BaseQueryBuilder implements QueryBuilder {
 
     private QueryInfo buildWithFind(MethodNameParsedResult result) {
         QueryInfo info = new QueryInfo();
+        info.setImportList(new HashSet<>());
         ParsedFind find = result.getParsedFind();
         FieldToColumnRelation relation = result.getRelation();
         Map<String, String> fieldMap = result.getFieldMap();
@@ -279,7 +289,8 @@ public class BaseQueryBuilder implements QueryBuilder {
             } else {
                 //说明等于1
                 String s = find.getFetchProps().get(0);
-                info.setReturnClass(fieldMap.get(s));
+                String returnClass = fieldMap.get(s);
+                info.setReturnClass(returnClass);
             }
         } else {
             queryAllTable = true;
@@ -308,6 +319,7 @@ public class BaseQueryBuilder implements QueryBuilder {
         } else {
             info.setMethodReturnType(extractLast(info.getReturnClass()));
         }
+        info.getImportList().add(info.getReturnClass());
         queryBuilderHandler.handleFindBeforeFromTable(info, result, queryAllTable);
         info.setSql(info.getSql() + "\n" + GenCodeUtil.ONE_RETRACT + " from " + result.getTableName());
         queryBuilderHandler.handleFindAfterFromTable(info, result);
