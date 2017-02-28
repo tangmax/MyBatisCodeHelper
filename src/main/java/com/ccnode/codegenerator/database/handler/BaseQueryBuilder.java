@@ -109,7 +109,6 @@ public class BaseQueryBuilder implements QueryBuilder {
         String tableName = result.getTableName();
         FieldToColumnRelation relation = result.getRelation();
         Map<String, String> fieldMap = result.getFieldMap();
-
         info.setType(QueryTypeConstants.DELETE);
         info.setMethodReturnType("int");
         StringBuilder builder = new StringBuilder();
@@ -239,6 +238,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                     }
                     case KeyWordConstants.NOTIN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop + "List").withParamType("List<" + paramShortType + ">").withParamValue(prop + "List").build();
+                        info.getImportList().add("java.util.List");
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + " not in \n" + GenCodeUtil.ONE_RETRACT + "<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n" + GenCodeUtil.ONE_RETRACT + "" +
                                 "open=\"(\" separator=\",\" close=\")\">\n" + GenCodeUtil.ONE_RETRACT + "" +
@@ -248,6 +248,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                     }
                     case KeyWordConstants.IN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop + "List").withParamType("List<" + paramShortType + ">").withParamValue(prop + "List").build();
+                        info.getImportList().add("java.util.List");
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + " in \n" + GenCodeUtil.ONE_RETRACT + "<foreach item=\"item\" index=\"index\" collection=\"" + paramInfo.getParamAnno() + "\"\n" + GenCodeUtil.ONE_RETRACT + "" +
                                 "open=\"(\" separator=\",\" close=\")\">\n" + GenCodeUtil.ONE_RETRACT + "" +
@@ -318,6 +319,7 @@ public class BaseQueryBuilder implements QueryBuilder {
         }
         if (returnList) {
             info.setMethodReturnType("List<" + extractLast(info.getReturnClass()) + ">");
+            info.getImportList().add("java.util.List");
         } else {
             info.setMethodReturnType(extractLast(info.getReturnClass()));
         }
