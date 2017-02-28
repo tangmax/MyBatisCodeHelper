@@ -136,8 +136,10 @@ public class BaseQueryBuilder implements QueryBuilder {
         info.setParamInfos(new ArrayList<>());
         for (int i = 0; i < update.getUpdateProps().size(); i++) {
             String prop = update.getUpdateProps().get(i);
+            String updateQualifyType = fieldMap.get(prop);
+            info.getImportList().add(updateQualifyType);
             ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("updated" + firstCharUpper(prop)).
-                    withParamType(extractLast(fieldMap.get(prop))).withParamValue("updated" + firstCharUpper(prop)).build();
+                    withParamType(extractLast(updateQualifyType)).withParamValue("updated" + firstCharUpper(prop)).build();
             info.getParamInfos().add(paramInfo);
             builder.append(" " + relation.getPropColumn(prop) + "=#{" + paramInfo.getParamAnno() + "}");
             if (i != update.getUpdateProps().size() - 1) {
