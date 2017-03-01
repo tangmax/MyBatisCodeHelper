@@ -67,8 +67,7 @@
         <foreach collection="pojos" item="pojo" index="index" separator=",">
             (
             <#list fieldAndColumns as fieldAndColumn>
-            ${r"#"}{pojo.${fieldAndColumn.field}}
-                <#if !fieldAndColumn?is_last>,</#if>
+            ${r"#"}{pojo.${fieldAndColumn.field}}<#if !fieldAndColumn?is_last>,</#if>
             </#list>
             )
         </foreach>

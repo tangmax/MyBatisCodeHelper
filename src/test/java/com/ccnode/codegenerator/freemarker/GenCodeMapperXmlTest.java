@@ -44,4 +44,26 @@ public class GenCodeMapperXmlTest {
         return columnAndFieldAndFormattedColumn;
     }
 
+
+    @Test
+    public void testGenerateMapperXmlForMysql() {
+        Map<String, Object> root = Maps.newHashMap();
+        root.put(TemplateConstants.DAO_FULLTYPE, "com.bruce.ge");
+        root.put(TemplateConstants.POJO_FULL_TYPE, "com.myUser");
+        List<ColumnAndFieldAndFormattedColumn> columnAndFields = Lists.newArrayList(
+                createFieldAndColumn("id","my_id"),
+                createFieldAndColumn("userName","user_name"),
+                createFieldAndColumn("password","password")
+        );
+        root.put(TemplateConstants.USE_GENERATED_KEYS, true);
+        root.put(TemplateConstants.FIELD_AND_COLUMNS, columnAndFields);
+        root.put(TemplateConstants.PRIMARY_COLUMN, "id");
+        root.put(TemplateConstants.PRIMARY_FIELD, "id");
+        root.put(TemplateConstants.TABLE_NAME, "my_user");
+        root.put(TemplateConstants.CURRENTDATABASE, DataBaseConstants.MYSQL);
+        root.put(TemplateConstants.PRIMAY_JDBC_TYPE, "NUMERIC");
+        String generateMapperString = TemplateUtil.processToString(TemplateConstants.GENCODE_MAPPERXML, root);
+        System.out.println(generateMapperString);
+    }
+
 }
