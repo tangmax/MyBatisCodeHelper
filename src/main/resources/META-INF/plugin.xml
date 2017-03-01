@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.ccnode.codegenerator.MyBatisCodeHelper</id>
     <name>MyBatisCodeHelper</name>
-    <version>1.4</version>
+    <version>1.4.1</version>
     <vendor email="gejun123456@gmail.com">MyBatisCodeHelper</vendor>
 
     <description><![CDATA[
@@ -58,6 +58,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <p><h4>1.4.1</h4>
+            <ul>
+                <li>bugfix - oralce insertList</li>
+                <li>bugfix - import issue</li>
+            </ul>
+     </p>
     <p><h4>1.4</h4>
             <ul>
                 <li>add support for oracle</li>
