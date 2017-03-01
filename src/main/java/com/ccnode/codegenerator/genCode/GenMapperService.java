@@ -47,7 +47,7 @@ public class GenMapperService {
         root.put(TemplateConstants.PRIMARY_FIELD, primaryProp.getFieldName());
         root.put(TemplateConstants.TABLE_NAME, tableName);
         root.put(TemplateConstants.CURRENTDATABASE, DatabaseComponenent.currentDatabase());
-        if (DatabaseComponenent.currentDatabase()==(DataBaseConstants.ORACLE)) {
+        if (DatabaseComponenent.currentDatabase().equals(DataBaseConstants.ORACLE)) {
             String primaryKeyJdbcType = OracleHandlerUtils.extractJdbcType(primaryProp);
             root.put(TemplateConstants.PRIMAY_JDBC_TYPE, primaryKeyJdbcType);
         }

@@ -43,18 +43,17 @@
         INSERT INTO ${tableName}
         <trim prefix="(" suffix=")" suffixOverrides=",">
         <#list fieldAndColumns as fieldAndColumn>
-            <if test="pojo.${fieldAndColumn.field}!=null"> ${fieldAndColumn.formattedColumn}</if><#if !fieldAndColumn?is_last>,</#if>
+            <if test="pojo.${fieldAndColumn.field}!=null"> ${fieldAndColumn.formattedColumn},</if>
         </#list>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
         <#list fieldAndColumns as fieldAndColumn>
             <#if fieldAndColumn.field == primaryField>
-            <if test="pojo.${fieldAndColumn.field}!=null">${r"#"}{pojo.${fieldAndColumn.field}<#if primaryJdbcType??>,jdbcType=${primaryJdbcType}</#if>}</if><#rt>
+            <if test="pojo.${fieldAndColumn.field}!=null">${r"#"}{pojo.${fieldAndColumn.field}<#if primaryJdbcType??>,jdbcType=${primaryJdbcType}</#if>},</if>
             <#else>
-            <if test="pojo.${fieldAndColumn.field}!=null">${r"#"}{pojo.${fieldAndColumn.field}}</if><#rt>
+            <if test="pojo.${fieldAndColumn.field}!=null">${r"#"}{pojo.${fieldAndColumn.field}},</if>
             </#if>
-            <#lt><#if !fieldAndColumn?is_last>,</#if>
         </#list>
         </trim>
     </insert>
