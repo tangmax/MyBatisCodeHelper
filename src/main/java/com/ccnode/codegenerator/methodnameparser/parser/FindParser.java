@@ -282,18 +282,4 @@ public class FindParser extends BaseParser {
         }
         return false;
     }
-
-
-    public static void main(String[] args) {
-        List<String> props = new ArrayList<>();
-        props.add("hello");
-        props.add("first");
-        props.add("id");
-        props.add("name");
-        props.add("order");
-        String methodName = "findFirst10OrderByName";
-        FindParser findParser = new FindParser(methodName.toLowerCase(), props);
-        ParsedFindDto parse = findParser.parse();
-        parse.getParsedFinds();
-    }
 }

@@ -7,8 +7,8 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URI;
 import java.util.Map;
 
 /**
@@ -25,8 +25,8 @@ public class TemplateUtil {
     static {
         configuration = new Configuration(Configuration.getVersion());
         try {
-            configuration.setDirectoryForTemplateLoading(new File(TemplateUtil.class.getClassLoader().getResource("templates").getPath()));
-        } catch (IOException e) {
+            configuration.setDirectoryForTemplateLoading(new File(new URI(TemplateUtil.class.getClassLoader().getResource("templates").toString()).getPath()));
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         configuration.setDefaultEncoding("UTF-8");
@@ -41,7 +41,7 @@ public class TemplateUtil {
             template.process(root, out);
             return out.toString();
         } catch (Exception e) {
-            log.error("template process catch exception",e);
+            log.error("template process catch exception", e);
             throw new RuntimeException("process freemarker template catch exception", e);
         }
     }

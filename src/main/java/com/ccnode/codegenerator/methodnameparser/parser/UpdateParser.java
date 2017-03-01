@@ -141,16 +141,4 @@ public class UpdateParser extends BaseParser {
         }
         return false;
     }
-
-    public static void main(String[] args) {
-        String methodName = "updateIdAndNameById";
-        List<String> props = new ArrayList<>();
-        props.add("Id");
-        props.add("Name");
-        props.add("username");
-        ParsedUpdateDto parse = new UpdateParser(methodName.toLowerCase(), props).parse();
-        parse.getUpdateList();
-    }
-
-
 }
