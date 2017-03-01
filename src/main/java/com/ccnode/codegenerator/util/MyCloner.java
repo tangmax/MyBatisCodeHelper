@@ -8,8 +8,6 @@ import com.rits.cloning.Cloner;
  * @Description
  */
 public class MyCloner {
-    private static MyCloner myCloner;
-
     private MyCloner() {
     }
 

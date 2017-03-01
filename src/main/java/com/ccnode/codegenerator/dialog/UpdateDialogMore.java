@@ -2,7 +2,6 @@ package com.ccnode.codegenerator.dialog;
 
 import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
-import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.ccnode.codegenerator.dialog.dto.MapperDto;
 import com.ccnode.codegenerator.dialog.dto.mybatis.*;
 import com.ccnode.codegenerator.enums.MethodName;
@@ -73,8 +72,6 @@ public class UpdateDialogMore extends DialogWrapper {
     private String message;
 
     private MapperDto mapperDto;
-
-    private Map<String, List<TypeProps>> addedFieldTypeMap;
 
     private JTable myTable;
 

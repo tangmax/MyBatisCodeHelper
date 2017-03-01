@@ -15,4 +15,6 @@ public class ColumnAndFieldAndFormattedColumn extends ColumnAndField{
     public void setFormattedColumn(String formattedColumn) {
         this.formattedColumn = formattedColumn;
     }
+
+
 }

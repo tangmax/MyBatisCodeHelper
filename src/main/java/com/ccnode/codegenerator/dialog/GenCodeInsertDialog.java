@@ -38,9 +38,6 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
     private PsiClass psiClass;
 
-    private List<GenCodeProp> propList;
-
-
     private String moduleSrcPath;
 
     private List<ClassFieldInfo> propFields;

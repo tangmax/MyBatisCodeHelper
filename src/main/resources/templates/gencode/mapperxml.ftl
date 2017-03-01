@@ -23,18 +23,18 @@
     <insert id="insert"<#if useGeneratedKeys> useGeneratedKeys="true" keyProperty="pojo.${primaryField}"</#if>>
         INSERT INTO ${tableName} (
     <#list fieldAndColumns as fieldAndColumn>
-        <#if fieldAndColumn?is_last>
-            ${fieldAndColumn.formattedColumn}
-        <#else>
-            ${fieldAndColumn.formattedColumn},
-        </#if></#list>
+            ${fieldAndColumn.formattedColumn}<#rt>
+        <#lt><#if !fieldAndColumn?is_last>,</#if>
+    </#list>
         ) VALUES (
     <#list fieldAndColumns as fieldAndColumn>
-        <#if fieldAndColumn?is_last>
-            ${r"#"}{pojo.${fieldAndColumn.field}}
+        <#if fieldAndColumn.field == primaryField>
+            ${r"#"}{pojo.${fieldAndColumn.field}<#if primaryJdbcType??>,jdbcType=${primaryJdbcType}</#if>}<#rt>
         <#else>
-            ${r"#"}{pojo.${fieldAndColumn.field}},
-        </#if></#list>
+            ${r"#"}{pojo.${fieldAndColumn.field}}<#rt>
+        </#if>
+        <#lt><#if !fieldAndColumn?is_last>,</#if>
+    </#list>
         )
     </insert>
 
@@ -42,64 +42,58 @@
     <insert id="insertSelective"<#if useGeneratedKeys> useGeneratedKeys="true" keyProperty="pojo.${primaryField}"</#if>>
         INSERT INTO ${tableName}
         <trim prefix="(" suffix=")" suffixOverrides=",">
-        <#list fieldAndColumns as filedAndColumn>
-            <#if filedAndColumn?is_last>
-            <if test="pojo.${filedAndColumn.field}!=null"> ${filedAndColumn.formattedColumn}</if>
-            <#else>
-            <if test="pojo.${filedAndColumn.field}!=null"> ${filedAndColumn.formattedColumn},</if>
-            </#if>
+        <#list fieldAndColumns as fieldAndColumn>
+            <if test="pojo.${fieldAndColumn.field}!=null"> ${fieldAndColumn.formattedColumn}</if><#if !fieldAndColumn?is_last>,</#if>
         </#list>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
-        <#list fieldAndColumns as filedAndColumn>
-            <#if filedAndColumn?is_last>
-            <if test="pojo.${filedAndColumn.field}!=null"> ${r"#"}{pojo.${filedAndColumn.field}}</if>
+        <#list fieldAndColumns as fieldAndColumn>
+            <#if fieldAndColumn.field == primaryField>
+            <if test="pojo.${fieldAndColumn.field}!=null">${r"#"}{pojo.${fieldAndColumn.field}<#if primaryJdbcType??>,jdbcType=${primaryJdbcType}</#if>}</if><#rt>
             <#else>
-            <if test="pojo.${filedAndColumn.field}!=null"> ${r"#"}{pojo.${filedAndColumn.field}},</if>
+            <if test="pojo.${fieldAndColumn.field}!=null">${r"#"}{pojo.${fieldAndColumn.field}}</if><#rt>
             </#if>
+            <#lt><#if !fieldAndColumn?is_last>,</#if>
         </#list>
         </trim>
     </insert>
 
     <!--auto generated Code-->
-    <#if currentDatabase=="Mysql">
+<#if currentDatabase=="Mysql">
     <insert id="insertList">
         INSERT INTO ${tableName} (
         <include refid="all_column"/>
         )VALUES
         <foreach collection="pojos" item="pojo" index="index" separator=",">
             (
-        <#list fieldAndColumns as fieldAndColumn>
-            <#if fieldAndColumn?is_last>
+            <#list fieldAndColumns as fieldAndColumn>
             ${r"#"}{pojo.${fieldAndColumn.field}}
-            <#else>
-            ${r"#"}{pojo.${fieldAndColumn.field}},
-            </#if>
-        </#list>
+                <#if !fieldAndColumn?is_last>,</#if>
+            </#list>
             )
         </foreach>
     </insert>
-    </#if>
-    <#if currentDatabase=="Oracle">
+</#if>
+<#if currentDatabase=="Oracle">
     <insert id="insertList">
         INSERT ALL
         <foreach collection="pojos" item="pojo">
             INTO ${tableName} (
             <include refid="all_column"/>
             )VALUES(
-        <#list fieldAndColumns as fieldAndColumn>
-            <#if fieldAndColumn?is_last>
-            ${r"#"}{pojo.${fieldAndColumn.field}}
-            <#else>
-            ${r"#"}{pojo.${fieldAndColumn.field}},
-            </#if>
-        </#list>
+            <#list fieldAndColumns as fieldAndColumn>
+                <#if fieldAndColumn.field == primaryField>
+                ${r"#"}{pojo.${fieldAndColumn.field}<#if primaryJdbcType??>,jdbcType=${primaryJdbcType}</#if>}<#rt>
+                <#else>
+                ${r"#"}{pojo.${fieldAndColumn.field}}<#rt>
+                <#lt></#if><#if !fieldAndColumn?is_last>,</#if>
+            </#list>
             )
         </foreach>
         select * from dual
     </insert>
-    </#if>
+</#if>
 
     <!--auto generated Code-->
     <update id="update">
@@ -107,9 +101,9 @@
         <set>
         <#list fieldAndColumns as filedAndColumn>
             <#if filedAndColumn?is_last>
-            <if test="pojo.${filedAndColumn.field} != null"> ${filedAndColumn.formattedColumn} = ${r"#"}{pojo.${filedAndColumn.field}}</if>
+            <if test="pojo.${filedAndColumn.field} != null"> ${filedAndColumn.formattedColumn} = ${r"#"}{pojo.${filedAndColumn.field}} </if>
             <#else>
-            <if test="pojo.${filedAndColumn.field} != null"> ${filedAndColumn.formattedColumn} = ${r"#"}{pojo.${filedAndColumn.field}},</if>
+            <if test="pojo.${filedAndColumn.field} != null"> ${filedAndColumn.formattedColumn} = ${r"#"}{pojo.${filedAndColumn.field}}, </if>
             </#if>
         </#list>
         </set>

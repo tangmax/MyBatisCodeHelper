@@ -1,8 +1,10 @@
 package com.ccnode.codegenerator.database.handler.oracle;
 
 import com.ccnode.codegenerator.database.JavaTypeConstant;
+import com.ccnode.codegenerator.database.handler.JdbcTypeConstatns;
 import com.ccnode.codegenerator.database.handler.mysql.MysqlTypeConstants;
 import com.ccnode.codegenerator.database.handler.utils.TypePropUtils;
+import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -106,8 +108,25 @@ public class OracleHandlerUtils {
     }
 
 
-    public static List<TypeProps> getTypePropByQulitifiedName(String name){
+    public static List<TypeProps> getTypePropByQulitifiedName(String name) {
         return oracleTypeProps.get(name);
     }
 
+    public static String extractJdbcType(GenCodeProp primaryProp) {
+        switch (primaryProp.getFiledType()) {
+            case OracleTypeConstants.NUMBER: {
+                return JdbcTypeConstatns.NUMERIC;
+            }
+            case OracleTypeConstants.DATE: {
+                return JdbcTypeConstatns.DATE;
+            }
+            case OracleTypeConstants.CHAR: {
+                return JdbcTypeConstatns.CHAR;
+            }
+            case OracleTypeConstants.VARCHAR2: {
+                return JdbcTypeConstatns.VARCHAR;
+            }
+        }
+        throw new RuntimeException("the primary key must be string or number");
+    }
 }

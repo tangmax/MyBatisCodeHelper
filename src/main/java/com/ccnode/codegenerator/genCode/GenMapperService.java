@@ -1,11 +1,13 @@
 package com.ccnode.codegenerator.genCode;
 
 import com.ccnode.codegenerator.database.DatabaseComponenent;
+import com.ccnode.codegenerator.database.handler.oracle.OracleHandlerUtils;
 import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndFieldAndFormattedColumn;
 import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
+import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 import com.ccnode.codegenerator.myconfigurable.MyBatisCodeHelperApplicationComponent;
 import com.ccnode.codegenerator.pojo.ClassInfo;
 import com.google.common.collect.Lists;
@@ -45,6 +47,10 @@ public class GenMapperService {
         root.put(TemplateConstants.PRIMARY_FIELD, primaryProp.getFieldName());
         root.put(TemplateConstants.TABLE_NAME, tableName);
         root.put(TemplateConstants.CURRENTDATABASE, DatabaseComponenent.currentDatabase());
+        if (DatabaseComponenent.currentDatabase()==(DataBaseConstants.ORACLE)) {
+            String primaryKeyJdbcType = OracleHandlerUtils.extractJdbcType(primaryProp);
+            root.put(TemplateConstants.PRIMAY_JDBC_TYPE, primaryKeyJdbcType);
+        }
         String generateMapperString = TemplateUtil.processToString(TemplateConstants.GENCODE_MAPPERXML, root);
         retList.add(generateMapperString);
         try {
@@ -54,5 +60,7 @@ public class GenMapperService {
             throw new RuntimeException("can't write file " + fileProp.getName() + " to path " + fileProp.getFullPath(), e);
         }
     }
+
+
 
 }

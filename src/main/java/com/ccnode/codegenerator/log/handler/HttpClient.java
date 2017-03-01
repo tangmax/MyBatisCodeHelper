@@ -37,8 +37,10 @@ public class HttpClient {
                 response = client.newCall(request).execute();
             } catch (IOException e) {
                 //ignore
-            }finally {
-                response.close();
+            } finally {
+                if (response != null) {
+                    response.close();
+                }
             }
         });
     }

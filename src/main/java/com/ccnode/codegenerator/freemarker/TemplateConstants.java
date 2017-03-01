@@ -51,6 +51,8 @@ public class TemplateConstants {
 
     public static final String CURRENTDATABASE = "currentDatabase";
 
+    public static final String PRIMAY_JDBC_TYPE = "primaryJdbcType";
+
     public static final String DAO_FULLTYPE = "daoFullType";
 
 }

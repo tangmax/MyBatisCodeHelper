@@ -25,9 +25,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.xml.XmlFileImpl;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -35,12 +33,10 @@ import com.intellij.psi.search.PsiShortNamesCache;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
-import com.intellij.testIntegration.createTest.CreateTestDialog;
 import com.intellij.util.IncorrectOperationException;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.jps.model.java.JavaSourceRootType;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -140,6 +136,9 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         List<String> props = PsiClassUtil.extractProps(pojoClass);
         //find the corresponding xml file.
         XmlTag rootTag = psixml.getRootTag();
+        if (rootTag == null) {
+            return;
+        }
         XmlTag[] subTags = rootTag.getSubTags();
 
         boolean allColumMapExist = false;
@@ -151,33 +150,27 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         FieldToColumnRelation relation = null;
         boolean hasResultType = false;
         for (XmlTag tag : subTags) {
-            if (tag.getName().equalsIgnoreCase("insert")) {
+            if (tag.getName().equalsIgnoreCase(MyBatisXmlConstants.INSERT)) {
                 String insertText = tag.getValue().getText();
                 //go format it.
                 tableName = MapperUtil.extractTable(insertText);
-                if (tableName != null) {
+                if (tableName != null && tableName.length() < 30) {
                     break;
-                }
-                // TODO: 2016/12/27  if table name is to long need to inform the user.
-                if (tableName != null && tableName.length() > 30) {
-                    Messages.showErrorDialog("can't extract table name from your insert statement," +
-                            "\n  the table name we found is " + tableName, "table name unknown");
-                    return;
                 }
             } else if (relation == null && tag.getName().equalsIgnoreCase(MyBatisXmlConstants.RESULTMAP)) {
                 String resultMapId;
-                XmlAttribute id = tag.getAttribute("id");
+                XmlAttribute id = tag.getAttribute(MyBatisXmlConstants.ID);
                 if (id != null && id.getValue() != null) {
                     resultMapId = id.getValue();
-                    XmlAttribute typeAttribute = tag.getAttribute("type");
+                    XmlAttribute typeAttribute = tag.getAttribute(MyBatisXmlConstants.TYPE);
                     if (typeAttribute != null && typeAttribute.getValue() != null && typeAttribute.getValue().trim().equals(pojoClass.getQualifiedName())) {
                         //mean we find the corresponding prop.
                         hasResultType = true;
                         relation = extractFieldAndColumnRelation(tag, props, resultMapId);
                     }
                 }
-            } else if (tag.getName().equalsIgnoreCase("sql")) {
-                XmlAttribute id = tag.getAttribute("id");
+            } else if (tag.getName().equalsIgnoreCase(MyBatisXmlConstants.SQL)) {
+                XmlAttribute id = tag.getAttribute(MyBatisXmlConstants.ID);
                 if (id != null && id.getValue().equals(MapperConstants.ALL_COLUMN)) {
                     allColumns = true;
                 }
@@ -214,8 +207,8 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
                 //use to generate resultMap
                 String allColumnMap = buildAllCoumnMap(relation1.getFiledToColumnMap());
                 XmlTag resultMap = rootTag.createChildTag(MyBatisXmlConstants.RESULTMAP, "", allColumnMap, false);
-                resultMap.setAttribute("id", relation1.getResultMapId());
-                resultMap.setAttribute("type", pojoClass.getQualifiedName());
+                resultMap.setAttribute(MyBatisXmlConstants.ID, relation1.getResultMapId());
+                resultMap.setAttribute(MyBatisXmlConstants.TYPE, pojoClass.getQualifiedName());
                 rootTag.addSubTag(resultMap, true);
                 Document xmlDocument = psiDocumentManager.getDocument(psixml);
                 PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, xmlDocument);
@@ -409,40 +402,16 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         builder.append("\n");
         return builder.toString();
     }
-
     private static XmlTag methodAlreadyExist(PsiFile psixml, String methodName) {
         XmlTag rootTag = ((XmlFileImpl) psixml).getRootTag();
         XmlTag[] subTags = rootTag.getSubTags();
-        Set<String> existIds = new HashSet<String>();
         for (XmlTag subTag : subTags) {
-            XmlAttribute id = subTag.getAttribute("id");
+            XmlAttribute id = subTag.getAttribute(MyBatisXmlConstants.ID);
             if (id != null && id.getValue() != null && id.getValue().equalsIgnoreCase(methodName)) {
                 return subTag;
             }
         }
-
         return null;
-
-    }
-
-    private CreateTestDialog createTestDialog(Project project, Module srcModule, PsiClass srcClass, PsiPackage srcPackage) {
-        return new CreateTestDialog(project, GENERATE_DAOXML, srcClass, srcPackage, srcModule);
-    }
-
-    private static void checkForTestRoots(Module srcModule, HashSet<VirtualFile> testFolder) {
-        checkForTestRoots(srcModule, testFolder, new HashSet<Module>());
-    }
-
-    private static void checkForTestRoots(Module srcModule, HashSet<VirtualFile> testFolder, HashSet<Module> processed) {
-        boolean isFirst = processed.isEmpty();
-        if (!processed.add(srcModule)) return;
-        testFolder.addAll(ModuleRootManager.getInstance(srcModule).getSourceRoots(JavaSourceRootType.TEST_SOURCE));
-        if (isFirst && !testFolder.isEmpty()) return;
-        HashSet<Module> modules = new HashSet<>();
-        ModuleUtilCore.collectModulesDependsOn(srcModule, modules);
-        for (Module module : modules) {
-            checkForTestRoots(module, testFolder, processed);
-        }
     }
 
     @Override
