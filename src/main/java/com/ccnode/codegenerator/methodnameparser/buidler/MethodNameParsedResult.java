@@ -35,6 +35,16 @@ public class MethodNameParsedResult {
 
     private ParsedCount parsedCount;
 
+    private String psiClassFullName;
+
+    public String getPsiClassFullName() {
+        return psiClassFullName;
+    }
+
+    public void setPsiClassFullName(String psiClassFullName) {
+        this.psiClassFullName = psiClassFullName;
+    }
+
     public ParsedTypeEnum getParsedType() {
         return parsedType;
     }

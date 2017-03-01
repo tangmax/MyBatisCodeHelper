@@ -85,6 +85,7 @@ public class QueryBuilder {
         methodNameParsedResult.setTableName(info.getTableName());
         methodNameParsedResult.setFieldMap(info.getFieldMap());
         methodNameParsedResult.setPsiClassName(info.getPsiClassName());
+        methodNameParsedResult.setPsiClassFullName(info.getPsiClassFullName());
         return methodNameParsedResult;
     }
 

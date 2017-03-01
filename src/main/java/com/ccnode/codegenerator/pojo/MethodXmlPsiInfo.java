@@ -18,6 +18,16 @@ public class MethodXmlPsiInfo {
     private String psiClassName;
 
 
+    private String psiClassFullName;
+
+    public String getPsiClassFullName() {
+        return psiClassFullName;
+    }
+
+    public void setPsiClassFullName(String psiClassFullName) {
+        this.psiClassFullName = psiClassFullName;
+    }
+
     public Map<String, String> getFieldMap() {
         return fieldMap;
     }

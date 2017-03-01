@@ -315,7 +315,7 @@ public class BaseQueryBuilder implements QueryBuilder {
             returnList = false;
         }
         if (info.getReturnClass() == null) {
-            info.setReturnClass(result.getPsiClassName());
+            info.setReturnClass(result.getPsiClassFullName());
         }
         if (returnList) {
             info.setMethodReturnType("List<" + extractLast(info.getReturnClass()) + ">");
