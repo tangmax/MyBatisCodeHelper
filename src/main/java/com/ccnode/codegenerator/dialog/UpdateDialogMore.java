@@ -540,7 +540,8 @@ public class UpdateDialogMore extends DialogWrapper {
 
         //following are the added field.
         bag.anchor = GridBagConstraints.NORTHWEST;
-        bag.fill = GridBagConstraints.HORIZONTAL;
+        bag.fill = GridBagConstraints.BOTH;
+        bag.weighty=1;
 
         bag.gridy++;
 
@@ -552,10 +553,11 @@ public class UpdateDialogMore extends DialogWrapper {
         JScrollPane jScrollPane = new JScrollPane(myTable);
 
         bag.gridwidth = 10;
+        bag.weighty=5;
 
         jPanel.add(jScrollPane, bag);
 
-
+        bag.weighty=1;
         //following are deleted fields.
         bag.gridwidth = 1;
         if (deletedFields.size() > 0) {
@@ -602,6 +604,8 @@ public class UpdateDialogMore extends DialogWrapper {
 
         bag.gridx = 0;
 
+        bag.weightx=0.25;
+
         jPanel.add(sqlFileRaidio, bag);
 
         bag.gridx = 1;
@@ -611,10 +615,11 @@ public class UpdateDialogMore extends DialogWrapper {
 
         bag.gridx = 2;
 
-
+        bag.weightx=1;
         jPanel.add(sqlNameText, bag);
 
         bag.gridx = 3;
+
 
         jPanel.add(sqlPathLable, bag);
 

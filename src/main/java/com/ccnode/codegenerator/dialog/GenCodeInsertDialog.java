@@ -305,22 +305,26 @@ public class GenCodeInsertDialog extends DialogWrapper {
         jPanel.setLayout(new GridBagLayout());
         GridBagConstraints bag = new GridBagConstraints();
         int mygridy = 0;
+        bag.gridwidth=1;
+        bag.weightx=1;
+        bag.weighty=1;
         bag.gridy = mygridy++;
         bag.gridx = 0;
         jPanel.add(tableName, bag);
-
         bag.gridx = 1;
         jPanel.add(tableNameText, bag);
 
         bag.anchor = GridBagConstraints.NORTHWEST;
-        bag.fill = GridBagConstraints.HORIZONTAL;
+        bag.fill = GridBagConstraints.BOTH;
         bag.gridy++;
         bag.gridx = 0;
         bag.gridwidth = 10;
-
+        bag.weighty=10;
 //        jScrollPane.setMinimumSize(jScrollPane.getPreferredSize());
         jPanel.add(jScrollPane, bag);
 
+        bag.fill = GridBagConstraints.HORIZONTAL;
+        bag.weighty=1;
         mygridy += 1;
         bag.gridwidth = 1;
         bag.gridy = mygridy++;
