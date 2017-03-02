@@ -16,8 +16,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * Created by bruce.ge on 2016/12/9.
@@ -36,12 +39,24 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
         final PsiClass currentClass = OverrideImplementUtil.getContextClass(project, editor, file, false);
         ClassValidateResult classValidateResult = DatabaseComponenent.currentHandler().getGenerateFileHandler().validateCurrentClass(currentClass);
         if (!classValidateResult.getValid()) {
-            Messages.showErrorDialog(project, classValidateResult.getInvalidMessages(), "validate fail");
-            return;
+            if (classValidateResult.getValid() == null || classValidateResult.getValidFields().size() == 0) {
+                Messages.showErrorDialog(project, classValidateResult.getInvalidMessages(), "validate fail");
+            } else {
+                List<PsiField> validFields1 = classValidateResult.getValidFields();
+                StringBuilder validBuilder = new StringBuilder();
+                validBuilder.append("\n the following are valid fields: ");
+                for (PsiField psiField : validFields1) {
+                    validBuilder.append(psiField.getName()+",");
+                }
+                int i = Messages.showOkCancelDialog(project, classValidateResult.getInvalidMessages() + validBuilder.toString() + "\n\n do you want just use with valid fields?", "some field not valid", null);
+                if (i == Messages.CANCEL) {
+                    return;
+                }
+            }
         }
         VirtualFileManager.getInstance().syncRefresh();
         ApplicationManager.getApplication().saveAll();
-        GenCodeDialog genCodeDialog = new GenCodeDialog(project, currentClass);
+        GenCodeDialog genCodeDialog = new GenCodeDialog(project, currentClass,classValidateResult.getValidFields());
         boolean b = genCodeDialog.showAndGet();
         if (!b) {
             return;

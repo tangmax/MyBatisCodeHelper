@@ -3,12 +3,14 @@ package com.ccnode.codegenerator.dialog;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiField;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * Created by bruce.ge on 2016/12/25.
@@ -23,10 +25,13 @@ public class GenCodeDialog extends DialogWrapper {
 
     private InsertDialogResult insertDialogResult;
 
-    public GenCodeDialog(Project project, PsiClass psiClass) {
+    private List<PsiField> myValidFields;
+
+    public GenCodeDialog(Project project, PsiClass psiClass, List<PsiField> validFields) {
         super(project, true);
         myProject = project;
         this.psiClass = psiClass;
+        this.myValidFields = validFields;
         //init with propList.
         setTitle("choose what you wan't to do");
         setOKButtonText("next");
@@ -44,7 +49,7 @@ public class GenCodeDialog extends DialogWrapper {
     @Override
     protected void doOKAction() {
         if (type == GenCodeType.INSERT) {
-            GenCodeInsertDialog genCodeInsertDialog = new GenCodeInsertDialog(myProject, psiClass);
+            GenCodeInsertDialog genCodeInsertDialog = new GenCodeInsertDialog(myProject, psiClass,myValidFields);
             boolean b = genCodeInsertDialog.showAndGet();
             if (!b) {
                 return;
@@ -54,7 +59,7 @@ public class GenCodeDialog extends DialogWrapper {
                 super.doOKAction();
             }
         } else if (type == GenCodeType.UPDATE) {
-            GenCodeUpdateDialog updateDialog = new GenCodeUpdateDialog(myProject, psiClass);
+            GenCodeUpdateDialog updateDialog = new GenCodeUpdateDialog(myProject, psiClass,myValidFields);
             boolean b = updateDialog.showAndGet();
             if (!b) {
                 return;

@@ -11,6 +11,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiField;
 import com.intellij.util.Consumer;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
@@ -112,12 +113,12 @@ public class GenCodeInsertDialog extends DialogWrapper {
         return insertDialogResult;
     }
 
-    public GenCodeInsertDialog(Project project, PsiClass psiClass) {
+    public GenCodeInsertDialog(Project project, PsiClass psiClass, List<PsiField> validFields) {
         super(project, true);
         myProject = project;
         this.psiClass = psiClass;
 
-        this.propFields = PsiClassUtil.buildPropFieldInfo(psiClass);
+        this.propFields = PsiClassUtil.buildPropFieldInfo(validFields);
 
         if (propFields.size() == 0) {
             // TODO: 2016/12/25

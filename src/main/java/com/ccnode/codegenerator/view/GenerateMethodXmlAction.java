@@ -319,7 +319,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         CodeInsightUtil.positionCursor(project, psixml, rootTag.getSubTags()[rootTag.getSubTags().length - 1]);
         long elapsed = started.elapsed(TimeUnit.MILLISECONDS);
         log.info("generate dao xml use with time in mill second is:" + elapsed + " and the method name is:" + methodInfo.getMethodName()
-                + "the user database is:" + DatabaseComponenent.currentDatabase());
+                + " used database is:" + DatabaseComponenent.currentDatabase());
     }
 
     private FieldToColumnRelation convertToRelation(FieldToColumnRelation relation1) {

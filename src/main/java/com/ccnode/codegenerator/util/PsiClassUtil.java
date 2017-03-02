@@ -100,23 +100,36 @@ public class PsiClassUtil {
         return null;
     }
 
-    public static List<ClassFieldInfo> buildPropFieldInfo(PsiClass psiClass) {
+//    public static List<ClassFieldInfo> buildPropFieldInfo(PsiClass psiClass) {
+//        List<ClassFieldInfo> lists = new ArrayList<>();
+//        PsiField[] allFields = psiClass.getAllFields();
+//        for (PsiField psiField : allFields) {
+//            if (isSupprtedModifier(psiField)) {
+//                ClassFieldInfo info = new ClassFieldInfo();
+//                info.setFieldName(psiField.getName());
+//                info.setFieldType(convertToObjectText(psiField.getType().getCanonicalText()));
+//                info.setPsiField(psiField);
+//                lists.add(info);
+//            }
+//        }
+//        return lists;
+//    }
+
+    public static List<ClassFieldInfo> buildPropFieldInfo(List<PsiField> validFields) {
         List<ClassFieldInfo> lists = new ArrayList<>();
-        PsiField[] allFields = psiClass.getAllFields();
-        for (PsiField psiField : allFields) {
-            if (isSupprtedModifier(psiField)) {
-                ClassFieldInfo info = new ClassFieldInfo();
-                info.setFieldName(psiField.getName());
-                info.setFieldType(convertToObjectText(psiField.getType().getCanonicalText()));
-                info.setPsiField(psiField);
-                lists.add(info);
-            }
+        for (PsiField psiField : validFields) {
+            ClassFieldInfo info = new ClassFieldInfo();
+            info.setFieldName(psiField.getName());
+            info.setFieldType(convertToObjectText(psiField.getType().getCanonicalText()));
+            info.setPsiField(psiField);
+            lists.add(info);
         }
         return lists;
     }
 
+
     public static boolean isSupprtedModifier(PsiField psiField) {
-        return psiField.hasModifierProperty("private") && !psiField.hasModifierProperty("static");
+        return (psiField.hasModifierProperty("private") || psiField.hasModifierProperty("protected")) && !psiField.hasModifierProperty("static");
     }
 
 

@@ -22,10 +22,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiParameter;
+import com.intellij.psi.*;
 import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
@@ -284,12 +281,13 @@ public class UpdateDialogMore extends DialogWrapper {
 
     }
 
-    public UpdateDialogMore(Project project, PsiClass srcClass, XmlFile xmlFile, PsiClass nameSpaceDaoClass) {
+    public UpdateDialogMore(Project project, PsiClass srcClass, XmlFile xmlFile, PsiClass nameSpaceDaoClass, List<PsiField> validFields) {
         super(project, true);
         this.myProject = project;
         this.myClass = srcClass;
         this.myXmlFile = xmlFile;
         this.myDaoClass = nameSpaceDaoClass;
+        this.propFields = PsiClassUtil.buildPropFieldInfo(validFields);
         initNeedUpdate();
         sqlNameText = new JTextField(srcClass.getName() + "_update_" + DateUtil.formatYYYYMMDD(new Date()) + ".sql");
         sqlPathText = new JTextField(myClass.getContainingFile().getVirtualFile().getParent().getPath());
@@ -298,7 +296,6 @@ public class UpdateDialogMore extends DialogWrapper {
     }
 
     private void initNeedUpdate() {
-        this.propFields = PsiClassUtil.buildPropFieldInfo(myClass);
         mapperDto = parseXml();
         //get the new added filed and type.
         extractAddAndDelete();

@@ -11,6 +11,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by bruce.ge on 2016/12/27.
@@ -41,12 +43,15 @@ public class GenCodeUpdateDialog extends DialogWrapper {
 
     private PsiClass nameSpaceDaoClass;
 
-    public GenCodeUpdateDialog(Project project, PsiClass psiClass) {
+    private List<PsiField> myValidFields;
+
+    public GenCodeUpdateDialog(Project project, PsiClass psiClass, List<PsiField> validFields) {
         super(project, true);
         this.myProject = project;
         this.myClass = psiClass;
         jTextField = new JTextField();
         jTextField.setEditable(false);
+        myValidFields = validFields;
         //go to find the corresponding xml if we can find.
         findXmlFileLocation();
         setTitle("generate update for your mapper xml");
@@ -92,7 +97,7 @@ public class GenCodeUpdateDialog extends DialogWrapper {
         if (!valid) {
             return;
         }
-        UpdateDialogMore updateDialogMore = new UpdateDialogMore(myProject, myClass, myXmlFile, nameSpaceDaoClass);
+        UpdateDialogMore updateDialogMore = new UpdateDialogMore(myProject, myClass, myXmlFile, nameSpaceDaoClass,myValidFields);
         boolean b = updateDialogMore.showAndGet();
         if (!b) {
             return;
