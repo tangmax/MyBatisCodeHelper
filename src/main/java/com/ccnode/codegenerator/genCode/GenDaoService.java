@@ -5,13 +5,10 @@ import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.myconfigurable.MyBatisCodeHelperApplicationComponent;
 import com.ccnode.codegenerator.pojo.ClassInfo;
+import com.ccnode.codegenerator.util.FileUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 
@@ -33,11 +30,6 @@ public class GenDaoService {
         String genDaoString = TemplateUtil.processToString(TemplateConstants.GENCODE_DAO, root);
         List<String> lines = Lists.newArrayList();
         lines.add(genDaoString);
-        try {
-            String filePath = daoProp.getFullPath();
-            Files.write(Paths.get(filePath), lines, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            throw new RuntimeException("can't write file " + daoProp.getName() + " to path " + daoProp.getFullPath(),e);
-        }
+        FileUtils.writeFiles(daoProp,lines);
     }
 }

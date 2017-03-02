@@ -4,14 +4,11 @@ import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.pojo.ClassInfo;
+import com.ccnode.codegenerator.util.FileUtils;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 
@@ -36,11 +33,6 @@ public class GenServiceService {
         root.put(TemplateConstants.POJO_TYPE, srcClass.getName());
         String generateServiceString = TemplateUtil.processToString(TemplateConstants.GENCODE_SERVICE, root);
         retList.add(generateServiceString);
-        try {
-            String filePath = fileProp.getFullPath();
-            Files.write(Paths.get(filePath), retList, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            throw new RuntimeException("can't write file " + fileProp.getName() + " to path " + fileProp.getFullPath(),e);
-        }
+        FileUtils.writeFiles(fileProp,retList);
     }
 }

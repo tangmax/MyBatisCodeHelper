@@ -10,13 +10,10 @@ import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 import com.ccnode.codegenerator.myconfigurable.MyBatisCodeHelperApplicationComponent;
 import com.ccnode.codegenerator.pojo.ClassInfo;
+import com.ccnode.codegenerator.util.FileUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,12 +50,7 @@ public class GenMapperService {
         }
         String generateMapperString = TemplateUtil.processToString(TemplateConstants.GENCODE_MAPPERXML, root);
         retList.add(generateMapperString);
-        try {
-            String filePath = fileProp.getFullPath();
-            Files.write(Paths.get(filePath), retList, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            throw new RuntimeException("can't write file " + fileProp.getName() + " to path " + fileProp.getFullPath(), e);
-        }
+        FileUtils.writeFiles(fileProp,retList);
     }
 
 
