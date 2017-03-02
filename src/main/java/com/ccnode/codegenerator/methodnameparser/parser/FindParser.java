@@ -60,7 +60,7 @@ public class FindParser extends BaseParser {
                     if (remaining.length() == KeyWordConstants.FIRST.length()) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.setLimit(1);
-                        parseMethods(1, remaining, KeyWordConstants.FIRST.length(), newFind);
+                        parseMethods(2, remaining, KeyWordConstants.FIRST.length(), newFind);
                         newParseFind = true;
                     } else {
                         int limitCount = 0;
@@ -277,7 +277,7 @@ public class FindParser extends BaseParser {
     }
 
     private boolean isValidEndState(int state) {
-        if (state == 0 || state == 1 || state == 2 || state == 3 || state == 5 || state == 6 || state == 9 || state == 10) {
+        if (state == 0 ||  state == 2 || state == 3 || state == 5 || state == 6 || state == 9 || state == 10) {
             return true;
         }
         return false;
