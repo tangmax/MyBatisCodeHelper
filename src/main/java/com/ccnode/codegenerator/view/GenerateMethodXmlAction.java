@@ -28,7 +28,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.xml.XmlFileImpl;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlFile;
@@ -57,25 +56,15 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element) throws IncorrectOperationException {
         Stopwatch started = Stopwatch.createStarted();
         Module srcModule = ModuleUtilCore.findModuleForPsiElement(element);
+        if (srcModule == null) {
+            return;
+        }
         PsiClass srcClass = PsiElementUtil.getContainingClass(element);
         if (srcClass == null) return;
         //go to check if the pojo class exist.
         PsiClass pojoClass = PsiClassUtil.getPojoClass(srcClass);
         String srcClassName = srcClass.getName();
-        if (pojoClass == null) {
-            if (srcClassName.endsWith(DAOCLASSEND)) {
-                String className = srcClassName.substring(0, srcClassName.length() - DAOCLASSEND.length());
-                PsiClass[] classesByName
-                        = PsiShortNamesCache.getInstance(project).getClassesByName(className, GlobalSearchScope.moduleScope(srcModule));
-                if (classesByName.length == 1) {
-                    pojoClass = classesByName[0];
-                } else {
-                    // TODO: 2016/12/14 does it need to find the pojo file with name?.
-                }
-            }
-            //then get the file of xml get table name from it cause it the most right.
-        }
-        //todo maybe wo can provide other method to know the real pojo class like annotation.
+        //ask user to provide a class name for it.
         if (pojoClass == null) {
             Messages.showErrorDialog("please provide an insert method with corresponding database class as parameter in this class" +
                     "\n like 'insert(User user)'\n" +
@@ -299,13 +288,6 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, document);
 
         psixml.getRootTag().addSubTag(choosed.getXmlTag(), false);
-
-//        Document xmlDocument = psiDocumentManager.getDocument(psixml);
-// // TODO: 2016/12/15 may be need add new line before the query.
-//        XmlTag tag = rootTag.getSubTags()[rootTag.getSubTags().length - 1];
-//        xmlDocument.insertString(tag.getTextOffset(), "\n\n<!--auto generated Code-->\n");
-        //let user choose with one.
-
 
         Document xmlDocument = psiDocumentManager.getDocument(psixml);
         PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, xmlDocument);

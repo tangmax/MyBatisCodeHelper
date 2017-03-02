@@ -13,10 +13,7 @@ import com.intellij.psi.util.PsiTypesUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by bruce.ge on 2016/12/9.
@@ -68,12 +65,7 @@ public class PsiClassUtil {
         if (methodsList.size() == 0) {
             return null;
         } else {
-            PsiMethod miniMethod = methodsList.get(0);
-            for (int i = 1; i < methodsList.size(); i++) {
-                if (methodsList.get(i).getName().length() < miniMethod.getName().length()) {
-                    miniMethod = methodsList.get(i);
-                }
-            }
+            PsiMethod miniMethod = methodsList.stream().min(Comparator.comparingInt(o -> o.getName().length())).get();
             return miniMethod;
         }
     }
