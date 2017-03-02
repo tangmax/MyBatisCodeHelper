@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.log.handler;
 
 import com.ccnode.codegenerator.common.VersionManager;
+import com.intellij.openapi.application.ApplicationInfo;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -24,6 +25,8 @@ public class MessageBuilder {
                 throwable = throwable.getCause();
             }
         }
+        builder.append(" the system os is:" + System.getProperty("os.name"));
+        builder.append(" the intellij version is:" + ApplicationInfo.getInstance().getBuild().asString());
         builder.append(" the currentVersion are:" + VersionManager.getCurrentVersion());
         return builder.toString();
     }
