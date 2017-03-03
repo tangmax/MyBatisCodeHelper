@@ -29,6 +29,14 @@ Intellij下代码自动生成插件 支持生成mybatis的dao接口,mapper xml,�
 
 ![autocomplete](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/autoComplete.gif) 
 
+- resultMap refid 跳转到定义和重构
+
+![resultMap](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/resultMapJump.gif) 
+
+- property refid resultMap等的自动补全
+
+![property complete](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/propertyComplete.gif) 
+
 安装
 ----
 

@@ -170,15 +170,18 @@ public class GenCodeUpdateDialog extends DialogWrapper {
         GridBagConstraints bag = new GridBagConstraints();
         jPanel.setLayout(new GridBagLayout());
         JLabel mapperLocationLable = new JLabel("choose your old mapper xml location:");
-
+        bag.anchor = GridBagConstraints.NORTHWEST;
+        bag.fill = GridBagConstraints.BOTH;
+//        bag.weightx=1;
         bag.gridx = 0;
         bag.gridy = 0;
         jPanel.add(mapperLocationLable, bag);
 
-        bag.gridx = 1;
+        bag.gridx =0;
+        bag.gridy=1;
         jPanel.add(jTextField, bag);
 
-        bag.gridx = 2;
+        bag.gridx = 1;
         JButton mapperButton = new JButton("open folder");
         mapperButton.addActionListener(e -> {
             getOKAction().setEnabled(true);
