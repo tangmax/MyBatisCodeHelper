@@ -183,7 +183,7 @@ CHANGELOG
 - 支持java8 time里的类型
 - 添加新图标
 - 在通过方法名生成sql如果接口引入其他类型比如（java.util.Date)自动import到接口中
-- bugfix 修复mac生成文件为null和initialize class com.ccnode.codegenerator.freemarker.TemplateUtil exception
+- bugfix 修复生成文件为null和initialize class com.ccnode.codegenerator.freemarker.TemplateUtil exception(大部分mac会出现的问题)
 
 1.3 
 - 生成mybatis文件时可生成索引及选择是否需要默认值
