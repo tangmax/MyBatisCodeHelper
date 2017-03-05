@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.view.completion;
 
+import com.ccnode.codegenerator.pojo.DomainClassInfo;
 import com.ccnode.codegenerator.util.MethodNameUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.ccnode.codegenerator.util.PsiElementUtil;
@@ -50,7 +51,8 @@ public class MethodNameCompletionContributor extends CompletionContributor {
             //go tell them to choose.
             //todo could use like when there. why after press tab can't show with more?
 //            get pojo class from it.
-            PsiClass pojoClass = PsiClassUtil.getPojoClass(containingClass);
+            DomainClassInfo domainClassInfo = PsiClassUtil.getDomainClassInfo(containingClass);
+            PsiClass pojoClass = domainClassInfo.getDomainClass();
             if (pojoClass == null) {
                 return;
             }

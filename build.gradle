@@ -46,7 +46,7 @@ dependencies{
 }
 
 group 'org.jetbrains'
-version '1.4.2' // Plugin version
+version '1.4.3-SNAPSHOT' // Plugin version
 
 
 

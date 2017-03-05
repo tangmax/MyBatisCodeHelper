@@ -43,7 +43,7 @@ public class HandlerValidator {
                     validFields.add(psiField);
                 }
             } else {
-                errorMessages.add(buildErrorMessage(psiField, " please use with private and not static"));
+                errorMessages.add(buildErrorMessage(psiField, " please use not public and not static"));
             }
         }
 

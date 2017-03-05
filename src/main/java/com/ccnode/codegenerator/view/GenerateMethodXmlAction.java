@@ -14,8 +14,7 @@ import com.ccnode.codegenerator.methodnameparser.QueryParser;
 import com.ccnode.codegenerator.methodnameparser.buidler.ParamInfo;
 import com.ccnode.codegenerator.methodnameparser.buidler.QueryInfo;
 import com.ccnode.codegenerator.methodnameparser.tag.XmlTagAndInfo;
-import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
-import com.ccnode.codegenerator.pojo.MethodXmlPsiInfo;
+import com.ccnode.codegenerator.pojo.*;
 import com.ccnode.codegenerator.util.*;
 import com.google.common.base.Stopwatch;
 import com.intellij.codeInsight.CodeInsightUtil;
@@ -28,7 +27,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.xml.XmlFileImpl;
-import com.intellij.psi.search.PsiShortNamesCache;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
@@ -62,7 +60,8 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         PsiClass srcClass = PsiElementUtil.getContainingClass(element);
         if (srcClass == null) return;
         //go to check if the pojo class exist.
-        PsiClass pojoClass = PsiClassUtil.getPojoClass(srcClass);
+        DomainClassInfo domainClassInfo = PsiClassUtil.getDomainClassInfo(srcClass);
+        PsiClass pojoClass = domainClassInfo.getDomainClass();
         String srcClassName = srcClass.getName();
         //ask user to provide a class name for it.
         if (pojoClass == null) {
@@ -90,36 +89,13 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
             methodInfo.setMethodName(text);
         }
 
-
-        //when pojoClass is not null, then try to extract all property from it. then get the sql generated.do thing with batch.
-
-        String xmlFileName = srcClassName + ".xml";
         XmlFile psixml = null;
-        //todo use with module?
-        PsiFile[] filesByName = PsiShortNamesCache.getInstance(project).getFilesByName(xmlFileName);
-        if (filesByName.length > 0) {
-            for (PsiFile file : filesByName) {
-                if (file instanceof XmlFileImpl) {
-                    XmlFileImpl xmlFile = (XmlFileImpl) file;
-                    XmlTag rootTag = xmlFile.getRootTag();
-                    String namespace = rootTag.getAttribute("namespace").getValue();
-                    //only the name space is equal than deal with it.
-                    if (namespace != null && namespace.equals(srcClass.getQualifiedName())) {
-                        psixml = xmlFile;
-                        break;
-                    }
-                }
-            }
-        }
-        if (psixml == null) {
-            //cant' find the file by name. then go to search it. will only search the file once.
-            List<XmlFile> xmlFiles = PsiSearchUtils.searchMapperXml(project, ModuleUtilCore.findModuleForPsiElement(element), srcClass.getQualifiedName());
-            if (xmlFiles.size() == 0) {
-                Messages.showErrorDialog("can't find xml file for namespace " + srcClassName, "xml file not found error");
-                return;
-            } else if (xmlFiles.size() == 1) {
-                psixml = xmlFiles.get(0);
-            }
+        List<XmlFile> xmlFiles = PsiSearchUtils.searchMapperXml(project, ModuleUtilCore.findModuleForPsiElement(element), srcClass.getQualifiedName());
+        if (xmlFiles.size() == 0) {
+            Messages.showErrorDialog("can't find xml file for namespace " + srcClassName, "xml file not found error");
+            return;
+        } else if (xmlFiles.size() == 1) {
+            psixml = xmlFiles.get(0);
         }
         //extract field from pojoClass.
         List<String> props = PsiClassUtil.extractProps(pojoClass);
@@ -128,47 +104,16 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         if (rootTag == null) {
             return;
         }
-        XmlTag[] subTags = rootTag.getSubTags();
 
-        boolean allColumMapExist = false;
-        boolean allColumns = false;
-
-        //boolean isReturnclassCurrentClass.
-        String tableName = null;
-
-        FieldToColumnRelation relation = null;
-        boolean hasResultType = false;
-        for (XmlTag tag : subTags) {
-            if (tag.getName().equalsIgnoreCase(MyBatisXmlConstants.INSERT)) {
-                String insertText = tag.getValue().getText();
-                //go format it.
-                tableName = MapperUtil.extractTable(insertText);
-                if (tableName != null && tableName.length() < 30) {
-                    break;
-                }
-            } else if (relation == null && tag.getName().equalsIgnoreCase(MyBatisXmlConstants.RESULTMAP)) {
-                String resultMapId;
-                XmlAttribute id = tag.getAttribute(MyBatisXmlConstants.ID);
-                if (id != null && id.getValue() != null) {
-                    resultMapId = id.getValue();
-                    XmlAttribute typeAttribute = tag.getAttribute(MyBatisXmlConstants.TYPE);
-                    if (typeAttribute != null && typeAttribute.getValue() != null && typeAttribute.getValue().trim().equals(pojoClass.getQualifiedName())) {
-                        //mean we find the corresponding prop.
-                        hasResultType = true;
-                        relation = extractFieldAndColumnRelation(tag, props, resultMapId);
-                    }
-                }
-            } else if (tag.getName().equalsIgnoreCase(MyBatisXmlConstants.SQL)) {
-                XmlAttribute id = tag.getAttribute(MyBatisXmlConstants.ID);
-                if (id != null && id.getValue().equals(MapperConstants.ALL_COLUMN)) {
-                    allColumns = true;
-                }
+        ExistXmlTagInfo existXmlTagInfo = extractExistXmlInfo(props, rootTag, pojoClass.getQualifiedName());
+        if (existXmlTagInfo.getTableName() == null && domainClassInfo.getDomainClassSourceType() == DomainClassSourceType.MYBATISPLUS) {
+            String tableName = MyBatisPlusUtils.extractTableNameForMybatisPlus(domainClassInfo);
+            if (tableName != null) {
+                existXmlTagInfo.setTableName(tableName);
             }
-            //then go next shall be the same.
-            //deal with it.
         }
+        if (StringUtils.isEmpty(existXmlTagInfo.getTableName())) {
 
-        if (StringUtils.isEmpty(tableName)) {
             Messages.showErrorDialog("can't find table name from your " + psixml.getName() + "" +
                     "\nplease add a correct insert method into the file\n" +
                     "like\n'<insert id=\"insert\">\n" +
@@ -178,8 +123,8 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         }
 
         PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
-        if (relation == null) {
-            if (hasResultType) {
+        if (existXmlTagInfo.getFieldToColumnRelation() == null) {
+            if (existXmlTagInfo.isHasResultMap()) {
                 Messages.showErrorDialog("please check with your resultMap\n" +
                         "dose it contain all the property of " + pojoClass.getQualifiedName() + "? ", "proprety in resultMap is not complete");
                 return;
@@ -202,14 +147,14 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
                 Document xmlDocument = psiDocumentManager.getDocument(psixml);
                 PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, xmlDocument);
 
-                relation = convertToRelation(relation1);
+                existXmlTagInfo.setFieldToColumnRelation(convertToRelation(relation1));
             }
         }
 
-        methodInfo.setRelation(relation);
+        methodInfo.setRelation(existXmlTagInfo.getFieldToColumnRelation());
 
-        if (!allColumns) {
-            String allColumn = buildAllColumn(relation.getFiledToColumnMap());
+        if (!existXmlTagInfo.isHasAllColumn()) {
+            String allColumn = buildAllColumn(existXmlTagInfo.getFieldToColumnRelation().getFiledToColumnMap());
             XmlTag sql = rootTag.createChildTag("sql", "", allColumn, false);
             sql.setAttribute("id", MapperConstants.ALL_COLUMN);
             rootTag.addSubTag(sql, true);
@@ -228,7 +173,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
             }
         }
         rootTag = psixml.getRootTag();
-        methodInfo.setTableName(tableName);
+        methodInfo.setTableName(existXmlTagInfo.getTableName());
         methodInfo.setPsiClassFullName(pojoClass.getQualifiedName());
         methodInfo.setPsiClassName(pojoClass.getName());
         methodInfo.setFieldMap(PsiClassUtil.buildFieldMapWithConvertPrimitiveType(pojoClass));
@@ -304,6 +249,45 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
                 + " used database is:" + DatabaseComponenent.currentDatabase());
     }
 
+    @NotNull
+    private ExistXmlTagInfo extractExistXmlInfo(List<String> props, XmlTag rootTag, String qualifiedName) {
+        ExistXmlTagInfo existXmlTagInfo = new ExistXmlTagInfo();
+        XmlTag[] subTags = rootTag.getSubTags();
+        for (XmlTag tag : subTags) {
+            if (tag.getName().equalsIgnoreCase(MyBatisXmlConstants.INSERT)) {
+                if (existXmlTagInfo.getTableName() != null) {
+                    continue;
+                }
+                String insertText = tag.getValue().getText();
+                //go format it.
+                String tableName = MapperUtil.extractTable(insertText);
+                if (tableName != null && tableName.length() < 30) {
+                    existXmlTagInfo.setTableName(tableName);
+                }
+            } else if (existXmlTagInfo.getFieldToColumnRelation() == null && tag.getName().equalsIgnoreCase(MyBatisXmlConstants.RESULTMAP)) {
+                String resultMapId;
+                XmlAttribute id = tag.getAttribute(MyBatisXmlConstants.ID);
+                if (id != null && id.getValue() != null) {
+                    resultMapId = id.getValue();
+                    XmlAttribute typeAttribute = tag.getAttribute(MyBatisXmlConstants.TYPE);
+                    if (typeAttribute != null && typeAttribute.getValue() != null && typeAttribute.getValue().trim().equals(qualifiedName)) {
+                        //mean we find the corresponding prop.
+                        existXmlTagInfo.setHasResultMap(true);
+                        existXmlTagInfo.setFieldToColumnRelation(extractFieldAndColumnRelation(tag, props, resultMapId));
+                    }
+                }
+            } else if (!existXmlTagInfo.isHasAllColumn() && tag.getName().equalsIgnoreCase(MyBatisXmlConstants.SQL)) {
+                XmlAttribute id = tag.getAttribute(MyBatisXmlConstants.ID);
+                if (id != null && id.getValue().equals(MapperConstants.ALL_COLUMN)) {
+                    existXmlTagInfo.setHasAllColumn(true);
+                }
+            }
+            //then go next shall be the same.
+            //deal with it.
+        }
+        return existXmlTagInfo;
+    }
+
     private FieldToColumnRelation convertToRelation(FieldToColumnRelation relation1) {
         FieldToColumnRelation relation = new FieldToColumnRelation();
         relation.setResultMapId(relation1.getResultMapId());
@@ -367,7 +351,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         int i = 0;
         for (String s : filedToColumnMap.keySet()) {
             i++;
-            bu.append("\n" + GenCodeUtil.ONE_RETRACT).append("`" + filedToColumnMap.get(s) + "`");
+            bu.append("\n" + GenCodeUtil.ONE_RETRACT).append(DatabaseComponenent.formatColumn(filedToColumnMap.get(s)));
             if (i != filedToColumnMap.size()) {
                 bu.append(",");
             }

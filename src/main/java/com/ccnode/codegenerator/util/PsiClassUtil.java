@@ -3,6 +3,8 @@ package com.ccnode.codegenerator.util;
 import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
+import com.ccnode.codegenerator.pojo.DomainClassInfo;
+import com.ccnode.codegenerator.pojo.DomainClassSourceType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
@@ -22,6 +24,7 @@ public class PsiClassUtil {
 
 
     public static final String PARAM = "@Param(\"";
+    public static final String MYBATISPLUS_BASEMAPPER = "BaseMapper";
 
     private static Map<String, String> primitiveToObjectMap = new HashMap<String, String>() {
         {
@@ -55,8 +58,8 @@ public class PsiClassUtil {
             if (name.startsWith("insert") || name.startsWith("save") || name.startsWith("add") || name.startsWith("create")) {
                 if (classMethod.getParameterList().getParameters().length == 1) {
                     PsiParameter parameter = classMethod.getParameterList().getParameters()[0];
-                    //mean is not system class like collection class ect.
-                    if (!parameter.getType().getCanonicalText().startsWith("java.")) {
+                    PsiClass psiClass = PsiTypesUtil.getPsiClass(parameter.getType());
+                    if (canBeDomainClass(psiClass)) {
                         methodsList.add(classMethod);
                     }
                 }
@@ -70,42 +73,41 @@ public class PsiClassUtil {
         }
     }
 
-    public static PsiClass getPojoClass(PsiClass srcClass) {
+    public static boolean canBeDomainClass(PsiClass psiClass) {
+        if (psiClass != null) {
+            if (!psiClass.getQualifiedName().startsWith("java.")) {
+                PsiField[] allFields = psiClass.getAllFields();
+                for (PsiField allField : allFields) {
+                    if (isSupprtedModifier(allField)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Nullable
+    public static DomainClassInfo getDomainClassInfo(PsiClass srcClass) {
         PsiMethod addMethod = getAddMethod(srcClass);
         if (addMethod != null) {
-            PsiParameterList parameterList = addMethod.getParameterList();
-            PsiParameter[] parameters = parameterList.getParameters();
-            if (parameters.length == 1) {
-                PsiType type = parameters[0].getType();
-                PsiClass psiClass = PsiTypesUtil.getPsiClass(type);
-                if (psiClass == null) {
-                    return null;
-                }
-                PsiField[] allFields = psiClass.getAllFields();
-                //// TODO: 2016/12/15 maybe need check if exist id property.
-                if (allFields != null && allFields.length > 0) {
-                    return psiClass;
-                }
-                //try to get it from the class.
+            PsiClass psiClass = PsiTypesUtil.getPsiClass(addMethod.getParameterList().getParameters()[0].getType());
+            DomainClassInfo info = new DomainClassInfo();
+            info.setDomainClass(psiClass);
+            info.setDomainClassSourceType(DomainClassSourceType.FROMMETHOD);
+            return info;
+        } else {
+            //get from super type.
+            PsiClass psiClass = MyBatisPlusUtils.getClassFromMyBatisPlus(srcClass);
+            if (psiClass != null) {
+                DomainClassInfo info = new DomainClassInfo();
+                info.setDomainClass(psiClass);
+                info.setDomainClassSourceType(DomainClassSourceType.MYBATISPLUS);
+                return info;
             }
         }
         return null;
     }
-
-//    public static List<ClassFieldInfo> buildPropFieldInfo(PsiClass psiClass) {
-//        List<ClassFieldInfo> lists = new ArrayList<>();
-//        PsiField[] allFields = psiClass.getAllFields();
-//        for (PsiField psiField : allFields) {
-//            if (isSupprtedModifier(psiField)) {
-//                ClassFieldInfo info = new ClassFieldInfo();
-//                info.setFieldName(psiField.getName());
-//                info.setFieldType(convertToObjectText(psiField.getType().getCanonicalText()));
-//                info.setPsiField(psiField);
-//                lists.add(info);
-//            }
-//        }
-//        return lists;
-//    }
 
     public static List<ClassFieldInfo> buildPropFieldInfo(List<PsiField> validFields) {
         List<ClassFieldInfo> lists = new ArrayList<>();
