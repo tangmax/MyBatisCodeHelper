@@ -1,7 +1,6 @@
 package com.ccnode.codegenerator.pojo;
 
 import com.ccnode.codegenerator.database.DatabaseComponenent;
-import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 
 import java.util.Map;
 
@@ -30,10 +29,7 @@ public class FieldToColumnRelation {
     }
 
     public String getPropColumn(String prop) {
-        if (DatabaseComponenent.currentDatabase().equals(DataBaseConstants.MYSQL)) {
-            return "`" + filedToColumnMap.get(prop.toLowerCase()) + "`";
-        } else {
-            return filedToColumnMap.get(prop.toLowerCase());
-        }
+        String s = filedToColumnMap.get(prop.toLowerCase());
+        return DatabaseComponenent.formatColumn(s);
     }
 }

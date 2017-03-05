@@ -125,6 +125,13 @@
                     text="generate mybatis files"
                     description="generate sql"/>
         </group>
+
+        <group id="MyBatisCodeHelperEditorGroup">
+            <add-to-group group-id="EditorPopupMenu"></add-to-group>
+            <action class="com.ccnode.codegenerator.view.MultipleMethodGenerateAction"
+                    id="MybatisMutlipleMethodGenerate"
+                    text="generate mybatis xml" description="generate mybatis xml"/>
+        </group>
         <!--<group id="com.ccnode.codegenerator.mybatis.generator" text="Gen" description="CodeGenerator">-->
         <!--<add-to-group group-id="TestActionSubGroup" />-->
         <!--<action id="mybatis.generator_1" class="com.ccnode.codegenerator.view.GenCodeAction" text="genCode1" description="A test menu item1"/>-->

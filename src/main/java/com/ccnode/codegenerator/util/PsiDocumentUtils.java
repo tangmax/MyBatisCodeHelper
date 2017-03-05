@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.util;
 
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.psi.PsiDocumentManager;
@@ -54,10 +55,13 @@ public class PsiDocumentUtils {
             if (packageStatement != null) {
                 start = packageStatement.getTextLength() + packageStatement.getTextOffset();
             }
+            final int textStart = start;
             String insertText = newImportText.toString();
             if (StringUtils.isNotBlank(insertText)) {
-                document.insertString(start, insertText);
-                PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, document);
+                WriteCommandAction.runWriteCommandAction(containingFile.getProject(), () -> {
+                    document.insertString(textStart, insertText);
+                    PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, document);
+                });
             }
         }
     }
