@@ -5,6 +5,7 @@ import com.ccnode.codegenerator.genmethodxml.GenMethodResult;
 import com.ccnode.codegenerator.genmethodxml.GenMethodXmlInvoker;
 import com.ccnode.codegenerator.log.Log;
 import com.ccnode.codegenerator.log.LogFactory;
+import com.ccnode.codegenerator.util.IconUtils;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.intellij.codeInsight.CodeInsightUtil;
@@ -31,6 +32,10 @@ import java.util.concurrent.TimeUnit;
 public class MultipleMethodGenerateAction extends AnAction {
 
     private static Log log = LogFactory.getLogger(MultipleMethodGenerateAction.class);
+
+    public MultipleMethodGenerateAction(){
+        super(null,null, IconUtils.useMyBatisIcon());
+    }
     @Override
     public void actionPerformed(AnActionEvent e) {
         Stopwatch started = Stopwatch.createStarted();

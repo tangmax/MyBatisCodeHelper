@@ -174,6 +174,10 @@ public class GenMethodXmlInvoker {
             methodInfo.setFieldMap(PsiClassUtil.buildFieldMapWithConvertPrimitiveType(pojoClass));
             QueryParseDto parseDto = QueryParser.parse(props, methodInfo);
             XmlTagAndInfo choosed = null;
+            if(parseDto==null){
+                Messages.showErrorDialog(myProject,"the text must start with find or delete or count or update","parse error");
+                return null;
+            }
             if (parseDto.getHasMatched()) {
                 //dothings in it.
                 List<QueryInfo> queryInfos = parseDto.getQueryInfos();
