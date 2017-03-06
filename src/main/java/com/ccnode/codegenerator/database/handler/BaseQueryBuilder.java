@@ -8,6 +8,7 @@ import com.ccnode.codegenerator.methodnameparser.buidler.QueryInfo;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.base.QueryRule;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.count.ParsedCount;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.delete.ParsedDelete;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.find.FetchProp;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFind;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.update.ParsedUpdate;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
@@ -281,6 +282,7 @@ public class BaseQueryBuilder implements QueryBuilder {
         QueryInfo info = new QueryInfo();
         info.setImportList(new HashSet<>());
         ParsedFind find = result.getParsedFind();
+        //shall support with function
         FieldToColumnRelation relation = result.getRelation();
         Map<String, String> fieldMap = result.getFieldMap();
         info.setType(QueryTypeConstants.SELECT);
@@ -288,12 +290,31 @@ public class BaseQueryBuilder implements QueryBuilder {
         boolean returnList = true;
         if (find.getFetchProps() != null && find.getFetchProps().size() > 0) {
             if (find.getFetchProps().size() > 1) {
+//need to handle when fetch two property let user choose to create class for it.
+
                 info.setReturnMap(relation.getResultMapId());
             } else {
                 //说明等于1
-                String s = find.getFetchProps().get(0);
-                String returnClass = fieldMap.get(s);
-                info.setReturnClass(returnClass);
+                FetchProp prop = find.getFetchProps().get(0);
+                if (prop.getFetchFunction() == null) {
+                    String returnClass = fieldMap.get(prop.getFetchProp());
+                    info.setReturnClass(returnClass);
+                } else {
+                    returnList = false;
+                    String fetchFunction = prop.getFetchFunction();
+                    switch (fetchFunction) {
+                        case KeyWordConstants.MAX:
+                        case KeyWordConstants.MIN: {
+                            info.setReturnClass(fieldMap.get(prop.getFetchProp()));
+                            break;
+                        }
+                        case KeyWordConstants.AVG:
+                        case KeyWordConstants.SUM: {
+                            info.setReturnClass("java.math.BigDecimal");
+                            break;
+                        }
+                    }
+                }
             }
         } else {
             queryAllTable = true;

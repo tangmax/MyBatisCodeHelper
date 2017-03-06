@@ -23,6 +23,8 @@ public class BaseParser {
             KeyWordConstants.ISNOTNULL, KeyWordConstants.ISNULL, KeyWordConstants.NOTNULL, KeyWordConstants.NOTLIKE, KeyWordConstants.LIKE
             , KeyWordConstants.NOTIN, KeyWordConstants.NOT, KeyWordConstants.IN};
 
+    protected static String[] functionOp = {KeyWordConstants.MAX,KeyWordConstants.MIN,KeyWordConstants.AVG,KeyWordConstants.SUM};
+
     protected static String[] order = {KeyWordConstants.ASC, KeyWordConstants.DESC};
 
 

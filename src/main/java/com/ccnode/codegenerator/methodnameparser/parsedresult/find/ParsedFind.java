@@ -13,7 +13,7 @@ public class ParsedFind extends ParsedBase{
     /**
      * the part after 'select' before 'by'
      */
-    private List<String> fetchProps;
+    private List<FetchProp> fetchProps;
 
     /**
      * the part after by.
@@ -39,9 +39,32 @@ public class ParsedFind extends ParsedBase{
     public void addFetchProps(String props) {
         if (fetchProps == null) {
             fetchProps = new ArrayList<>();
+
         }
-        fetchProps.add(props);
+        FetchProp e = new FetchProp();
+        e.setFetchProp(props);
+        fetchProps.add(e);
     }
+
+    public void addFunction(String function){
+        if (fetchProps == null) {
+            fetchProps = new ArrayList<>();
+
+        }
+        FetchProp e = new FetchProp();
+        e.setFetchFunction(function);
+        fetchProps.add(e);
+    }
+
+    public void addFunctionProp(String functionProp){
+        if (fetchProps == null) {
+            throw new RuntimeException("add function prop, the fetchProp shall not be empty");
+        }
+        FetchProp lastFecthProp = fetchProps.get(fetchProps.size() - 1);
+        lastFecthProp.setFetchProp(functionProp);
+    }
+
+
 
 
     public void addOrderByProp(String prop) {
@@ -75,7 +98,7 @@ public class ParsedFind extends ParsedBase{
     }
 
 
-    public List<String> getFetchProps() {
+    public List<FetchProp> getFetchProps() {
         return fetchProps;
     }
 

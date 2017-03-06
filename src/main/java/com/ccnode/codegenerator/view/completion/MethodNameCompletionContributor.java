@@ -63,6 +63,7 @@ public class MethodNameCompletionContributor extends CompletionContributor {
             }
             String lower = text.toLowerCase();
             boolean defaultrecommed = false;
+            //todo need fix when there is variable named 'by'
             for (String end : textEndList) {
                 if (lower.endsWith(end)) {
                     defaultrecommed = true;
@@ -82,28 +83,56 @@ public class MethodNameCompletionContributor extends CompletionContributor {
             }
             //todo may be can add more.
             List<String> afterlower = new ArrayList<String>();
-            if (lower.endsWith("g")) {
-                afterlower.add("reaterThan");
-                afterlower.add("reaterThanOrEqualTo");
+            if(lower.indexOf("by")!=-1){
+                if (lower.endsWith("g")) {
+                    afterlower.add("reaterThan");
+                    afterlower.add("reaterThanOrEqualTo");
+                }
+                if (lower.endsWith("l")) {
+                    afterlower.add("essThan");
+                    afterlower.add("essThanOrEqualTo");
+                    afterlower.add("ike");
+                }
+                if (lower.endsWith("b")) {
+                    afterlower.add("etween");
+                    afterlower.add("etweenOrEqualTo");
+                }
+                if (lower.endsWith("i")) {
+                    afterlower.add("n");
+                    afterlower.add("sNotNull");
+                }
+                if (lower.endsWith("n")) {
+                    afterlower.add("otIn");
+                    afterlower.add("otLike");
+                    afterlower.add("ot");
+                    afterlower.add("otNull");
+                }
+                if(lower.endsWith("a")){
+                    afterlower.add("nd");
+                }
+                if(lower.endsWith("o")){
+                    afterlower.add("r");
+                }
+
             }
-            if (lower.endsWith("l")) {
-                afterlower.add("essThan");
-                afterlower.add("essThanOrEqualTo");
-                afterlower.add("ike");
+
+            if(lower.endsWith("m")){
+                afterlower.add("ax");
+                afterlower.add("in");
             }
-            if (lower.endsWith("b")) {
-                afterlower.add("etween");
-                afterlower.add("etweenOrEqualTo");
+
+            if(lower.endsWith("a")){
+                afterlower.add("vg");
             }
-            if (lower.endsWith("findd") || lower.endsWith("countd")) {
+
+            if(lower.endsWith("s")){
+                afterlower.add("um");
+            }
+
+            if (lower.equals("findd") || lower.equals("countd")) {
                 afterlower.add("istinct");
             }
-            if (lower.endsWith("i")) {
-                afterlower.add("n");
-            }
-            if (lower.endsWith("n")) {
-                afterlower.add("otIn");
-            }
+
             if (lower.indexOf("orderby") != -1 && lower.endsWith("d")) {
                 afterlower.add("esc");
             }

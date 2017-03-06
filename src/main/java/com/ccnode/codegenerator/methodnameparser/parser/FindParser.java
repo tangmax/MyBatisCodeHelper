@@ -102,6 +102,15 @@ public class FindParser extends BaseParser {
                     parseMethods(8, remaining, KeyWordConstants.BY.length(), newFind);
                     newParseFind = true;
                 }
+
+                for (String function : functionOp) {
+                    if (remaining.startsWith(function)) {
+                        ParsedFind newFind = createParseFind(parsedFind);
+                        newFind.addFunction(function);
+                        parseMethods(11, remaining, function.length(), newFind);
+                        newParseFind = true;
+                    }
+                }
                 break;
             }
             case 1: {
@@ -201,6 +210,15 @@ public class FindParser extends BaseParser {
                         newParseFind = true;
                     }
                 }
+
+                for (String function : functionOp) {
+                    if (remaining.startsWith(function)) {
+                        ParsedFind newFind = createParseFind(parsedFind);
+                        newFind.addFunction(function);
+                        parseMethods(11, remaining, function.length(), newFind);
+                        newParseFind = true;
+                    }
+                }
                 break;
             }
 
@@ -254,6 +272,19 @@ public class FindParser extends BaseParser {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addConnector(link);
                         parseMethods(8, remaining, link.length(), newFind);
+                        newParseFind = true;
+                    }
+                }
+                break;
+            }
+
+            case 11:{
+                for (int i = 0; i < props.length; i++) {
+                    if (remaining.startsWith(lowerProps[i])) {
+                        ParsedFind newFind = createParseFind(parsedFind);
+                        newFind.addFunctionProp(props[i]);
+                        parseMethods(3, remaining, props[i].length(), newFind);
+                        newParseFind = true;
                     }
                 }
                 break;
@@ -277,7 +308,7 @@ public class FindParser extends BaseParser {
     }
 
     private boolean isValidEndState(int state) {
-        if (state == 0 ||  state == 2 || state == 3 || state == 5 || state == 6 || state == 9 || state == 10) {
+        if (state == 0 || state == 2 || state == 3 || state == 5 || state == 6 || state == 9 || state == 10) {
             return true;
         }
         return false;

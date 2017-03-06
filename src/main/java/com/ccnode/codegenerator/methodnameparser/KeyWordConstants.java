@@ -10,6 +10,15 @@ public class KeyWordConstants {
     public static final String DISTINCT = "distinct";
 
 
+    public static final String MAX = "max";
+
+    public static final String MIN = "min";
+
+    public static final String AVG = "avg";
+
+    public static final String SUM = "sum";
+
+
     public static final String COUNT = "count";
 
     public static final String FIND = "find";

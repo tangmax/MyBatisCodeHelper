@@ -1,5 +1,7 @@
 package com.ccnode.codegenerator.queryparser;
 
+import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.find.FetchProp;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFind;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFindDto;
 import com.ccnode.codegenerator.methodnameparser.parser.FindParser;
@@ -48,6 +50,25 @@ public class FindParserTest {
         List<ParsedFind> parsedFinds =
                 parse.getParsedFinds();
 
+
+    }
+
+    @Test
+    public void testFunction(){
+        List<String> props = buildBasicProp();
+        String methodName = "findMaxUserName";
+        FindParser findParser = new FindParser(methodName.toLowerCase(), props);
+        ParsedFindDto parse = findParser.parse();
+        List<ParsedFind> parsedFinds =
+                parse.getParsedFinds();
+        assertThat(parsedFinds.size()).isEqualTo(1);
+        ParsedFind parsedFind = parsedFinds.get(0);
+        List<FetchProp> fetchProps =
+                parsedFind.getFetchProps();
+        assertThat(fetchProps.size()).isEqualTo(1);
+        FetchProp prop = fetchProps.get(0);
+        assertThat(prop.getFetchFunction()).isEqualTo(KeyWordConstants.MAX);
+        assertThat(prop.getFetchProp()).isEqualTo("userName");
     }
 
     @NotNull

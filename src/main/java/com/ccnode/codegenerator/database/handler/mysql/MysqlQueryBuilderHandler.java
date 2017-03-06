@@ -3,8 +3,10 @@ package com.ccnode.codegenerator.database.handler.mysql;
 import com.ccnode.codegenerator.constants.MapperConstants;
 import com.ccnode.codegenerator.database.handler.BaseQueryBuilder;
 import com.ccnode.codegenerator.database.handler.QueryBuilderHandler;
+import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
 import com.ccnode.codegenerator.methodnameparser.buidler.MethodNameParsedResult;
 import com.ccnode.codegenerator.methodnameparser.buidler.QueryInfo;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.find.FetchProp;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.OrderByRule;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFind;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
@@ -31,19 +33,44 @@ public class MysqlQueryBuilderHandler implements QueryBuilderHandler {
             builder.append("\n" + GenCodeUtil.ONE_RETRACT + "select");
             if (find.getDistinct()) {
                 builder.append(" distinct(");
-                for (String prop : find.getFetchProps()) {
-                    builder.append(relation.getPropColumn(prop) + ",");
+                for (FetchProp prop : find.getFetchProps()) {
+                    builder.append(relation.getPropColumn(prop.getFetchProp()) + ",");
                 }
                 builder.deleteCharAt(builder.length() - 1);
                 builder.append(")");
             } else {
-                for (String prop : find.getFetchProps()) {
-                    builder.append(" " + relation.getPropColumn(prop) + ",");
+                for (FetchProp prop : find.getFetchProps()) {
+                    if (prop.getFetchFunction() == null) {
+                        builder.append(" " + relation.getPropColumn(prop.getFetchProp()) + ",");
+                    } else {
+                        handleWithFunction(relation, builder, prop);
+                    }
                 }
                 builder.deleteCharAt(builder.length() - 1);
             }
         }
         info.setSql(builder.toString());
+    }
+
+    public static void handleWithFunction(FieldToColumnRelation relation, StringBuilder builder, FetchProp prop) {
+        switch (prop.getFetchFunction()) {
+            case KeyWordConstants.MAX: {
+                builder.append(" max(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                break;
+            }
+            case KeyWordConstants.MIN: {
+                builder.append(" min(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                break;
+            }
+            case KeyWordConstants.AVG: {
+                builder.append(" avg(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                break;
+            }
+            case KeyWordConstants.SUM: {
+                builder.append(" sum(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                break;
+            }
+        }
     }
 
     @Override

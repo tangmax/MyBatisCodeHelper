@@ -5,6 +5,7 @@ import com.ccnode.codegenerator.database.handler.BaseQueryBuilder;
 import com.ccnode.codegenerator.database.handler.QueryBuilderHandler;
 import com.ccnode.codegenerator.methodnameparser.buidler.MethodNameParsedResult;
 import com.ccnode.codegenerator.methodnameparser.buidler.QueryInfo;
+import com.ccnode.codegenerator.methodnameparser.parsedresult.find.FetchProp;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.OrderByRule;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFind;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
@@ -31,14 +32,18 @@ public class OracleQueryBuilderHandler implements QueryBuilderHandler {
             builder.append("\n" + GenCodeUtil.ONE_RETRACT + "select");
             if (find.getDistinct()) {
                 builder.append(" distinct(");
-                for (String prop : find.getFetchProps()) {
-                    builder.append(relation.getPropColumn(prop) + ",");
+                for (FetchProp prop : find.getFetchProps()) {
+                    builder.append(relation.getPropColumn(prop.getFetchProp()) + ",");
                 }
                 builder.deleteCharAt(builder.length() - 1);
                 builder.append(")");
             } else {
-                for (String prop : find.getFetchProps()) {
-                    builder.append(" " + relation.getPropColumn(prop) + ",");
+                for (FetchProp prop : find.getFetchProps()) {
+                    if (prop.getFetchFunction() == null) {
+                        builder.append(" " + relation.getPropColumn(prop.getFetchProp()) + ",");
+                    } else {
+                        //todo when there is function in it.
+                    }
                 }
                 builder.deleteCharAt(builder.length() - 1);
             }
