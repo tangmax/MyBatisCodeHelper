@@ -249,7 +249,7 @@ public class GenMethodXmlInvoker {
         }
         PsiFile psiFile = PsiDocumentManager.getInstance(myProject).getPsiFile(document);
         if (psiFile != null && (psiFile instanceof PsiJavaFile)) {
-            PsiDocumentUtils.addImportToFile(psiDocumentManager, (PsiJavaFile) psiFile, psiDocumentManager.getDocument(srcClass.getContainingFile()), allImportList);
+            PsiDocumentUtils.addImportToFile(psiDocumentManager, (PsiJavaFile) psiFile, document, allImportList);
         }
         XmlTag[] subTags = psixml.getRootTag().getSubTags();
         if (subTags.length > 0) {
