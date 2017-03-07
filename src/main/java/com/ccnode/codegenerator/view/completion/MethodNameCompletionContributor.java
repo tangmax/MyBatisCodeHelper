@@ -107,9 +107,6 @@ public class MethodNameCompletionContributor extends CompletionContributor {
                     afterlower.add("ot");
                     afterlower.add("otNull");
                 }
-                if(lower.endsWith("a")){
-                    afterlower.add("nd");
-                }
                 if(lower.endsWith("o")){
                     afterlower.add("r");
                 }
@@ -123,6 +120,7 @@ public class MethodNameCompletionContributor extends CompletionContributor {
 
             if(lower.endsWith("a")){
                 afterlower.add("vg");
+                afterlower.add("nd");
             }
 
             if(lower.endsWith("s")){

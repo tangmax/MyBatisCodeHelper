@@ -1,5 +1,8 @@
 package com.ccnode.codegenerator.pojo;
 
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiClass;
+
 import java.util.Map;
 
 /**
@@ -19,6 +22,28 @@ public class MethodXmlPsiInfo {
 
 
     private String psiClassFullName;
+
+    private Project project;
+
+    private PsiClass srcClass;
+
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    //get the interface class of project.
+    public PsiClass getSrcClass() {
+        return srcClass;
+    }
+
+    public void setSrcClass(PsiClass srcClass) {
+        this.srcClass = srcClass;
+    }
 
     public String getPsiClassFullName() {
         return psiClassFullName;

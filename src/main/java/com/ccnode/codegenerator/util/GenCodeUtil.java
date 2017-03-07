@@ -1,7 +1,5 @@
 package com.ccnode.codegenerator.util;
 
-import com.ccnode.codegenerator.database.DatabaseComponenent;
-import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +91,12 @@ public class GenCodeUtil {
     public static String getLowerCamel(String value) {
         return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, value);
     }
+
+    public static String getCamelFromUnderScore(String value) {
+        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, value);
+    }
+
+
 
     public static void main(String[] args) {
 //        System.out.println(deducePackage("src/main/java/com/qunar/insurance","com.qunar.insurance.annotion"));

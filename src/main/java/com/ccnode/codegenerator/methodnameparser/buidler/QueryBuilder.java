@@ -38,6 +38,7 @@ public class QueryBuilder {
 
         List<QueryInfo> queryInfos = new ArrayList<>();
         for (ParsedFind find : parsedFinds) {
+            //todo make people to use it, if return null,just skip.
             queryInfos.add(DatabaseComponenent.currentHandler().getMethodXmlHandler().buildQueryInfoByMethodNameParsedResult(convertFromParsedFind(find, info)));
         }
         //say this is not an method.
@@ -86,6 +87,8 @@ public class QueryBuilder {
         methodNameParsedResult.setFieldMap(info.getFieldMap());
         methodNameParsedResult.setPsiClassName(info.getPsiClassName());
         methodNameParsedResult.setPsiClassFullName(info.getPsiClassFullName());
+        methodNameParsedResult.setSrcClass(info.getSrcClass());
+        methodNameParsedResult.setProject(info.getProject());
         return methodNameParsedResult;
     }
 

@@ -171,6 +171,8 @@ public class GenMethodXmlInvoker {
             methodInfo.setPsiClassFullName(pojoClass.getQualifiedName());
             methodInfo.setPsiClassName(pojoClass.getName());
             methodInfo.setFieldMap(PsiClassUtil.buildFieldMapWithConvertPrimitiveType(pojoClass));
+            methodInfo.setProject(myProject);
+            methodInfo.setSrcClass(srcClass);
             QueryParseDto parseDto = QueryParser.parse(props, methodInfo);
             XmlTagAndInfo choosed = null;
             if(parseDto==null){

@@ -1,6 +1,8 @@
 package com.ccnode.codegenerator.database.handler;
 
 import com.ccnode.codegenerator.constants.QueryTypeConstants;
+import com.ccnode.codegenerator.database.DbUtils;
+import com.ccnode.codegenerator.database.GenClassDialog;
 import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
 import com.ccnode.codegenerator.methodnameparser.buidler.MethodNameParsedResult;
 import com.ccnode.codegenerator.methodnameparser.buidler.ParamInfo;
@@ -291,7 +293,13 @@ public class BaseQueryBuilder implements QueryBuilder {
         if (find.getFetchProps() != null && find.getFetchProps().size() > 0) {
             if (find.getFetchProps().size() > 1) {
 //need to handle when fetch two property let user choose to create class for it.
-
+                //let user to generate class for it.
+                GenClassDialog genClassDialog = new GenClassDialog(result.getProject(), find.getFetchProps(), fieldMap, result.getMethodName(), relation,result.getSrcClass());
+                boolean b = genClassDialog.showAndGet();
+                if(!b){
+                    //todo make it here.
+                    return null;
+                }
                 info.setReturnMap(relation.getResultMapId());
             } else {
                 //说明等于1
@@ -302,18 +310,8 @@ public class BaseQueryBuilder implements QueryBuilder {
                 } else {
                     returnList = false;
                     String fetchFunction = prop.getFetchFunction();
-                    switch (fetchFunction) {
-                        case KeyWordConstants.MAX:
-                        case KeyWordConstants.MIN: {
-                            info.setReturnClass(fieldMap.get(prop.getFetchProp()));
-                            break;
-                        }
-                        case KeyWordConstants.AVG:
-                        case KeyWordConstants.SUM: {
-                            info.setReturnClass("java.math.BigDecimal");
-                            break;
-                        }
-                    }
+                    String returnClass = DbUtils.getReturnClassFromFunction(fieldMap, fetchFunction, prop.getFetchProp());
+                    info.setReturnClass(returnClass);
                 }
             }
         } else {

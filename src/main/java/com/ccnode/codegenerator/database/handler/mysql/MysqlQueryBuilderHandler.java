@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.database.handler.mysql;
 
 import com.ccnode.codegenerator.constants.MapperConstants;
+import com.ccnode.codegenerator.database.DbUtils;
 import com.ccnode.codegenerator.database.handler.BaseQueryBuilder;
 import com.ccnode.codegenerator.database.handler.QueryBuilderHandler;
 import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
@@ -53,21 +54,22 @@ public class MysqlQueryBuilderHandler implements QueryBuilderHandler {
     }
 
     public static void handleWithFunction(FieldToColumnRelation relation, StringBuilder builder, FetchProp prop) {
+        String returnVal = DbUtils.buildSelectFunctionVal(prop);
         switch (prop.getFetchFunction()) {
             case KeyWordConstants.MAX: {
-                builder.append(" max(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                builder.append(String.format(" max(%s) as %s,", relation.getPropColumn(prop.getFetchProp()),returnVal));
                 break;
             }
             case KeyWordConstants.MIN: {
-                builder.append(" min(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                builder.append(String.format(" min(%s) as %s,", relation.getPropColumn(prop.getFetchProp()),returnVal));
                 break;
             }
             case KeyWordConstants.AVG: {
-                builder.append(" avg(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                builder.append(String.format(" avg(%s) as %s,", relation.getPropColumn(prop.getFetchProp()),returnVal));
                 break;
             }
             case KeyWordConstants.SUM: {
-                builder.append(" sum(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                builder.append(String.format(" sum(%s) as %s,", relation.getPropColumn(prop.getFetchProp()),returnVal));
                 break;
             }
         }
