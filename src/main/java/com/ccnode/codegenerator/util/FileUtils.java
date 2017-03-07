@@ -27,4 +27,17 @@ public class FileUtils {
             throw new RuntimeException("can't write file " + prop.getName() + " to path " + prop.getFullPath(), e);
         }
     }
+
+
+    public static void writeFiles(String  fullPath, List<String> retList,String fileName) {
+        try {
+            File file = new File(fullPath);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+            }
+            Files.write(Paths.get(fullPath), retList, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException("can't write file " + fileName + " to path " + fullPath, e);
+        }
+    }
 }

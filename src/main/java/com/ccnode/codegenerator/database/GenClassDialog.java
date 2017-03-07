@@ -1,10 +1,14 @@
 package com.ccnode.codegenerator.database;
 
+import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
+import com.ccnode.codegenerator.genCode.GenClassService;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.FetchProp;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.psi.PsiClass;
@@ -15,6 +19,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Author bruce.ge
@@ -37,7 +42,7 @@ public class GenClassDialog extends DialogWrapper {
 
     private List<FieldInfo> fieldInfoList;
 
-    private List<ColumnAndField> columnAndFields;
+    private List<ColumnAndField> columnAndFields = new ArrayList<>();
 
     private FieldToColumnRelation relation;
 
@@ -160,14 +165,17 @@ public class GenClassDialog extends DialogWrapper {
         //generate the info for it.
         //gonna save the result.
         String className = classNameText.getText();
-        String resultMapId = resultMapText.getText();
 
-        StringBuilder classFileBuilder = new StringBuilder();
 
         String folder = classFolderText.getText();
         String packageToModule = PsiClassUtil.getPackageToModule(folder, modulePath);
 
         int rowCount = myJtable.getRowCount();
+
+        Set<String> importList = Sets.newHashSet();
+
+        GenClassInfo info = new GenClassInfo();
+        List<NewClassFieldInfo> fieldInfos = Lists.newArrayList();
         for (int i = 0; i < rowCount; i++) {
             String columnName = (String) myJtable.getValueAt(i, 0);
             String fieldName = (String) myJtable.getValueAt(i, 1);
@@ -176,6 +184,43 @@ public class GenClassDialog extends DialogWrapper {
             columnAndField.setColumn(columnName);
             columnAndField.setField(fieldName);
             this.columnAndFields.add(columnAndField);
+            NewClassFieldInfo e = new NewClassFieldInfo();
+            e.setFieldName(fieldName);
+            e.setFieldShortType(MapperUtil.extractClassShortName(fieldType));
+            String s = MapperUtil.extractPackage(fieldType);
+            if (checkIsNeedImport(s)) {
+                importList.add(s);
+            }
+            fieldInfos.add(e);
         }
+        info.setClassFullPath(folder + "/" + className + ".java");
+        info.setClassFieldInfos(fieldInfos);
+        info.setClassName(className);
+        info.setClassPackageName(packageToModule);
+        info.setImportList(importList);
+        GenClassService.generateClassFileUsingFtl(info);
+
+        this.resultMapName = resultMapText.getText();
+        this.classQutifiedName = folder + "." + className;
+        //make it happen.
+    }
+
+    private boolean checkIsNeedImport(String s) {
+        if (s != null && !s.startsWith("java.lang")) {
+            return true;
+        }
+        return false;
+    }
+
+    public String getResultMapName() {
+        return resultMapName;
+    }
+
+    public List<ColumnAndField> getColumnAndFields() {
+        return columnAndFields;
+    }
+
+    public String getClassQutifiedName() {
+        return classQutifiedName;
     }
 }

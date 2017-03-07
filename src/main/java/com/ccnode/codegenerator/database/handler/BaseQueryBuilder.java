@@ -76,7 +76,7 @@ public class BaseQueryBuilder implements QueryBuilder {
         if (count.isDistinct()) {
             builder.append("distinct(");
             for (int i = 0; i < count.getFetchProps().size(); i++) {
-                builder.append(relation.getPropColumn(count.getFetchProps().get(i)));
+                builder.append(relation.getPropFormatColumn(count.getFetchProps().get(i)));
                 if (i != count.getFetchProps().size() - 1) {
                     builder.append(",");
                 }
@@ -87,7 +87,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                 builder.append("1");
             } else {
                 for (int i = 0; i < count.getFetchProps().size(); i++) {
-                    builder.append(relation.getPropColumn(count.getFetchProps().get(i)));
+                    builder.append(relation.getPropFormatColumn(count.getFetchProps().get(i)));
                     if (i != count.getFetchProps().size() - 1) {
                         builder.append(",");
                     }
@@ -143,7 +143,7 @@ public class BaseQueryBuilder implements QueryBuilder {
             ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("updated" + firstCharUpper(prop)).
                     withParamType(extractLast(updateQualifyType)).withParamValue("updated" + firstCharUpper(prop)).build();
             info.getParamInfos().add(paramInfo);
-            builder.append(" " + relation.getPropColumn(prop) + "=#{" + paramInfo.getParamAnno() + "}");
+            builder.append(" " + relation.getPropFormatColumn(prop) + "=#{" + paramInfo.getParamAnno() + "}");
             if (i != update.getUpdateProps().size() - 1) {
                 builder.append(",");
             }
@@ -172,7 +172,7 @@ public class BaseQueryBuilder implements QueryBuilder {
             String prop = rule.getProp();
             String operator = rule.getOperator();
             String connector = rule.getConnector();
-            String propColumn = relation.getPropColumn(prop);
+            String propColumn = relation.getPropFormatColumn(prop);
             String paramQualtifyType = fieldMap.get(prop);
             info.getImportList().add(paramQualtifyType);
             String paramShortType = extractLast(paramQualtifyType);

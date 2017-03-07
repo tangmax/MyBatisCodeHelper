@@ -33,14 +33,14 @@ public class OracleQueryBuilderHandler implements QueryBuilderHandler {
             if (find.getDistinct()) {
                 builder.append(" distinct(");
                 for (FetchProp prop : find.getFetchProps()) {
-                    builder.append(relation.getPropColumn(prop.getFetchProp()) + ",");
+                    builder.append(relation.getPropFormatColumn(prop.getFetchProp()) + ",");
                 }
                 builder.deleteCharAt(builder.length() - 1);
                 builder.append(")");
             } else {
                 for (FetchProp prop : find.getFetchProps()) {
                     if (prop.getFetchFunction() == null) {
-                        builder.append(" " + relation.getPropColumn(prop.getFetchProp()) + ",");
+                        builder.append(" " + relation.getPropFormatColumn(prop.getFetchProp()) + ",");
                     } else {
                         //todo when there is function in it.
                     }
@@ -61,7 +61,7 @@ public class OracleQueryBuilderHandler implements QueryBuilderHandler {
         if (find.getOrderByProps() != null) {
             info.setSql(info.getSql() + " order by");
             for (OrderByRule rule : find.getOrderByProps()) {
-                info.setSql(info.getSql() + " " + parsedResult.getRelation().getPropColumn(rule.getProp()) + " " + rule.getOrder());
+                info.setSql(info.getSql() + " " + parsedResult.getRelation().getPropFormatColumn(rule.getProp()) + " " + rule.getOrder());
             }
         }
         if (find.getLimit() > 0) {

@@ -19,6 +19,8 @@ public class TemplateConstants {
 
     public static final String GENCODE_DAO = "gencode/dao.ftl";
 
+    public static final String GEN_CLASS = "newclass.ftl";
+
     public static final String GENCODE_SERVICE = "gencode/service.ftl";
 
 
@@ -54,5 +56,14 @@ public class TemplateConstants {
     public static final String PRIMAY_JDBC_TYPE = "primaryJdbcType";
 
     public static final String DAO_FULLTYPE = "daoFullType";
+
+
+    public static final String CLASS_PACKAGE = "classPackage";
+
+    public static final String CLASS_NAME = "className";
+
+    public static final String FIELDS = "fields";
+
+    public static final String IMPORT_LIST = "importList";
 
 }
