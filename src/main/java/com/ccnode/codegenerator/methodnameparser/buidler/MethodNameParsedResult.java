@@ -7,6 +7,7 @@ import com.ccnode.codegenerator.methodnameparser.parsedresult.update.ParsedUpdat
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.xml.XmlFile;
 
 import java.util.Map;
 
@@ -22,6 +23,8 @@ public class MethodNameParsedResult {
     private String methodName;
 
     private FieldToColumnRelation relation;
+
+    private XmlFile mybatisXmlFile;
 
 
     private Project project;
@@ -148,5 +151,13 @@ public class MethodNameParsedResult {
 
     public void setParsedCount(ParsedCount parsedCount) {
         this.parsedCount = parsedCount;
+    }
+
+    public XmlFile getMybatisXmlFile() {
+        return mybatisXmlFile;
+    }
+
+    public void setMybatisXmlFile(XmlFile mybatisXmlFile) {
+        this.mybatisXmlFile = mybatisXmlFile;
     }
 }

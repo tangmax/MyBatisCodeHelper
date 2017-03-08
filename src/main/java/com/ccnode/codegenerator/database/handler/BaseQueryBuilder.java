@@ -3,6 +3,8 @@ package com.ccnode.codegenerator.database.handler;
 import com.ccnode.codegenerator.constants.QueryTypeConstants;
 import com.ccnode.codegenerator.database.DbUtils;
 import com.ccnode.codegenerator.database.GenClassDialog;
+import com.ccnode.codegenerator.database.GenClassInfo;
+import com.ccnode.codegenerator.genCode.GenClassService;
 import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
 import com.ccnode.codegenerator.methodnameparser.buidler.MethodNameParsedResult;
 import com.ccnode.codegenerator.methodnameparser.buidler.ParamInfo;
@@ -15,6 +17,10 @@ import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFind;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.update.ParsedUpdate;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.GenCodeUtil;
+import com.ccnode.codegenerator.util.MyPsiXmlUtils;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.xml.XmlFile;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -299,8 +305,18 @@ public class BaseQueryBuilder implements QueryBuilder {
                 if(!b){
                     //todo make it here.
                     return null;
+                } else{
+                    GenClassInfo genClassInfo = genClassDialog.getGenClassInfo();
+                    GenClassService.generateClassFileUsingFtl(genClassInfo);
+                    VirtualFileManager.getInstance().syncRefresh();
+                    PsiDocumentManager manager = PsiDocumentManager.getInstance(result.getProject());
+                    //gonna build the resultMap for it.
+                    XmlFile mybatisXmlFile = result.getMybatisXmlFile();
+                    MyPsiXmlUtils.buildAllColumnMap(result.getProject(),manager.getDocument(mybatisXmlFile),mybatisXmlFile.getRootTag(),
+                            manager,genClassDialog.getExtractFieldToColumnRelation(),genClassDialog.getClassQutifiedName());
+                    info.setReturnClass(genClassDialog.getClassQutifiedName());
+                    info.setReturnMap(genClassDialog.getExtractFieldToColumnRelation().getResultMapId());
                 }
-                info.setReturnMap(relation.getResultMapId());
             } else {
                 //说明等于1
                 FetchProp prop = find.getFetchProps().get(0);

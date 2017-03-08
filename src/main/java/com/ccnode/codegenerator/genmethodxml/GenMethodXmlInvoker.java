@@ -1,7 +1,6 @@
 package com.ccnode.codegenerator.genmethodxml;
 
 import com.ccnode.codegenerator.constants.MapperConstants;
-import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
 import com.ccnode.codegenerator.dialog.GenerateResultMapDialog;
 import com.ccnode.codegenerator.dialog.MethodExistDialog;
 import com.ccnode.codegenerator.methodnameparser.QueryParseDto;
@@ -121,13 +120,7 @@ public class GenMethodXmlInvoker {
                 //create tag into the file.
                 FieldToColumnRelation relation1 = generateResultMapDialog.getRelation();
                 //use to generate resultMap
-                String allColumnMap = MyPsiXmlUtils.buildAllCoumnMap(relation1.getFiledToColumnMap());
-                XmlTag resultMap = rootTag.createChildTag(MyBatisXmlConstants.RESULTMAP, "", allColumnMap, false);
-                resultMap.setAttribute(MyBatisXmlConstants.ID, relation1.getResultMapId());
-                resultMap.setAttribute(MyBatisXmlConstants.TYPE, pojoClass.getQualifiedName());
-                rootTag.addSubTag(resultMap, true);
-                Document xmlDocument = psiDocumentManager.getDocument(psixml);
-                PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, xmlDocument);
+                MyPsiXmlUtils.buildAllColumnMap(myProject,psiDocumentManager.getDocument(psixml), rootTag, psiDocumentManager, relation1, pojoClass.getQualifiedName());
 
                 existXmlTagInfo.setFieldToColumnRelation(MyPsiXmlUtils.convertToRelation(relation1));
             }
@@ -160,8 +153,8 @@ public class GenMethodXmlInvoker {
                 } else {
                     WriteCommandAction.runWriteCommandAction(myProject, () -> {
                         existTag.delete();
+                        PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, document);
                     });
-                    PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, document);
                 }
             }
             rootTag = psixml.getRootTag();
@@ -170,6 +163,7 @@ public class GenMethodXmlInvoker {
             methodInfo.setPsiClassName(pojoClass.getName());
             methodInfo.setFieldMap(PsiClassUtil.buildFieldMapWithConvertPrimitiveType(pojoClass));
             methodInfo.setProject(myProject);
+            methodInfo.setMybatisXmlFile(psixml);
             methodInfo.setSrcClass(srcClass);
             QueryParseDto parseDto = QueryParser.parse(props, methodInfo);
             XmlTagAndInfo choosed = null;
@@ -246,4 +240,5 @@ public class GenMethodXmlInvoker {
             return null;
         }
     }
+
 }

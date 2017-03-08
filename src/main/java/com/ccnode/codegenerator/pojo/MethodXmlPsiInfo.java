@@ -2,6 +2,7 @@ package com.ccnode.codegenerator.pojo;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.xml.XmlFile;
 
 import java.util.Map;
 
@@ -20,6 +21,8 @@ public class MethodXmlPsiInfo {
 
     private String psiClassName;
 
+    private XmlFile mybatisXmlFile;
+
 
     private String psiClassFullName;
 
@@ -27,6 +30,13 @@ public class MethodXmlPsiInfo {
 
     private PsiClass srcClass;
 
+    public XmlFile getMybatisXmlFile() {
+        return mybatisXmlFile;
+    }
+
+    public void setMybatisXmlFile(XmlFile mybatisXmlFile) {
+        this.mybatisXmlFile = mybatisXmlFile;
+    }
 
     public Project getProject() {
         return project;

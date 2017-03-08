@@ -109,6 +109,7 @@ public class QueryBuilder {
         methodNameParsedResult.setPsiClassFullName(info.getPsiClassFullName());
         methodNameParsedResult.setSrcClass(info.getSrcClass());
         methodNameParsedResult.setProject(info.getProject());
+        methodNameParsedResult.setMybatisXmlFile(info.getMybatisXmlFile());
         return methodNameParsedResult;
     }
 

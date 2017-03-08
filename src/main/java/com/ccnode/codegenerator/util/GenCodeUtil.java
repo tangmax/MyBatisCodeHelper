@@ -92,10 +92,13 @@ public class GenCodeUtil {
         return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, value);
     }
 
+    public static String getUpperStart(String value){
+        return value.substring(0,1).toUpperCase()+value.substring(1);
+    }
+
     public static String getCamelFromUnderScore(String value) {
         return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, value);
     }
-
 
 
     public static void main(String[] args) {

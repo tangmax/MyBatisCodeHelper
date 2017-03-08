@@ -2,7 +2,6 @@ package com.ccnode.codegenerator.database;
 
 import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
-import com.ccnode.codegenerator.genCode.GenClassService;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.FetchProp;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.GenCodeUtil;
@@ -11,15 +10,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiClass;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @Author bruce.ge
@@ -35,8 +34,6 @@ public class GenClassDialog extends DialogWrapper {
     private Map<String, String> fieldMap;
 
     private String methodName;
-
-    private String resultMapName;
 
     private String classPackageName;
 
@@ -60,20 +57,23 @@ public class GenClassDialog extends DialogWrapper {
 
     private String classQutifiedName;
 
+    private GenClassInfo genClassInfo;
+
+
+    private FieldToColumnRelation extractFieldToColumnRelation;
+
 
     public GenClassDialog(Project project, List<FetchProp> props, Map<String, String> fieldMap, String methodName, FieldToColumnRelation relation, PsiClass srcClass) {
         super(project, true);
         //just need to know the module path.
-
         this.myProject = project;
         this.fetchPropList = props;
         this.fieldMap = fieldMap;
         this.methodName = methodName;
         this.relation = relation;
-        this.resultMapName = methodName;
         this.fieldInfoList = buildClassInfo(props, fieldMap, relation);
         this.classFolderText = new JTextField(srcClass.getContainingFile().getVirtualFile().getParent().getPath());
-        this.classNameText = new JTextField(methodName + "Result");
+        this.classNameText = new JTextField(GenCodeUtil.getUpperStart(methodName + "Result"));
         this.resultMapText = new JTextField(methodName + "Result");
         this.modulePath = PsiClassUtil.getModuleSrcPathOfClass(srcClass);
         this.myJtable = new JTable(extractValue(fieldInfoList), new String[]{"columnName", "fieldName", "fieldType"}) {
@@ -165,9 +165,12 @@ public class GenClassDialog extends DialogWrapper {
         //generate the info for it.
         //gonna save the result.
         String className = classNameText.getText();
-
-
+        if(StringUtils.isBlank(className)){
+            Messages.showErrorDialog(myProject,"the className is empty, please reinput","validefail");
+            return;
+        }
         String folder = classFolderText.getText();
+
         String packageToModule = PsiClassUtil.getPackageToModule(folder, modulePath);
 
         int rowCount = myJtable.getRowCount();
@@ -176,14 +179,15 @@ public class GenClassDialog extends DialogWrapper {
 
         GenClassInfo info = new GenClassInfo();
         List<NewClassFieldInfo> fieldInfos = Lists.newArrayList();
+        extractFieldToColumnRelation = new FieldToColumnRelation();
+        extractFieldToColumnRelation.setResultMapId(resultMapText.getText());
+        Map<String,String> fieldToColumnMap = new LinkedHashMap<>();
+        extractFieldToColumnRelation.setFiledToColumnMap(fieldToColumnMap);
         for (int i = 0; i < rowCount; i++) {
             String columnName = (String) myJtable.getValueAt(i, 0);
             String fieldName = (String) myJtable.getValueAt(i, 1);
             String fieldType = (String) myJtable.getValueAt(i, 2);
-            ColumnAndField columnAndField = new ColumnAndField();
-            columnAndField.setColumn(columnName);
-            columnAndField.setField(fieldName);
-            this.columnAndFields.add(columnAndField);
+            fieldToColumnMap.put(fieldName,columnName);
             NewClassFieldInfo e = new NewClassFieldInfo();
             e.setFieldName(fieldName);
             e.setFieldShortType(MapperUtil.extractClassShortName(fieldType));
@@ -198,10 +202,10 @@ public class GenClassDialog extends DialogWrapper {
         info.setClassName(className);
         info.setClassPackageName(packageToModule);
         info.setImportList(importList);
-        GenClassService.generateClassFileUsingFtl(info);
-
-        this.resultMapName = resultMapText.getText();
-        this.classQutifiedName = folder + "." + className;
+        this.genClassInfo = info;
+        //need refresh file tree.
+        this.classQutifiedName = packageToModule + "." + className;
+        super.doOKAction();
         //make it happen.
     }
 
@@ -212,9 +216,6 @@ public class GenClassDialog extends DialogWrapper {
         return false;
     }
 
-    public String getResultMapName() {
-        return resultMapName;
-    }
 
     public List<ColumnAndField> getColumnAndFields() {
         return columnAndFields;
@@ -222,5 +223,13 @@ public class GenClassDialog extends DialogWrapper {
 
     public String getClassQutifiedName() {
         return classQutifiedName;
+    }
+
+    public FieldToColumnRelation getExtractFieldToColumnRelation() {
+        return extractFieldToColumnRelation;
+    }
+
+    public GenClassInfo getGenClassInfo() {
+        return genClassInfo;
     }
 }

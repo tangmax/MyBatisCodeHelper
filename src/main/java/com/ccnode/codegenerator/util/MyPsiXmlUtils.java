@@ -9,6 +9,10 @@ import com.ccnode.codegenerator.methodnameparser.tag.XmlTagAndInfo;
 import com.ccnode.codegenerator.pojo.ExistXmlTagInfo;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.google.common.collect.Lists;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.source.xml.XmlFileImpl;
@@ -236,5 +240,17 @@ public class MyPsiXmlUtils {
         }
         relation.setFiledToColumnMap(fieldToColumnLower);
         return relation;
+    }
+
+    public static void buildAllColumnMap(Project myProject, Document document, XmlTag rootTag, PsiDocumentManager psiDocumentManager, FieldToColumnRelation relation1, String qualifiedName) {
+        String allColumnMap = buildAllCoumnMap(relation1.getFiledToColumnMap());
+        XmlTag resultMap = rootTag.createChildTag(MyBatisXmlConstants.RESULTMAP, "", allColumnMap, false);
+        resultMap.setAttribute(MyBatisXmlConstants.ID, relation1.getResultMapId());
+        resultMap.setAttribute(MyBatisXmlConstants.TYPE, qualifiedName);
+        WriteCommandAction.runWriteCommandAction(myProject,()->{
+            rootTag.addSubTag(resultMap, true);
+            Document xmlDocument = document;
+            PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, xmlDocument);
+        });
     }
 }

@@ -40,7 +40,7 @@ public class GenMapperService {
         }).collect(Collectors.toList());
         root.put(TemplateConstants.USE_GENERATED_KEYS, MyBatisCodeHelperApplicationComponent.getInstance().getState().getProfile().getUseGeneratedKeys());
         root.put(TemplateConstants.FIELD_AND_COLUMNS, columnAndFields);
-        root.put(TemplateConstants.PRIMARY_COLUMN, primaryProp.getColumnName());
+        root.put(TemplateConstants.PRIMARY_COLUMN, DatabaseComponenent.formatColumn(primaryProp.getColumnName()));
         root.put(TemplateConstants.PRIMARY_FIELD, primaryProp.getFieldName());
         root.put(TemplateConstants.TABLE_NAME, tableName);
         root.put(TemplateConstants.CURRENTDATABASE, DatabaseComponenent.currentDatabase());
