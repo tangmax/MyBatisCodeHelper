@@ -24,6 +24,9 @@ public class ParsedFind extends ParsedBase{
      */
     private Boolean distinct = false;
 
+
+    private List<GroupByRule> groupByProps;
+
     /**
      *
      */
@@ -45,6 +48,8 @@ public class ParsedFind extends ParsedBase{
         e.setFetchProp(props);
         fetchProps.add(e);
     }
+
+
 
     public void addFunction(String function){
         if (fetchProps == null) {
@@ -104,5 +109,10 @@ public class ParsedFind extends ParsedBase{
 
     public List<OrderByRule> getOrderByProps() {
         return orderByProps;
+    }
+
+
+    public List<GroupByRule> getGroupByProps() {
+        return groupByProps;
     }
 }

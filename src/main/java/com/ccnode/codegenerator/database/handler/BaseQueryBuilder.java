@@ -300,6 +300,11 @@ public class BaseQueryBuilder implements QueryBuilder {
             if (find.getFetchProps().size() > 1) {
 //need to handle when fetch two property let user choose to create class for it.
                 //let user to generate class for it.
+                //check the return result.
+                boolean checkHasFunction = checkHasFunction(find);
+                if(checkHasFunction&&find.getGroupByProps()==null){
+                    returnList = false;
+                }
                 GenClassDialog genClassDialog = new GenClassDialog(result.getProject(), find.getFetchProps(), fieldMap, result.getMethodName(), relation,result.getSrcClass());
                 boolean b = genClassDialog.showAndGet();
                 if(!b){
@@ -364,6 +369,19 @@ public class BaseQueryBuilder implements QueryBuilder {
         queryBuilderHandler.handleFindAfterFromTable(info, result);
         return info;
 
+    }
+
+    private static boolean checkHasFunction(ParsedFind find) {
+        List<FetchProp> fetchProps = find.getFetchProps();
+        if(fetchProps==null||fetchProps.size()==0){
+            return false;
+        }
+        for (FetchProp fetchProp : fetchProps) {
+            if(fetchProp.getFetchFunction()!=null){
+                return true;
+            }
+        }
+        return false;
     }
 
     private static String extractLast(String returnClass) {
