@@ -2,7 +2,6 @@ package com.ccnode.codegenerator.genmethodxml;
 
 import com.ccnode.codegenerator.constants.MapperConstants;
 import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
-import com.ccnode.codegenerator.dialog.ChooseXmlToUseDialog;
 import com.ccnode.codegenerator.dialog.GenerateResultMapDialog;
 import com.ccnode.codegenerator.dialog.MethodExistDialog;
 import com.ccnode.codegenerator.methodnameparser.QueryParseDto;
@@ -27,7 +26,6 @@ import com.intellij.psi.xml.XmlTag;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -175,34 +173,19 @@ public class GenMethodXmlInvoker {
             methodInfo.setSrcClass(srcClass);
             QueryParseDto parseDto = QueryParser.parse(props, methodInfo);
             XmlTagAndInfo choosed = null;
-            if(parseDto==null){
-                Messages.showErrorDialog(myProject,"the text must start with find or delete or count or update","parse error");
+            if (parseDto == null) {
+                Messages.showErrorDialog(myProject, "the text must start with find or delete or count or update", "parse error");
                 return null;
             }
             if (parseDto.getHasMatched()) {
                 //dothings in it.
-                List<QueryInfo> queryInfos = parseDto.getQueryInfos();
+                QueryInfo queryInfos = parseDto.getQueryInfo();
                 //generate tag for them
-                List<XmlTagAndInfo> tags = new ArrayList<>();
-                for (QueryInfo info : queryInfos) {
-                    XmlTagAndInfo tag = MyPsiXmlUtils.generateTag(rootTag, info, methodInfo.getMethodName());
-                    tags.add(tag);
-                }
-
-                if (tags.size() > 1) {
-                    //let user choose with one.
-                    ChooseXmlToUseDialog chooseXmlToUseDialog = new ChooseXmlToUseDialog(myProject, tags);
-                    boolean b = chooseXmlToUseDialog.showAndGet();
-                    if (!b) {
-                        return null;
-                    } else {
-                        choosed = tags.get(chooseXmlToUseDialog.getChoosedIndex());
-                    }
-
-                } else {
-                    choosed = tags.get(0);
-                }
+                choosed = MyPsiXmlUtils.generateTag(rootTag, queryInfos, methodInfo.getMethodName());
             } else {
+                if (!parseDto.getDisplayErrorMsg()) {
+                    return null;
+                }
                 //there is no match the current methodName display error msg for user.
                 String content = "";
                 List<String> errorMsg = parseDto.getErrorMsg();

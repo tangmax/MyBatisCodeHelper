@@ -1,5 +1,7 @@
 package com.ccnode.codegenerator.methodnameparser.parsedresult.base;
 
+import com.ccnode.codegenerator.dialog.ParseTypeEnum;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,25 @@ import java.util.List;
  */
 public class ParsedBase {
     protected List<QueryRule> queryRules;
+
+
+    protected String parsedResult;
+
+    public String getParsedResult() {
+        return parsedResult;
+    }
+
+    public void setParsedResult(String parsedResult) {
+        this.parsedResult = parsedResult;
+    }
+
+    public void addParsePart(ParseTypeEnum parseTypeEnum,String value){
+        if(parsedResult==null){
+            parsedResult = "| parsedType:"+parseTypeEnum.name()+" parse value:"+value;
+        } else{
+            parsedResult = parsedResult+"| parsedType:"+parseTypeEnum.name()+" parse value:"+value;
+        }
+    }
 
     public void addQueryProp(String queryProp) {
         if (this.queryRules == null) {

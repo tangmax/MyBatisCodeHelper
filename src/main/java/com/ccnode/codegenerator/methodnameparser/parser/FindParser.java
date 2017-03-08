@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.methodnameparser.parser;
 
+import com.ccnode.codegenerator.dialog.ParseTypeEnum;
 import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFindError;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFind;
@@ -53,6 +54,7 @@ public class FindParser extends BaseParser {
                 if (remaining.startsWith(KeyWordConstants.DISTINCT)) {
                     ParsedFind newFind = createParseFind(parsedFind);
                     newFind.setDistinct(true);
+                    newFind.addParsePart(ParseTypeEnum.DISTINCT,KeyWordConstants.DISTINCT);
                     parseMethods(1, remaining, KeyWordConstants.DISTINCT.length(), newFind);
                     newParseFind = true;
                 }
@@ -60,6 +62,7 @@ public class FindParser extends BaseParser {
                     if (remaining.length() == KeyWordConstants.FIRST.length()) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.setLimit(1);
+                        newFind.addParsePart(ParseTypeEnum.FIRST,KeyWordConstants.FIRST);
                         parseMethods(2, remaining, KeyWordConstants.FIRST.length(), newFind);
                         newParseFind = true;
                     } else {
@@ -78,6 +81,7 @@ public class FindParser extends BaseParser {
                         }
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.setLimit(limitCount);
+                        newFind.addParsePart(ParseTypeEnum.FIRST,remaining.substring(0,i));
                         parseMethods(2, remaining, i, newFind);
                         newParseFind = true;
                     }
@@ -87,18 +91,21 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addFetchProps(props[i]);
+                        newFind.addParsePart(ParseTypeEnum.PROPERTY,props[i]);
                         parseMethods(3, remaining, props[i].length(), newFind);
                         newParseFind = true;
                     }
                 }
                 if (remaining.startsWith(KeyWordConstants.ORDERBY)) {
                     ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.addParsePart(ParseTypeEnum.ORDERBY,KeyWordConstants.ORDERBY);
                     parseMethods(4, remaining, KeyWordConstants.ORDERBY.length(), newFind);
                     newParseFind = true;
                 }
 
                 if (remaining.startsWith(KeyWordConstants.BY)) {
                     ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.addParsePart(ParseTypeEnum.BY,KeyWordConstants.BY);
                     parseMethods(8, remaining, KeyWordConstants.BY.length(), newFind);
                     newParseFind = true;
                 }
@@ -107,6 +114,7 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(function)) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addFunction(function);
+                        newFind.addParsePart(ParseTypeEnum.FUNCTION,function);
                         parseMethods(11, remaining, function.length(), newFind);
                         newParseFind = true;
                     }
@@ -118,6 +126,7 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addFetchProps(props[i]);
+                        newFind.addParsePart(ParseTypeEnum.PROPERTY,props[i]);
                         parseMethods(3, remaining, props[i].length(), newFind);
                         newParseFind = true;
                     }
@@ -129,6 +138,7 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addFetchProps(props[i]);
+                        newFind.addParsePart(ParseTypeEnum.PROPERTY,props[i]);
                         parseMethods(3, remaining, props[i].length(), newFind);
                         newParseFind = true;
                     }
@@ -141,6 +151,7 @@ public class FindParser extends BaseParser {
 
                 if (remaining.startsWith(KeyWordConstants.BY)) {
                     ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.addParsePart(ParseTypeEnum.BY,KeyWordConstants.BY);
                     parseMethods(8, remaining, KeyWordConstants.BY.length(), newFind);
                     newParseFind = true;
                 }
@@ -149,16 +160,19 @@ public class FindParser extends BaseParser {
             case 3: {
                 if (remaining.startsWith(KeyWordConstants.AND)) {
                     ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.addParsePart(ParseTypeEnum.AND,KeyWordConstants.AND);
                     parseMethods(7, remaining, KeyWordConstants.AND.length(), newFind);
                     newParseFind = true;
                 }
                 if (remaining.startsWith(KeyWordConstants.BY)) {
                     ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.addParsePart(ParseTypeEnum.BY,KeyWordConstants.BY);
                     parseMethods(8, remaining, KeyWordConstants.BY.length(), newFind);
                     newParseFind = true;
                 }
                 if (remaining.startsWith(KeyWordConstants.ORDERBY)) {
                     ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.addParsePart(ParseTypeEnum.ORDERBY,KeyWordConstants.ORDERBY);
                     parseMethods(4, remaining, KeyWordConstants.ORDERBY.length(), newFind);
                     newParseFind = true;
                 }
@@ -169,6 +183,7 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addOrderByProp(props[i]);
+                        newFind.addParsePart(ParseTypeEnum.PROPERTY,props[i]);
                         parseMethods(5, remaining, props[i].length(), newFind);
                         newParseFind = true;
                     }
@@ -180,6 +195,7 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(orderbyw)) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addOrderByPropOrder(orderbyw);
+                        newFind.addParsePart(ParseTypeEnum.ORDER,orderbyw);
                         parseMethods(6, remaining, orderbyw.length(), newFind);
                         newParseFind = true;
                     }
@@ -187,6 +203,7 @@ public class FindParser extends BaseParser {
 
                 if (remaining.startsWith(KeyWordConstants.AND)) {
                     ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.addParsePart(ParseTypeEnum.AND,KeyWordConstants.AND);
                     parseMethods(4, remaining, KeyWordConstants.AND.length(), newFind);
                     newParseFind = true;
                 }
@@ -195,6 +212,7 @@ public class FindParser extends BaseParser {
             case 6: {
                 if (remaining.startsWith(KeyWordConstants.AND)) {
                     ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.addParsePart(ParseTypeEnum.AND,KeyWordConstants.AND);
                     parseMethods(4, remaining, KeyWordConstants.AND.length(), newFind);
                     newParseFind = true;
                 }
@@ -206,6 +224,7 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addFetchProps(props[i]);
+                        newFind.addParsePart(ParseTypeEnum.PROPERTY,props[i]);
                         parseMethods(3, remaining, props[i].length(), newFind);
                         newParseFind = true;
                     }
@@ -215,6 +234,7 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(function)) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addFunction(function);
+                        newFind.addParsePart(ParseTypeEnum.FUNCTION,function);
                         parseMethods(11, remaining, function.length(), newFind);
                         newParseFind = true;
                     }
@@ -227,6 +247,7 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addQueryProp(props[i]);
+                        newFind.addParsePart(ParseTypeEnum.PROPERTY,props[i]);
                         parseMethods(9, remaining, props[i].length(), newFind);
                         newParseFind = true;
                     }
@@ -238,6 +259,7 @@ public class FindParser extends BaseParser {
                 for (String comp : compareOp) {
                     if (remaining.startsWith(comp)) {
                         ParsedFind newFind = createParseFind(parsedFind);
+                        newFind.addParsePart(ParseTypeEnum.COMPARATOR,comp);
                         newFind.addQueryOperator(comp);
                         parseMethods(10, remaining, comp.length(), newFind);
                         newParseFind = true;
@@ -248,12 +270,14 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(link)) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addConnector(link);
+                        newFind.addParsePart(ParseTypeEnum.LINKOP,link);
                         parseMethods(8, remaining, link.length(), newFind);
                     }
                 }
 
                 if (remaining.startsWith(KeyWordConstants.ORDERBY)) {
                     ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.addParsePart(ParseTypeEnum.ORDERBY,KeyWordConstants.ORDERBY);
                     parseMethods(4, remaining, KeyWordConstants.ORDERBY.length(), newFind);
                     newParseFind = true;
                 }
@@ -264,6 +288,7 @@ public class FindParser extends BaseParser {
             case 10: {
                 if (remaining.startsWith(KeyWordConstants.ORDERBY)) {
                     ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.addParsePart(ParseTypeEnum.ORDERBY,KeyWordConstants.ORDERBY);
                     parseMethods(4, remaining, KeyWordConstants.ORDERBY.length(), newFind);
                     newParseFind = true;
                 }
@@ -271,6 +296,7 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(link)) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addConnector(link);
+                        newFind.addParsePart(ParseTypeEnum.LINKOP,link);
                         parseMethods(8, remaining, link.length(), newFind);
                         newParseFind = true;
                     }
@@ -283,6 +309,7 @@ public class FindParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedFind newFind = createParseFind(parsedFind);
                         newFind.addFunctionProp(props[i]);
+                        newFind.addParsePart(ParseTypeEnum.PROPERTY,props[i]);
                         parseMethods(3, remaining, props[i].length(), newFind);
                         newParseFind = true;
                     }
