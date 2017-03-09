@@ -182,6 +182,8 @@
         </component>
     </project-components>
 
+
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <codeInsight.lineMarkerProvider language="JAVA"
@@ -216,6 +218,8 @@
             <!--<descriptionDirectoryName>ConditionalOperatorConvertor</descriptionDirectoryName>-->
             <!--<bundleName>Generate daoxml</bundleName>-->
         </intentionAction>
+
+        <projectService serviceInterface="com.ccnode.codegenerator.view.completion.MysqlCompleteCacheInteface" serviceImplementation="com.ccnode.codegenerator.view.completion.MyBatisSqlCompleteCache"/>
 
 
         <!--<intentionAction>-->

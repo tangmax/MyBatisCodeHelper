@@ -24,7 +24,7 @@ public class DatabaseConnector {
             String realUrl = buildUrl(databaseType,url,database);
             conn = DriverManager.getConnection(realUrl, userName, password);
             DatabaseMetaData metaData = conn.getMetaData();
-            String schemaName = exatractScheme(realUrl);
+            String schemaName = database;
             databaseInfo = new DatabaseInfo();
             databaseInfo.setDatabaseName(schemaName);
             List<TableInfo> tableInfos = Lists.newArrayList();
@@ -48,7 +48,9 @@ public class DatabaseConnector {
                 while (columns.next()) {
                     String columnName = columns.getString(4);
                     TableColumnInfo columnInfo = new TableColumnInfo();
+                    String columnType = columns.getString(6);
                     columnInfo.setFieldName(columnName);
+                    columnInfo.setFieldType(columnType);
                     tableColumnInfos.add(columnInfo);
 
                 }

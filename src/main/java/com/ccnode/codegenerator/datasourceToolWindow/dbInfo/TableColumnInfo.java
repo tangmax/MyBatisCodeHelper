@@ -8,6 +8,17 @@ package com.ccnode.codegenerator.datasourceToolWindow.dbInfo;
 public class TableColumnInfo {
     private String fieldName;
 
+    private String fieldType;
+
+
+    public String getFieldType() {
+        return fieldType;
+    }
+
+    public void setFieldType(String fieldType) {
+        this.fieldType = fieldType;
+    }
+
     public String getFieldName() {
         return fieldName;
     }

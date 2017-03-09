@@ -6,7 +6,10 @@ import com.ccnode.codegenerator.datasourceToolWindow.NewDatabaseInfo;
 import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.DatabaseConnector;
 import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.DatabaseInfo;
 import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.TableInfo;
+import com.ccnode.codegenerator.view.completion.MysqlCompleteCacheInteface;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -37,7 +40,7 @@ public class MyBastisDatasourceForm {
 
     private DefaultMutableTreeNode selectedNode;
 
-    private Map<DefaultMutableTreeNode,NewDatabaseInfo> nodeDatabaseMap = new HashMap<>();
+    private Map<DefaultMutableTreeNode, NewDatabaseInfo> nodeDatabaseMap = new HashMap<>();
 
     private List<NewDatabaseInfo> myNewDatabaseInfos = new ArrayList<>();
 
@@ -46,14 +49,19 @@ public class MyBastisDatasourceForm {
         MyBatisDatasourceComponent component = myProject.getComponent(MyBatisDatasourceComponent.class);
         DatasourceState state = component.getState();
         myNewDatabaseInfos = state.getDatabaseInfos();
+        new Thread(()->{
+            for (NewDatabaseInfo myNewDatabaseInfo : myNewDatabaseInfos) {
+                ServiceManager.getService(myProject,MysqlCompleteCacheInteface.class).addDatabaseCache(myNewDatabaseInfo);
+            }
+        });
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MyBatisDatasourceConfigView myBatisDatasourceConfigView = new MyBatisDatasourceConfigView(myProject, false,myNewDatabaseInfos);
+                MyBatisDatasourceConfigView myBatisDatasourceConfigView = new MyBatisDatasourceConfigView(myProject, false, myNewDatabaseInfos);
                 boolean b = myBatisDatasourceConfigView.showAndGet();
-                if(!b){
+                if (!b) {
                     return;
-                } else{
+                } else {
                     //gonna refresh the view.
                     NewDatabaseInfo newDatabaseInfo =
                             myBatisDatasourceConfigView.getNewDatabaseInfo();
@@ -62,10 +70,10 @@ public class MyBastisDatasourceForm {
                             newDatabaseInfo.getUrl(), newDatabaseInfo.getUserName(), newDatabaseInfo.getPassword(), newDatabaseInfo.getDatabase());
                     DefaultMutableTreeNode top =
                             new DefaultMutableTreeNode(dataBaseInfoFromConnection.getDatabaseName());
-                    createNodes(top,dataBaseInfoFromConnection.getTableInfoList(),newDatabaseInfo);
+                    createNodes(top, dataBaseInfoFromConnection.getTableInfoList(), newDatabaseInfo);
                     DefaultTreeModel model = (DefaultTreeModel) datasourceTree.getModel();
                     DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-                    model.insertNodeInto(top,root,root.getChildCount());
+                    model.insertNodeInto(top, root, root.getChildCount());
                     //shoud load state of the database.
                     DatasourceState state = myProject.getComponent(MyBatisDatasourceComponent.class).getState();
                     state.getDatabaseInfos().add(newDatabaseInfo);
@@ -75,10 +83,10 @@ public class MyBastisDatasourceForm {
         });
     }
 
-    private void createNodes(DefaultMutableTreeNode top, List<TableInfo> tableInfos,NewDatabaseInfo info) {
+    private void createNodes(DefaultMutableTreeNode top, List<TableInfo> tableInfos, NewDatabaseInfo info) {
         for (TableInfo tableInfo : tableInfos) {
             DefaultMutableTreeNode defaultMutableTreeNode = new DefaultMutableTreeNode(tableInfo.getTableName());
-            nodeDatabaseMap.put(defaultMutableTreeNode,info);
+            nodeDatabaseMap.put(defaultMutableTreeNode, info);
             top.add(defaultMutableTreeNode);
         }
     }
@@ -96,7 +104,7 @@ public class MyBastisDatasourceForm {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
         for (NewDatabaseInfo databaseInfo : myNewDatabaseInfos) {
             DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(databaseInfo.getDatabase());
-            nodeDatabaseMap.put(newChild,databaseInfo);
+            nodeDatabaseMap.put(newChild, databaseInfo);
             root.add(newChild);
         }
         datasourceTree.addMouseListener(new MouseAdapter() {
@@ -104,21 +112,40 @@ public class MyBastisDatasourceForm {
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
                     TreePath pathForLocation = datasourceTree.getPathForLocation(e.getX(), e.getY());
-                    if(pathForLocation!=null){
-                        selectedNode = (DefaultMutableTreeNode)pathForLocation.getLastPathComponent();
+                    if (pathForLocation != null) {
+                        selectedNode = (DefaultMutableTreeNode) pathForLocation.getLastPathComponent();
                         datasourceTree.getSelectionModel().setSelectionPath(pathForLocation);
                         JPopupMenu popupMenu = new JPopupMenu();
                         JMenuItem menuItem = new JMenuItem("mybatis generator");
                         JMenuItem refresh = new JMenuItem("refresh");
+                        JMenuItem addForComplete = new JMenuItem("auto complete for mybatis file");
+                        addForComplete.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                //for get the database info.
+                                //save it to the project file.
+                                //save it to the cache.
+                                NewDatabaseInfo info = nodeDatabaseMap.get(selectedNode);
+                                if (info != null) {
+                                    ServiceManager.getService(myProject, MysqlCompleteCacheInteface.class).addDatabaseCache(info);
+                                    Messages.showMessageDialog("success", "success", null);
+                                } else {
+                                    Messages.showErrorDialog(myProject, "can't find database for it", "fail");
+                                    return;
+                                }
+                            }
+                        });
                         menuItem.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
-                                System.out.println(nodeDatabaseMap.get(selectedNode));;
+                                System.out.println(nodeDatabaseMap.get(selectedNode));
+                                ;
                             }
                         });
                         popupMenu.add(menuItem);
                         popupMenu.add(refresh);
-                        popupMenu.show(datasourceTree,e.getX(),e.getY());
+                        popupMenu.add(addForComplete);
+                        popupMenu.show(datasourceTree, e.getX(), e.getY());
                     }
                     System.out.println("right mouse");
                 }
