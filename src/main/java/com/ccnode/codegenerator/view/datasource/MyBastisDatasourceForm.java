@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,12 +39,17 @@ public class MyBastisDatasourceForm {
 
     private Map<DefaultMutableTreeNode,NewDatabaseInfo> nodeDatabaseMap = new HashMap<>();
 
+    private List<NewDatabaseInfo> myNewDatabaseInfos = new ArrayList<>();
+
     public MyBastisDatasourceForm(Project project) {
         myProject = project;
+        MyBatisDatasourceComponent component = myProject.getComponent(MyBatisDatasourceComponent.class);
+        DatasourceState state = component.getState();
+        myNewDatabaseInfos = state.getDatabaseInfos();
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MyBatisDatasourceConfigView myBatisDatasourceConfigView = new MyBatisDatasourceConfigView(myProject, false);
+                MyBatisDatasourceConfigView myBatisDatasourceConfigView = new MyBatisDatasourceConfigView(myProject, false,myNewDatabaseInfos);
                 boolean b = myBatisDatasourceConfigView.showAndGet();
                 if(!b){
                     return;
@@ -86,12 +92,9 @@ public class MyBastisDatasourceForm {
     }
 
     public JPanel getMyDatasourcePanel() {
-        MyBatisDatasourceComponent component = myProject.getComponent(MyBatisDatasourceComponent.class);
-        DatasourceState state = component.getState();
-        List<NewDatabaseInfo> databaseInfos = state.getDatabaseInfos();
         DefaultTreeModel model = (DefaultTreeModel) datasourceTree.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-        for (NewDatabaseInfo databaseInfo : databaseInfos) {
+        for (NewDatabaseInfo databaseInfo : myNewDatabaseInfos) {
             DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(databaseInfo.getDatabase());
             nodeDatabaseMap.put(newChild,databaseInfo);
             root.add(newChild);

@@ -9,13 +9,14 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * @Author bruce.ge
  * @Date 2017/3/9
  * @Description
  */
-public class MyBatisDatasourceConfigView extends DialogWrapper{
+public class MyBatisDatasourceConfigView extends DialogWrapper {
     private JPanel jpanel;
     private JButton button1;
     private JButton button2;
@@ -33,10 +34,13 @@ public class MyBatisDatasourceConfigView extends DialogWrapper{
 
     private Project myProject;
 
+    private List<NewDatabaseInfo> existingDatabaseInfo;
 
-    public MyBatisDatasourceConfigView(@Nullable Project project, boolean canBeParent) {
+
+    public MyBatisDatasourceConfigView(@Nullable Project project, boolean canBeParent, List<NewDatabaseInfo> existingDatabaseInfo) {
         super(project, canBeParent);
         myProject = project;
+        this.existingDatabaseInfo = existingDatabaseInfo;
         setTitle("add database config");
         init();
     }
@@ -49,10 +53,10 @@ public class MyBatisDatasourceConfigView extends DialogWrapper{
             public void actionPerformed(ActionEvent e) {
                 //connect to db.
                 boolean b = DatabaseConnector.checkConnection((String) datasourceCombox.getSelectedItem()
-                        , urlField.getText(), usernamefield.getText(), passwordField.getText(),databaseText.getText());
-                if(!b){
+                        , urlField.getText(), usernamefield.getText(), passwordField.getText(), databaseText.getText());
+                if (!b) {
                     testConnectionText.setText("failed");
-                }else{
+                } else {
                     testConnectionText.setText("success");
                 }
                 Timer t = new Timer(4000, new ActionListener() {
@@ -72,17 +76,21 @@ public class MyBatisDatasourceConfigView extends DialogWrapper{
     @Override
     protected void doOKAction() {
         boolean b = DatabaseConnector.checkConnection((String) datasourceCombox.getSelectedItem()
-                , urlField.getText(), usernamefield.getText(), passwordField.getText(),databaseText.getText());
-        if(b){
-            newDatabaseInfo  = new NewDatabaseInfo();
+                , urlField.getText(), usernamefield.getText(), passwordField.getText(), databaseText.getText());
+        if (b) {
+            newDatabaseInfo = new NewDatabaseInfo();
             newDatabaseInfo.setDatabaseType((String) datasourceCombox.getSelectedItem());
             newDatabaseInfo.setUrl(urlField.getText());
             newDatabaseInfo.setUserName(usernamefield.getText());
             newDatabaseInfo.setPassword(passwordField.getText());
             newDatabaseInfo.setDatabase(databaseText.getText());
+            if (existingDatabaseInfo.contains(newDatabaseInfo)) {
+                Messages.showErrorDialog(myProject, "database already exist", "validate fail");
+                return;
+            }
             super.doOKAction();
-        } else{
-            Messages.showErrorDialog(myProject,"make sure you can connect to the database","database connect fail");
+        } else {
+            Messages.showErrorDialog(myProject, "make sure you can connect to the database", "database connect fail");
         }
     }
 
