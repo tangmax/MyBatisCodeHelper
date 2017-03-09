@@ -139,7 +139,10 @@ public class MyBastisDatasourceForm {
                                 //save it to the cache.
                                 NewDatabaseInfo info = nodeDatabaseMap.get(selectedNode);
                                 if (info != null) {
-                                    ServiceManager.getService(myProject, MysqlCompleteCacheInteface.class).addDatabaseCache(info);
+                                    //there is only one database avaliable.
+                                    MysqlCompleteCacheInteface service = ServiceManager.getService(myProject, MysqlCompleteCacheInteface.class);
+                                    service.cleanAll();
+                                    service.addDatabaseCache(info);
                                     Messages.showMessageDialog("success", "success", null);
                                 } else {
                                     Messages.showErrorDialog(myProject, "can't find database for it", "fail");

@@ -101,6 +101,22 @@ public class MyPsiXmlUtils {
         return null;
     }
 
+
+    @Nullable
+    public static XmlTag findCurrentElementXmlTag(PsiElement positionElement) {
+        PsiElement parent = positionElement.getParent();
+        while (parent != null) {
+            if (parent instanceof XmlTag) {
+                String name = ((XmlTag) parent).getName();
+                if (MyBatisXmlConstants.mapperMethodSet.contains(name)) {
+                    return (XmlTag) parent;
+                }
+            }
+            parent = parent.getParent();
+        }
+        return null;
+    }
+
     @Nullable
     public static String findCurrentXmlFileNameSpace(@NotNull XmlFile xmlFile) {
         XmlTag rootTag = xmlFile.getRootTag();

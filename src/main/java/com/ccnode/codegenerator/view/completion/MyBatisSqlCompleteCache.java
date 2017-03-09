@@ -7,7 +7,6 @@ import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.TableColumnInfo;
 import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.TableInfo;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ public class MyBatisSqlCompleteCache implements MysqlCompleteCacheInteface{
     private  List<String> tables = new ArrayList<>();
     //tableName and field map
 
-    private  Multimap<String, String> tableToField = ArrayListMultimap.create();
+    private  ArrayListMultimap<String, String> tableToField = ArrayListMultimap.create();
 
     private Map<CompleteField, String> fieldMap = new HashMap<>();
 
@@ -63,6 +62,30 @@ public class MyBatisSqlCompleteCache implements MysqlCompleteCacheInteface{
     public List<String> getRecommendFromCache(String currentText, String allText) {
         //
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<String> getAllTables() {
+        return tables;
+    }
+
+    @Override
+    public List<String> getAllFields() {
+        List<String> fields = Lists.newArrayList();
+        for(Map.Entry<String,String> map : tableToField.entries()){
+            fields.add(map.getValue());
+        }
+        return fields;
+    }
+
+    @Override
+    public List<String> getTableAllFields(String tableName) {
+        return tableToField.get(tableName);
+    }
+
+    @Override
+    public String getFieldType() {
+        return null;
     }
 
     @Override

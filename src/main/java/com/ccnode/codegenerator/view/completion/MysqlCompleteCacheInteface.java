@@ -16,6 +16,14 @@ public interface MysqlCompleteCacheInteface {
     List<String> getRecommendFromCache(String currentText, String allText);
 
 
+    List<String> getAllTables();
+
+    List<String> getAllFields();
+
+
+    List<String> getTableAllFields(String table);
+
+    String getFieldType();
     void cleanAll();
 
 }

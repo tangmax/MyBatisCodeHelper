@@ -2,6 +2,8 @@ package com.ccnode.codegenerator.view.completion;
 
 import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
+import com.ccnode.codegenerator.sqlparse.ParsedResult;
+import com.ccnode.codegenerator.sqlparse.SqlParser;
 import com.ccnode.codegenerator.util.MyPsiXmlUtils;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.google.common.collect.ImmutableList;
@@ -11,9 +13,12 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
+import com.intellij.psi.xml.XmlTagValue;
 import com.intellij.psi.xml.XmlText;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +33,7 @@ import java.util.Set;
  */
 public class MapperSqlCompletionContributor extends CompletionContributor {
 
+    //    shall sort with order.
     private static ImmutableListMultimap<String, String> multimap = ImmutableListMultimap.<String, String>builder()
             .put("s", "select")
             .put("S", "SELECT")
@@ -81,6 +87,8 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             .put("U", "UNION")
             .put("r", "replace")
             .put("R", "REPLACE")
+            .put("u", "using")
+            .put("U", "USING")
             .build();
 
 
@@ -89,6 +97,8 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         if (parameters.getCompletionType() != CompletionType.BASIC) {
             return;
         }
+        //auto complete for different type.
+        // there are two type of the interface can be find or can't be find.
         PsiElement positionElement = parameters.getOriginalPosition();
         if (positionElement == null) {
             return;
@@ -119,6 +129,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             return;
         }
 
+
         int m = realStart.lastIndexOf("`");
         if (m != -1 && m > realStart.length() - 10) {
             String lastText = realStart.substring(m + 1);
@@ -140,6 +151,32 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
                     result.addElement(LookupElementBuilder.create(realStart.substring(firstStart, m + 1) + item + "`"));
                 }
             });
+//            return;
+        }
+
+        XmlTag currentElementXmlTag = MyPsiXmlUtils.findCurrentElementXmlTag(positionElement);
+        if (currentElementXmlTag != null) {
+            String text = currentElementXmlTag.getText();
+            XmlTagValue value =
+                    currentElementXmlTag.getValue();
+
+            Document document = PsiDocumentManager.getInstance(parameters.getEditor().getProject()).getDocument(xmlFile);
+            int startOffset1 = value.getTextRange().getStartOffset();
+            if (endPosition < startOffset1) {
+                return;
+            }
+            String startText = document.getText(new TextRange(startOffset1, endPosition));
+            //get words from startText.
+            ParsedResult parse = SqlParser.parse(startText,parameters.getEditor().getProject());
+            //get lots of recommed list.
+
+            if(parse.getRecommedValues().size()>0){
+                for (String s : parse.getRecommedValues()) {
+                    result.addElement(LookupElementBuilder.create(s));
+                }
+                return;
+            }
+
         }
 
         int findFieldIndex = realStart.lastIndexOf("#{");
@@ -169,7 +206,11 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
                     result.addElement(LookupElementBuilder.create(realStart.substring(findAlpha, findFieldIndex + 2) + s + "}"));
                 }
             }
+            return;
         }
+
+        //share the word.
+
 
         if (realStart.length() == 1) {
             ImmutableList<String> recommends = multimap.get(realStart);
