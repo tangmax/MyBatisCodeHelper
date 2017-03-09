@@ -70,28 +70,32 @@ public class MyBastisDatasourceForm {
     }
 
     private void createNodes(DefaultMutableTreeNode top, List<TableInfo> tableInfos,NewDatabaseInfo info) {
-        DefaultMutableTreeNode category = null;
         for (TableInfo tableInfo : tableInfos) {
-            category = new DefaultMutableTreeNode(tableInfo.getTableName());
-            category.setUserObject(info);
-            top.add(category);
+            DefaultMutableTreeNode defaultMutableTreeNode = new DefaultMutableTreeNode(tableInfo.getTableName());
+            nodeDatabaseMap.put(defaultMutableTreeNode,info);
+            top.add(defaultMutableTreeNode);
         }
     }
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-
-        MyBatisDatasourceComponent component = myProject.getComponent(MyBatisDatasourceComponent.class);
         DefaultMutableTreeNode top =
                 new DefaultMutableTreeNode("Data sources");
+        datasourceTree = new JTree(top);
+
+    }
+
+    public JPanel getMyDatasourcePanel() {
+        MyBatisDatasourceComponent component = myProject.getComponent(MyBatisDatasourceComponent.class);
         DatasourceState state = component.getState();
         List<NewDatabaseInfo> databaseInfos = state.getDatabaseInfos();
+        DefaultTreeModel model = (DefaultTreeModel) datasourceTree.getModel();
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
         for (NewDatabaseInfo databaseInfo : databaseInfos) {
             DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(databaseInfo.getDatabase());
             nodeDatabaseMap.put(newChild,databaseInfo);
-            top.add(newChild);
+            root.add(newChild);
         }
-        datasourceTree = new JTree(top);
         datasourceTree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -117,9 +121,6 @@ public class MyBastisDatasourceForm {
                 }
             }
         });
-    }
-
-    public JPanel getMyDatasourcePanel() {
         return myDatasourcePanel;
     }
 }
