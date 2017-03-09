@@ -176,6 +176,12 @@
         </component>
     </application-components>
 
+    <project-components>
+        <component>
+            <implementation-class>com.ccnode.codegenerator.view.datasource.MyBatisDatasourceComponent</implementation-class>
+        </component>
+    </project-components>
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <codeInsight.lineMarkerProvider language="JAVA"

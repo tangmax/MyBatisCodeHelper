@@ -1,7 +1,8 @@
 package com.ccnode.codegenerator.jdbc;
 
-import com.ccnode.codegenerator.database.dbInfo.DatabaseInfo;
-import com.ccnode.codegenerator.database.dbInfo.MySqlDatabaseConnector;
+import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.DatabaseInfo;
+import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.DatabaseConnector;
+import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -20,10 +21,10 @@ import java.util.concurrent.TimeUnit;
  * @Date 2017/2/26
  * @Description
  */
-public class MySqlDatabaseConnectorTest {
+public class DatabaseConnectorTest {
     @Test
     public void test() throws IOException {
-        DatabaseInfo root = MySqlDatabaseConnector.getDataBaseInfoFromConnection("jdbc:mysql://localhost/world?useUnicode=true&characterEncoding=utf8&useSSL=false", "root", "");
+        DatabaseInfo root = DatabaseConnector.getDataBaseInfoFromConnection(DataBaseConstants.MYSQL, "localhost:3306" ,"root", "","world");
         Gson gson = new Gson();
         String databaseJson = gson.toJson(root);
         List<String> lines = Lists.newArrayList();
