@@ -200,6 +200,8 @@
                                  id="MyBatisCodeHelper"
                                  displayName="MyBatisCodeHelper"/>
 
+        <toolWindow id="Mybatis datasource" secondary="true" anchor="right" factoryClass="com.ccnode.codegenerator.view.datasource.MyBatisDatasourceToolWindow"/>
+
         <!--<renamePsiElementProcessor implementation="com.ccnode.codegenerator.view.rename.RenameResultMapSqlProcessor" order="first"/>-->
 
         <intentionAction>

@@ -9,6 +9,7 @@ public class KeyWordConstants {
 
     public static final String DISTINCT = "distinct";
 
+    public static final String GROUPBY = "groupby";
 
     public static final String MAX = "max";
 
