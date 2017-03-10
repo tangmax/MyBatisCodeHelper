@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
-import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
@@ -92,11 +91,12 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             .build();
 
 
+    //not only basic type completion.
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
-        if (parameters.getCompletionType() != CompletionType.BASIC) {
-            return;
-        }
+//        if (parameters.getCompletionType() != CompletionType.BASIC) {
+//            return;
+//        }
         //auto complete for different type.
         // there are two type of the interface can be find or can't be find.
         PsiElement positionElement = parameters.getOriginalPosition();
@@ -111,7 +111,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         String positionText = position.getText();
         int endPosition = parameters.getEditor().getCaretModel().getCurrentCaret().getSelectionStart();
         int startOffset = parameters.getPosition().getTextRange().getStartOffset();
-        if (endPosition - startOffset <= 0) {
+        if (endPosition - startOffset < 0) {
             return;
         }
         //there are end text for it.
@@ -167,10 +167,10 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             }
             String startText = document.getText(new TextRange(startOffset1, endPosition));
             //get words from startText.
-            ParsedResult parse = SqlParser.parse(startText,parameters.getEditor().getProject());
+            ParsedResult parse = SqlParser.parse(startText, parameters.getEditor().getProject());
             //get lots of recommed list.
 
-            if(parse.getRecommedValues().size()>0){
+            if (parse.getRecommedValues().size() > 0) {
                 for (String s : parse.getRecommedValues()) {
                     result.addElement(LookupElementBuilder.create(s));
                 }

@@ -28,7 +28,7 @@ public class SqlParser {
         }
         String lastWord = words.get(words.size() - 1);
         String lastSecondWord = words.get(words.size() - 2);
-        if(lastSecondWord.equals("from")||lastSecondWord.equals("from")){
+        if(lastWord.equals("from")||lastSecondWord.equals("from")){
             List<String> allTables = ServiceManager.getService(project, MysqlCompleteCacheInteface.class).getAllTables();
             result.setRecommedValues(allTables);
         }
