@@ -4,6 +4,9 @@ import com.ccnode.codegenerator.common.VersionManager;
 import com.intellij.openapi.application.ApplicationInfo;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * @Author bruce.ge
  * @Date 2017/2/27
@@ -19,11 +22,11 @@ public class MessageBuilder {
         }
         if (e != null) {
             builder.append(" the exception cause:");
-            Throwable throwable = e;
-            while (throwable != null) {
-                builder.append(throwable.getMessage() + "\n");
-                throwable = throwable.getCause();
-            }
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            e.printStackTrace( printWriter );
+            printWriter.flush();
+            builder.append(writer.toString());
         }
         builder.append(" the system os is:" + System.getProperty("os.name"));
         builder.append(" the intellij version is:" + ApplicationInfo.getInstance().getBuild().asString());

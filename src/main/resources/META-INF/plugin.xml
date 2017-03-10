@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.ccnode.codegenerator.MyBatisCodeHelper</id>
     <name>MyBatisCodeHelper</name>
-    <version>1.4.2</version>
+    <version>1.4.3</version>
     <vendor email="gejun123456@gmail.com">MyBatisCodeHelper</vendor>
 
     <description><![CDATA[
@@ -58,6 +58,15 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <p><h4>1.4.3</h4>
+            <ul>
+                <li> support multiple method xml generate</li>
+                <li> support for mybatis plus</li>
+                <li> support domain class with protected field and static field</li>
+                <li> support for small resolution</li>
+                <li>bugfix - fix can't generate to path</li>
+            </ul>
+     </p>
     <p><h4>1.4.2</h4>
             <ul>
                 <li>bugfix - fix Could not initialize class com.ccnode.codegenerator.freemarker.TemplateUtil</li>
