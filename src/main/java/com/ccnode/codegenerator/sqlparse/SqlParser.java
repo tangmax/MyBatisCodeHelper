@@ -42,7 +42,7 @@ public class SqlParser {
         String m = "";
         for (int i = 0; i < startText.length(); i++) {
             char c = startText.charAt(i);
-            if (c == ' ' || c == '\n' || c == '\t') {
+            if (c == ' ' || c == '\n' || c == '\t'||c==',') {
                 if (m.length() > 0) {
                     words.add(m);
                     m = "";

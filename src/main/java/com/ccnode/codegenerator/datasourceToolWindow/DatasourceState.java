@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.datasourceToolWindow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,7 +9,7 @@ import java.util.List;
  * @Description
  */
 public class DatasourceState {
-    private List<NewDatabaseInfo> databaseInfos;
+    private List<NewDatabaseInfo> databaseInfos = new ArrayList<>();
 
 
     public List<NewDatabaseInfo> getDatabaseInfos() {

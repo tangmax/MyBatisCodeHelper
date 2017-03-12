@@ -58,7 +58,8 @@ public class MyBatisDatasourceComponent implements ProjectComponent, PersistentS
             DatasourceState datasourceState = new DatasourceState();
             datasourceState.setDatabaseInfos(new ArrayList<>());
             state = datasourceState;
-        } else if(state.getDatabaseInfos()==null){
+        }
+        if(state.getDatabaseInfos()==null){
             state.setDatabaseInfos(new ArrayList<>());
         }
         return state;
