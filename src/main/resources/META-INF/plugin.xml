@@ -58,6 +58,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <p><h4>1.4.4</h4>
+            <ul>
+                <li>fix exception when start up</li>
+            </ul>
+     </p>
     <p><h4>1.4.3</h4>
             <ul>
                 <li> support multiple method xml generate</li>
