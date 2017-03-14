@@ -11,7 +11,7 @@
       <p>特性</p>
       <ul>
       <li>支持mysql和oracle</li>
-      <li><p>根据数据库对象生成mybatis crud代码和建表sql</p></li>
+      <li><p>根据java对象生成mybatis crud代码和建表sql</p></li>
       <li><p><b>根据mybatis接口中的方法名生成mybatis的sql
             支持find,update,delete,count方法 只需定义一个方法名就可以得到完整mybatis xml代码 可生成大部分单表操作sql 极大提升效率</b></p></li>
       <li><p>mybatis接口文件的mapper xml之间的相互跳转</p></li>
