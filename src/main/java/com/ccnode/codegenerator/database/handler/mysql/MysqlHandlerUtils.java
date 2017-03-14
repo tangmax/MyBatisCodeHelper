@@ -134,7 +134,12 @@ public class MysqlHandlerUtils {
             throw new RuntimeException("field type not support, the field is:" + psiField.getName() + " the type is:" + psiField.getType().getCanonicalText());
         }
         //mean this is enum type.
-        return newArrayListWithOrder(new TypeProps(MysqlTypeConstants.VARCHAR, "50", "''"), new TypeProps(MysqlTypeConstants.TEXT, null, null));
+        return newArrayListWithOrder(new TypeProps(MysqlTypeConstants.VARCHAR, "50", "''"),
+                new TypeProps(MysqlTypeConstants.INTEGER, "11", "-1"),
+                new TypeProps(MysqlTypeConstants.SMALLINT, "5", "-1"),
+                new TypeProps(MysqlTypeConstants.MEDIUMINT, "7", "-1"),
+                new TypeProps(MysqlTypeConstants.TINYINT, "3", "0")
+        );
     }
 
     public static UnsignedCheckResult checkUnsigned(String chooseType) {
@@ -150,7 +155,7 @@ public class MysqlHandlerUtils {
         }
     }
 
-    public static List<TypeProps> getTypePropsByQulifiType(String type){
+    public static List<TypeProps> getTypePropsByQulifiType(String type) {
         return mysqlTypeProps.get(type);
     }
 }

@@ -2,6 +2,7 @@ package com.ccnode.codegenerator.database.handler.utils;
 
 import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.google.common.collect.Lists;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -12,7 +13,11 @@ import java.util.List;
  */
 public class TypePropUtils {
 
+    @Nullable
     public static List<TypeProps> generateFromDefaultMap(List<TypeProps> fromMapTypes) {
+        if (fromMapTypes == null) {
+            return null;
+        }
         List<TypeProps> typePropslist = Lists.newArrayList();
 
         for (TypeProps fromMapType : fromMapTypes) {
