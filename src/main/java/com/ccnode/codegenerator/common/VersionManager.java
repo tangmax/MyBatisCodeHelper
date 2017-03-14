@@ -7,7 +7,7 @@ package com.ccnode.codegenerator.common;
  */
 public class VersionManager {
 
-    public static String CURRENT_VERSION = "1.4.2";
+    public static String CURRENT_VERSION = "1.4.5";
 
     public static String getCurrentVersion() {
         return CURRENT_VERSION;

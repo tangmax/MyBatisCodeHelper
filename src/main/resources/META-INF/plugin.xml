@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.ccnode.codegenerator.MyBatisCodeHelper</id>
     <name>MyBatisCodeHelper</name>
-    <version>1.4.3</version>
+    <version>1.4.5</version>
     <vendor email="gejun123456@gmail.com">MyBatisCodeHelper</vendor>
 
     <description><![CDATA[
@@ -58,6 +58,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+
+    <p><h4>1.4.5</h4>
+            <ul>
+                <li>support with enum type</li>
+            </ul>
+     </p>
     <p><h4>1.4.4</h4>
             <ul>
                 <li>fix exception when start up</li>
