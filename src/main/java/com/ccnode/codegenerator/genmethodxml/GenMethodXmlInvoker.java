@@ -60,7 +60,6 @@ public class GenMethodXmlInvoker {
             return null;
         }
         PsiClass srcClass = PsiElementUtil.getContainingClass(element);
-        PsiIdentifier nameIdentifier = srcClass.getNameIdentifier();
         if (srcClass == null) return null;
         //go to check if the pojo class exist.
         DomainClassInfo domainClassInfo = PsiClassUtil.getDomainClassInfo(srcClass);
