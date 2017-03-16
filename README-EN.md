@@ -9,6 +9,9 @@ MyBatisCodeHelper
 
 Intellij code generate plugin. support to generate mybatis dao interface,mapper xml and create table sql base on domain class, use method name to generate mybatis sql.
 -----------------------------------------------------------------------
+- 根据接的方法名直接生成对应的sql  
+![find](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/generate_multiple_method.gif)
+
 - generate mybatis dao interface, mapper xml by domain class, support dao interface jump to mybatis mapper file.
 ![generateFile](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/generateFiles.gif)  
 
