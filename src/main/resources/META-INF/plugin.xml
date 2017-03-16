@@ -1,26 +1,26 @@
 <idea-plugin version="2">
     <id>com.ccnode.codegenerator.MyBatisCodeHelper</id>
     <name>MyBatisCodeHelper</name>
-    <version>1.4.5</version>
+    <version>1.0</version>
     <vendor email="gejun123456@gmail.com">MyBatisCodeHelper</vendor>
 
     <description><![CDATA[
       <div>
       <p><a href="https://github.com/gejun123456/MyBatisCodeHelper">GitHub</a>
       |&nbsp<a href="https://github.com/gejun123456/MyBatisCodeHelper/issues">Issues</a></p>
-      <p>特性</p>
+      <p>特�/p>
       <ul>
       <li>支持mysql和oracle</li>
       <li><p>根据java对象生成mybatis crud代码和建表sql</p></li>
       <li><p><b>根据mybatis接口中的方法名生成mybatis的sql
             支持find,update,delete,count方法 只需定义一个方法名就可以得到完整mybatis xml代码 可生成大部分单表操作sql 极大提升效率</b></p></li>
-      <li><p>mybatis接口文件的mapper xml之间的相互跳转</p></li>
+      <li><p>mybatis接口文件的mapper xml之间的相互跳�/p></li>
       <li><p>数据库对象更新后一键更新对应的Sql和mybatis xml文件</p></li>
-      <li><p>默认提供insert，insertSelective，insertList，update。因为delete可以由方法名生成 默认不提供</p></li>
+      <li><p>默认提供insert，insertSelective，insertList，update。因为delete可以由方法名生成 默认不提�/p></li>
       <li><p>提供mybatis接口方法名的重构</p></li>
       <li>refid, resultMap跳转到到定义，支持重命名</li>
-      <li>refid,resultMap,keyProperty,property的自动补全</li>
-      <li><p>mybatis mapper xml文件sql的自动补全</p></li>
+      <li>refid,resultMap,keyProperty,property的自动补�/li>
+      <li><p>mybatis mapper xml文件sql的自动补�/p></li>
       </ul>
       <p>使用方法</p>
       <ul>
