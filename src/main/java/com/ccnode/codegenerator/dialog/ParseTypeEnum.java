@@ -6,5 +6,5 @@ package com.ccnode.codegenerator.dialog;
  * @Description
  */
 public enum  ParseTypeEnum {
-    PROPERTY,DISTINCT,ORDERBY,BY,LINKOP,AND,FIRST,COMPARATOR,FUNCTION,ORDER
+    PROPERTY,DISTINCT,ORDERBY,BY,LINKOP,AND,FIRST,COMPARATOR,FUNCTION,ORDER,ONE
 }

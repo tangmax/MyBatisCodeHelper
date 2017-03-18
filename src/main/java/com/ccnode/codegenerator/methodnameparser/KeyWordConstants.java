@@ -11,6 +11,8 @@ public class KeyWordConstants {
 
     public static final String GROUPBY = "groupby";
 
+    public static final String HAVING = "having";
+
     public static final String MAX = "max";
 
     public static final String MIN = "min";
@@ -18,6 +20,18 @@ public class KeyWordConstants {
     public static final String AVG = "avg";
 
     public static final String SUM = "sum";
+
+    public static final String STARTING_WITH = "startingwith";
+
+    public static final String ENDING_WTIH = "endingwith";
+
+    public static final String CONTAINING = "containing";
+
+    public static final String ONE = "one";
+
+    public static final String BEFORE = "before";
+
+    public static final String AFTER = "after";
 
 
     public static final String COUNT = "count";

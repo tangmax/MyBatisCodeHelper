@@ -86,6 +86,14 @@ public class FindParser extends BaseParser {
                         newParseFind = true;
                     }
                 }
+
+                if(remaining.startsWith(KeyWordConstants.ONE)){
+                    ParsedFind newFind = createParseFind(parsedFind);
+                    newFind.setLimit(1);
+                    newFind.addParsePart(ParseTypeEnum.ONE,KeyWordConstants.ONE);
+                    parseMethods(2, remaining, KeyWordConstants.ONE.length(), newFind);
+                    newParseFind = true;
+                }
 //                check for props.
                 for (int i = 0; i < props.length; i++) {
                     if (remaining.startsWith(lowerProps[i])) {

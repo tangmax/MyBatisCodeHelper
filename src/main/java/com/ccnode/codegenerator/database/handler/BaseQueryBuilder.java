@@ -188,6 +188,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                 builder.append(" " + propColumn + "=#{" + paramInfo.getParamAnno() + "}");
             } else {
                 switch (operator) {
+                    case KeyWordConstants.AFTER:
                     case KeyWordConstants.GREATERTHAN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("min" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
@@ -201,6 +202,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                         builder.append(" " + propColumn + cdata(">=") + " #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
+                    case KeyWordConstants.BEFORE:
                     case KeyWordConstants.LESSTHAN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
@@ -275,6 +277,24 @@ public class BaseQueryBuilder implements QueryBuilder {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("like" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("like" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
                         builder.append(" " + propColumn + "like #{" + paramInfo.getParamAnno() + "}");
+                        break;
+                    }
+                    case KeyWordConstants.STARTING_WITH:{
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop+"Prefix").withParamType(paramShortType).withParamValue(prop+"Prefix").build();
+                        info.getParamInfos().add(paramInfo);
+                        builder.append(" " + propColumn + "like #{" + paramInfo.getParamAnno() + "}%");
+                        break;
+                    }
+                    case KeyWordConstants.ENDING_WTIH:{
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop+"Suffix").withParamType(paramShortType).withParamValue(prop+"Suffix").build();
+                        info.getParamInfos().add(paramInfo);
+                        builder.append(" " + propColumn + "like %#{" + paramInfo.getParamAnno() + "}");
+                        break;
+                    }
+                    case KeyWordConstants.CONTAINING:{
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("containing" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("containing" + firstCharUpper(prop)).build();
+                        info.getParamInfos().add(paramInfo);
+                        builder.append(" " + propColumn + "like %#{" + paramInfo.getParamAnno() + "}%");
                         break;
                     }
                 }
