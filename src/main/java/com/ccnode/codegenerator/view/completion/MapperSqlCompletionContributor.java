@@ -2,6 +2,7 @@ package com.ccnode.codegenerator.view.completion;
 
 import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
+import com.ccnode.codegenerator.sqlparse.ParseContext;
 import com.ccnode.codegenerator.sqlparse.ParsedResult;
 import com.ccnode.codegenerator.sqlparse.SqlParser;
 import com.ccnode.codegenerator.util.MyPsiXmlUtils;
@@ -11,8 +12,10 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.xml.XmlFile;
@@ -166,8 +169,11 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
                 return;
             }
             String startText = document.getText(new TextRange(startOffset1, endPosition));
+            String afterText = document.getText(new TextRange(endPosition, value.getTextRange().getEndOffset()));
             //get words from startText.
-            ParsedResult parse = SqlParser.parse(startText, parameters.getEditor().getProject());
+            ParseContext context = buildParseContext(parameters.getEditor().getProject(),realStart,startText,afterText,value.getText(),endPosition-startOffset1
+            ,parameters.getCompletionType());
+            ParsedResult parse = SqlParser.parse(context);
             //get lots of recommed list.
 
             if (parse.getRecommedValues().size() > 0) {
@@ -219,6 +225,18 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             }
         }
 
+    }
+
+    private ParseContext buildParseContext(Project project, String realStart, String startText, String afterText, String text, int i, CompletionType type) {
+        ParseContext context = new ParseContext();
+        context.setCursorOffSet(i);
+        context.setBeforeText(startText);
+        context.setAfterText(afterText);
+        context.setAllText(text);
+        context.setCurrentWordStart(realStart);
+        context.setProject(project);
+        context.setCompletionType(type);
+        return context;
     }
 
     private static int findFindAlpha(String realStart) {
