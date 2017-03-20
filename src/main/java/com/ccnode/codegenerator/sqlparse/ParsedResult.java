@@ -1,5 +1,7 @@
 package com.ccnode.codegenerator.sqlparse;
 
+import com.intellij.codeInsight.lookup.LookupElement;
+
 import java.util.List;
 
 /**
@@ -10,7 +12,7 @@ import java.util.List;
 public class ParsedResult {
     private String currentState;
 
-    private List<String> recommedValues;
+    private List<LookupElement> recommedValues;
 
     public String getCurrentState() {
         return currentState;
@@ -20,11 +22,11 @@ public class ParsedResult {
         this.currentState = currentState;
     }
 
-    public List<String> getRecommedValues() {
+    public List<LookupElement> getRecommedValues() {
         return recommedValues;
     }
 
-    public void setRecommedValues(List<String> recommedValues) {
+    public void setRecommedValues(List<LookupElement> recommedValues) {
         this.recommedValues = recommedValues;
     }
 }

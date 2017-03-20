@@ -5,6 +5,7 @@ import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.DatabaseConnector;
 import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.DatabaseInfo;
 import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.TableColumnInfo;
 import com.ccnode.codegenerator.datasourceToolWindow.dbInfo.TableInfo;
+import com.ccnode.codegenerator.sqlparse.TableNameAndFieldName;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 
@@ -22,12 +23,12 @@ import java.util.Map;
 * try to find the column type for the database.
 *
 * */
-public class MyBatisSqlCompleteCache implements MysqlCompleteCacheInteface{
+public class MyBatisSqlCompleteCache implements MysqlCompleteCacheInteface {
 
-    private  List<String> tables = new ArrayList<>();
+    private List<String> tables = new ArrayList<>();
     //tableName and field map
 
-    private  ArrayListMultimap<String, String> tableToField = ArrayListMultimap.create();
+    private ArrayListMultimap<String, String> tableToField = ArrayListMultimap.create();
 
     private Map<CompleteField, String> fieldMap = new HashMap<>();
 
@@ -72,16 +73,37 @@ public class MyBatisSqlCompleteCache implements MysqlCompleteCacheInteface{
     @Override
     public List<String> getAllFields() {
         List<String> fields = Lists.newArrayList();
-        for(Map.Entry<String,String> map : tableToField.entries()){
+        for (Map.Entry<String, String> map : tableToField.entries()) {
             fields.add(map.getValue());
         }
         return fields;
     }
 
     @Override
-    public List<String> getTableAllFields(String tableName) {
-        return tableToField.get(tableName);
+    public List<TableNameAndFieldName> getAllFieldsWithTable() {
+        List<TableNameAndFieldName> fields = Lists.newArrayList();
+        for (Map.Entry<String, String> map : tableToField.entries()) {
+            TableNameAndFieldName tableNameAndFieldName = new TableNameAndFieldName();
+            tableNameAndFieldName.setTableName(map.getKey());
+            tableNameAndFieldName.setFieldName(map.getValue());
+            fields.add(tableNameAndFieldName);
+        }
+        return fields;
     }
+
+    @Override
+    public List<TableNameAndFieldName> getTableAllFields(String tableName) {
+        List<String> strings = tableToField.get(tableName);
+        List<TableNameAndFieldName> tableNameAndFieldNames = Lists.newArrayList();
+        for (String string : strings) {
+            TableNameAndFieldName tableNameAndFieldName = new TableNameAndFieldName();
+            tableNameAndFieldName.setTableName(tableName);
+            tableNameAndFieldName.setFieldName(string);
+            tableNameAndFieldNames.add(tableNameAndFieldName);
+        }
+        return tableNameAndFieldNames;
+    }
+
 
     @Override
     public String getFieldType() {

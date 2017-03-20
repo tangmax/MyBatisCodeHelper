@@ -2,6 +2,10 @@ package com.ccnode.codegenerator.sqlparse;
 
 import com.ccnode.codegenerator.view.completion.MysqlCompleteCacheInteface;
 import com.google.common.collect.Lists;
+import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.codeInsight.lookup.LookupElementPresentation;
+import com.intellij.codeInsight.lookup.LookupElementRenderer;
 import com.intellij.openapi.components.ServiceManager;
 
 import java.util.ArrayList;
@@ -15,6 +19,7 @@ import java.util.List;
 public class SqlParser {
     public static ParsedResult parse(ParseContext context) {
         //first make it parse to a list of word.
+        List<String> baseRecommends = Lists.newArrayList();
         ParsedResult result = new ParsedResult();
         result.setRecommedValues(new ArrayList<>());
         String currentWordStart = context.getCurrentWordStart();
@@ -23,11 +28,11 @@ public class SqlParser {
         List<String> afterWords = extractWords(context.getAfterText().toLowerCase());
         boolean currentIsSkipChar = isSkipChar(context.getAllText().charAt(context.getCursorOffSet() - 1));
         if (beforeWord.size() == 0 || (beforeWord.size() == 1 && !currentIsSkipChar)) {
-            result.getRecommedValues().add("insert into");
-            result.getRecommedValues().add("select");
-            result.getRecommedValues().add("update");
-            result.getRecommedValues().add("delete");
-            result.getRecommedValues().add("count");
+            baseRecommends.add("insert into");
+            baseRecommends.add("select");
+            baseRecommends.add("update");
+            baseRecommends.add("delete");
+            result.setRecommedValues(convertToRecommeds(baseRecommends));
             return result;
         }
 
@@ -36,19 +41,30 @@ public class SqlParser {
         if (beforeWord.contains("select")) {
             boolean beforeContainsFrom = beforeWord.contains("from");
             boolean afterContainsFrom = afterWords.contains("from");
+            //make the render more buautiful.
             if (!beforeContainsFrom && !afterContainsFrom) {
-                List<String> allFields = cacheService.getAllFields();
-                for (String allField : allFields) {
-                    result.getRecommedValues().add(beforeCurrentWordString + allField);
+                List<TableNameAndFieldName> allFields = cacheService.getAllFieldsWithTable();
+                for (TableNameAndFieldName field : allFields) {
+                    result.getRecommedValues().add(LookupElementBuilder.create(field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
+                        @Override
+                        public void renderElement(LookupElement element, LookupElementPresentation presentation) {
+                            presentation.setItemText(field.getFieldName()+"  ("+field.getTableName()+")");
+                        }
+                    }));
                 }
-                result.getRecommedValues().add("from");
+                result.getRecommedValues().add(LookupElementBuilder.create("from"));
                 return result;
             } else if (afterContainsFrom) {
                 //todo make it just select the from value.
                 //make it happend
-                List<String> fields = getRecommendFromTableFields(afterWords,cacheService);
-                for (String field : fields) {
-                    result.getRecommedValues().add(beforeCurrentWordString + field);
+                List<TableNameAndFieldName> fields = getRecommendFromTableFields(afterWords, cacheService);
+                for (TableNameAndFieldName field : fields) {
+                    result.getRecommedValues().add(LookupElementBuilder.create(field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
+                        @Override
+                        public void renderElement(LookupElement element, LookupElementPresentation presentation) {
+                            presentation.setItemText(field.getFieldName()+"  ("+field.getTableName()+")");
+                        }
+                    }));
                 }
                 return result;
             }
@@ -56,21 +72,30 @@ public class SqlParser {
             boolean beforeContainWhereOrOn = beforeWord.contains("where") || beforeWord.contains("on");
             if (beforeContainsFrom && !beforeContainWhereOrOn) {
                 List<String> allTables = cacheService.getAllTables();
-                result.setRecommedValues(allTables);
-                result.getRecommedValues().add("inner join ");
-                result.getRecommedValues().add("left join ");
-                result.getRecommedValues().add("right join ");
-                result.getRecommedValues().add("where ");
+                baseRecommends = allTables;
+                baseRecommends.add("inner join ");
+                baseRecommends.add("left join ");
+                baseRecommends.add("right join ");
+                baseRecommends.add("where ");
                 if (beforeWord.contains("join")) {
-                    result.getRecommedValues().add("on");
+                    baseRecommends.add("on");
                 }
+                result.setRecommedValues(convertToRecommeds(baseRecommends));
                 return result;
             }
 
             if (beforeContainsFrom && beforeContainWhereOrOn) {
                 //extract the table name and aliase for the tables.
-                List<String> fields = getRecommendFromTableFields(beforeWord,cacheService);
-                result.getRecommedValues().addAll(fields);
+                List<TableNameAndFieldName> fields = getRecommendFromTableFields(beforeWord, cacheService);
+                for (TableNameAndFieldName field : fields) {
+                    result.getRecommedValues().add(LookupElementBuilder.create(field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
+                        @Override
+                        public void renderElement(LookupElement element, LookupElementPresentation presentation) {
+                            presentation.setItemText(field.getFieldName()+"  ("+field.getTableName()+")");
+                        }
+                    }));
+                }
+                return result;
             }
             //does it contains where
 //            String lastWord = beforeWord.get(beforeWord.size() - 1);
@@ -84,6 +109,16 @@ public class SqlParser {
         return result;
     }
 
+    private static List<LookupElement> convertToRecommeds(List<String> baseRecommends) {
+        List<LookupElement> lookupElements = Lists.newArrayList();
+        for (String baseRecommend : baseRecommends) {
+            lookupElements.add(LookupElementBuilder.create(baseRecommend));
+        }
+        return lookupElements;
+    }
+
+
+
     private static String getBeforeRealString(String currentWordStart) {
         for (int i = currentWordStart.length() - 1; i >= 0; i--) {
             if (isSkipChar(currentWordStart.charAt(i))) {
@@ -93,17 +128,21 @@ public class SqlParser {
         return "";
     }
 
-    private static List<String> getRecommendFromTableFields(List<String> beforeWord,MysqlCompleteCacheInteface cacheInteface) {
-        List<String> recommends = Lists.newArrayList();
+    private static List<TableNameAndFieldName> getRecommendFromTableFields(List<String> beforeWord, MysqlCompleteCacheInteface cacheInteface) {
+        List<TableNameAndFieldName> recommends = Lists.newArrayList();
         //
         List<TableNameAndAliaseName> tableNameAndAliaseNames = extractNameFrom(beforeWord);
         for (TableNameAndAliaseName tableNameAndAliaseName : tableNameAndAliaseNames) {
-            if(tableNameAndAliaseName.getAliaseName()==null){
+            if (tableNameAndAliaseName.getAliaseName() == null) {
                 recommends.addAll(cacheInteface.getTableAllFields(tableNameAndAliaseName.getTableName()));
-            } else{
-                List<String> tableAllFields = cacheInteface.getTableAllFields(tableNameAndAliaseName.getTableName());
-                for (String tableAllField : tableAllFields) {
-                    recommends.add(tableNameAndAliaseName.getAliaseName()+"."+tableAllField);
+            } else {
+                List<TableNameAndFieldName> tableAllFields = cacheInteface.getTableAllFields(tableNameAndAliaseName.getTableName());
+                for (TableNameAndFieldName tableAllField : tableAllFields) {
+                    String s = tableNameAndAliaseName.getAliaseName() + "." + tableAllField;
+                    TableNameAndFieldName tableNameAndFieldName = new TableNameAndFieldName();
+                    tableNameAndFieldName.setFieldName(s);
+                    tableNameAndFieldName.setTableName(tableAllField.getFieldName());
+                    recommends.add(tableNameAndFieldName);
                 }
             }
         }

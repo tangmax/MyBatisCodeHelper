@@ -126,7 +126,6 @@ public class UpdateDialogMore extends DialogWrapper {
         this.jcheckWithMapperMethods.forEach((item) -> {
             if (item.getjCheckBox().isSelected()) {
                 handleWithMapperMethod(finalDisplayFieldAndFormatedColumn, tableName, item.getMapperMethod(), item.getClassMapperMethod(), manager);
-                PsiDocumentUtils.commitAndSaveDocument(manager, manager.getDocument(myXmlFile));
             }
         });
 
@@ -222,6 +221,7 @@ public class UpdateDialogMore extends DialogWrapper {
             WriteCommandAction.runWriteCommandAction(myProject, () -> {
                 TextRange valueTextRange = mapperMethod.getXmlTag().getValue().getTextRange();
                 manager.getDocument(myXmlFile.getContainingFile()).replaceString(valueTextRange.getStartOffset(), valueTextRange.getEndOffset(), insertValue);
+                PsiDocumentUtils.commitAndSaveDocument(manager, manager.getDocument(myXmlFile));
             });
         }
         //else set with value.
@@ -370,7 +370,7 @@ public class UpdateDialogMore extends DialogWrapper {
             MapperMethod mapperMethod = mapperDto.getMapperMethodMap().get(item.getMethodName());
             if (mapperMethod != null && defaultMethodSet.contains(item.getMethodName())) {
                 JcheckWithMapperMethod e = new JcheckWithMapperMethod();
-                e.setjCheckBox(new JCheckBox("replace " + mapperMethod.getType().name() + " mapper id " + item.getMethodName(), false));
+                e.setjCheckBox(new JCheckBox("replace " + mapperMethod.getType().name() + " mapper id " + item.getMethodName(), true));
                 e.setClassMapperMethod(item);
                 e.setMapperMethod(mapperMethod);
                 jcheckWithMapperMethods.add(e);

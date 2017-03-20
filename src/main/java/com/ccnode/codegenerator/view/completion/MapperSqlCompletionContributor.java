@@ -13,6 +13,7 @@ import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
@@ -177,8 +178,8 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             //get lots of recommed list.
 
             if (parse.getRecommedValues().size() > 0) {
-                for (String s : parse.getRecommedValues()) {
-                    result.addElement(LookupElementBuilder.create(s));
+                for (LookupElement s : parse.getRecommedValues()) {
+                    result.addElement(s);
                 }
                 return;
             }

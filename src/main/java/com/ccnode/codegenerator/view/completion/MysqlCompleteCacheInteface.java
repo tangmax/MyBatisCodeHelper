@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.view.completion;
 
 import com.ccnode.codegenerator.datasourceToolWindow.NewDatabaseInfo;
+import com.ccnode.codegenerator.sqlparse.TableNameAndFieldName;
 
 import java.util.List;
 
@@ -20,8 +21,11 @@ public interface MysqlCompleteCacheInteface {
 
     List<String> getAllFields();
 
+    List<TableNameAndFieldName> getAllFieldsWithTable();
 
-    List<String> getTableAllFields(String table);
+
+    List<TableNameAndFieldName> getTableAllFields(String tableName);
+
 
     String getFieldType();
     void cleanAll();
