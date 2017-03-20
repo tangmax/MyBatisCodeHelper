@@ -7,6 +7,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.intellij.codeInsight.lookup.LookupElementRenderer;
 import com.intellij.openapi.components.ServiceManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,12 +46,7 @@ public class SqlParser {
             if (!beforeContainsFrom && !afterContainsFrom) {
                 List<TableNameAndFieldName> allFields = cacheService.getAllFieldsWithTable();
                 for (TableNameAndFieldName field : allFields) {
-                    result.getRecommedValues().add(LookupElementBuilder.create(beforeCurrentWordString + field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
-                        @Override
-                        public void renderElement(LookupElement element, LookupElementPresentation presentation) {
-                            presentation.setItemText(field.getFieldName() + "  (" + field.getTableName() + ")");
-                        }
-                    }));
+                    result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
                 }
                 result.getRecommedValues().add(LookupElementBuilder.create("from"));
                 return result;
@@ -59,12 +55,7 @@ public class SqlParser {
                 //make it happend
                 List<TableNameAndFieldName> fields = getRecommendFromTableFields(afterWords, cacheService);
                 for (TableNameAndFieldName field : fields) {
-                    result.getRecommedValues().add(LookupElementBuilder.create(beforeCurrentWordString + field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
-                        @Override
-                        public void renderElement(LookupElement element, LookupElementPresentation presentation) {
-                            presentation.setItemText(field.getFieldName() + "  (" + field.getTableName() + ")");
-                        }
-                    }));
+                    result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
                 }
                 return result;
             }
@@ -88,12 +79,7 @@ public class SqlParser {
                 //extract the table name and aliase for the tables.
                 List<TableNameAndFieldName> fields = getRecommendFromTableFields(beforeWord, cacheService);
                 for (TableNameAndFieldName field : fields) {
-                    result.getRecommedValues().add(LookupElementBuilder.create(field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
-                        @Override
-                        public void renderElement(LookupElement element, LookupElementPresentation presentation) {
-                            presentation.setItemText(field.getFieldName() + "  (" + field.getTableName() + ")");
-                        }
-                    }));
+                    result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
                 }
                 return result;
             }
@@ -107,6 +93,16 @@ public class SqlParser {
 //            return result;
         }
         return result;
+    }
+
+    @NotNull
+    private static LookupElementBuilder getTableAndFieldElement(String beforeCurrentWordString, final TableNameAndFieldName field) {
+        return LookupElementBuilder.create(beforeCurrentWordString + field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
+            @Override
+            public void renderElement(LookupElement element, LookupElementPresentation presentation) {
+                presentation.setItemText(field.getFieldName() + "  (" + field.getTableName() + ")");
+            }
+        });
     }
 
     private static List<LookupElement> convertToRecommeds(List<String> baseRecommends) {
