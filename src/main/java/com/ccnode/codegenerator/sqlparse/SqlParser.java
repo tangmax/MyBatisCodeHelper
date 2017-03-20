@@ -45,10 +45,10 @@ public class SqlParser {
             if (!beforeContainsFrom && !afterContainsFrom) {
                 List<TableNameAndFieldName> allFields = cacheService.getAllFieldsWithTable();
                 for (TableNameAndFieldName field : allFields) {
-                    result.getRecommedValues().add(LookupElementBuilder.create(field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
+                    result.getRecommedValues().add(LookupElementBuilder.create(beforeCurrentWordString + field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
                         @Override
                         public void renderElement(LookupElement element, LookupElementPresentation presentation) {
-                            presentation.setItemText(field.getFieldName()+"  ("+field.getTableName()+")");
+                            presentation.setItemText(field.getFieldName() + "  (" + field.getTableName() + ")");
                         }
                     }));
                 }
@@ -59,10 +59,10 @@ public class SqlParser {
                 //make it happend
                 List<TableNameAndFieldName> fields = getRecommendFromTableFields(afterWords, cacheService);
                 for (TableNameAndFieldName field : fields) {
-                    result.getRecommedValues().add(LookupElementBuilder.create(field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
+                    result.getRecommedValues().add(LookupElementBuilder.create(beforeCurrentWordString + field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
                         @Override
                         public void renderElement(LookupElement element, LookupElementPresentation presentation) {
-                            presentation.setItemText(field.getFieldName()+"  ("+field.getTableName()+")");
+                            presentation.setItemText(field.getFieldName() + "  (" + field.getTableName() + ")");
                         }
                     }));
                 }
@@ -91,7 +91,7 @@ public class SqlParser {
                     result.getRecommedValues().add(LookupElementBuilder.create(field.getFieldName()).withRenderer(new LookupElementRenderer<LookupElement>() {
                         @Override
                         public void renderElement(LookupElement element, LookupElementPresentation presentation) {
-                            presentation.setItemText(field.getFieldName()+"  ("+field.getTableName()+")");
+                            presentation.setItemText(field.getFieldName() + "  (" + field.getTableName() + ")");
                         }
                     }));
                 }
@@ -118,7 +118,6 @@ public class SqlParser {
     }
 
 
-
     private static String getBeforeRealString(String currentWordStart) {
         for (int i = currentWordStart.length() - 1; i >= 0; i--) {
             if (isSkipChar(currentWordStart.charAt(i))) {
@@ -138,10 +137,10 @@ public class SqlParser {
             } else {
                 List<TableNameAndFieldName> tableAllFields = cacheInteface.getTableAllFields(tableNameAndAliaseName.getTableName());
                 for (TableNameAndFieldName tableAllField : tableAllFields) {
-                    String s = tableNameAndAliaseName.getAliaseName() + "." + tableAllField;
+                    String s = tableNameAndAliaseName.getAliaseName() + "." + tableAllField.getFieldName();
                     TableNameAndFieldName tableNameAndFieldName = new TableNameAndFieldName();
                     tableNameAndFieldName.setFieldName(s);
-                    tableNameAndFieldName.setTableName(tableAllField.getFieldName());
+                    tableNameAndFieldName.setTableName(tableAllField.getTableName());
                     recommends.add(tableNameAndFieldName);
                 }
             }
