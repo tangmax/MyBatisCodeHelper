@@ -207,7 +207,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             String afterText = document.getText(new TextRange(endPosition, value.getTextRange().getEndOffset()));
             //get words from startText.
             ParseContext context = buildParseContext(parameters.getEditor().getProject(), realStart, startText, afterText, value.getText(), endPosition - startOffset1
-                    , parameters.getCompletionType());
+                    , parameters.getCompletionType(),currentElementXmlTag,xmlFile);
             ParsedResult parse = SqlParser.parse(context);
             //get lots of recommed list.
 
@@ -233,7 +233,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
 
     }
 
-    private ParseContext buildParseContext(Project project, String realStart, String startText, String afterText, String text, int i, CompletionType type) {
+    private ParseContext buildParseContext(Project project, String realStart, String startText, String afterText, String text, int i, CompletionType type,XmlTag currentTag,XmlFile xmlFile) {
         ParseContext context = new ParseContext();
         context.setCursorOffSet(i);
         context.setBeforeText(startText);
@@ -242,6 +242,8 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         context.setCurrentWordStart(realStart);
         context.setProject(project);
         context.setCompletionType(type);
+        context.setCurrentTag(currentTag);
+        context.setCurrentXmlFile(xmlFile);
         return context;
     }
 

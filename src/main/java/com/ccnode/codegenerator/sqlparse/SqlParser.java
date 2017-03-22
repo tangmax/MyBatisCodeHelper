@@ -1,5 +1,7 @@
 package com.ccnode.codegenerator.sqlparse;
 
+import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
+import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.ccnode.codegenerator.view.completion.MysqlCompleteCacheInteface;
 import com.google.common.collect.Lists;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -7,6 +9,10 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.intellij.codeInsight.lookup.LookupElementRenderer;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.xml.XmlTag;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -40,7 +46,6 @@ public class SqlParser {
         //if not contains from.
         MysqlCompleteCacheInteface cacheService = ServiceManager.getService(context.getProject(), MysqlCompleteCacheInteface.class);
         if (beforeWord.contains("select")) {
-
             if (checkTableNameRecommend(beforeWord, currentIsSkipChar)) {
                 List<String> allTables = cacheService.getAllTables();
                 result.setRecommedValues(convertToRecommeds(allTables));
@@ -48,31 +53,54 @@ public class SqlParser {
             }
 
 
+
             boolean beforeContainsFrom = beforeWord.contains("from");
             boolean afterContainsFrom = afterWords.contains("from");
             //make the render more buautiful.
-            if (!beforeContainsFrom && !afterContainsFrom) {
-                List<TableNameAndFieldName> allFields = cacheService.getAllFieldsWithTable();
-                for (TableNameAndFieldName field : allFields) {
-                    result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
+            if (!beforeContainsFrom) {
+                if (checkAsRecommed(beforeWord, currentIsSkipChar)) {
+                    //try to extract the resultType.
+                    //the before is xml. get from resultType or resultMap.
+                    XmlTag currentTag =
+                            context.getCurrentTag();
+                    String attributeValue = currentTag.getAttributeValue(MyBatisXmlConstants.RESULT_TYPE);
+                    if (StringUtils.isNotEmpty(attributeValue)){
+                        PsiClass classOfQuatifiedType = PsiClassUtil.findClassOfQuatifiedType(ModuleUtilCore.findModuleForPsiElement(context.getCurrentXmlFile()), context.getProject(), attributeValue);
+                        if(classOfQuatifiedType!=null){
+                            List<String> strings = PsiClassUtil.extractProps(classOfQuatifiedType);
+                            for (String string : strings) {
+                                result.getRecommedValues().add(LookupElementBuilder.create(string).withRenderer(new LookupElementRenderer<LookupElement>() {
+                                    @Override
+                                    public void renderElement(LookupElement element, LookupElementPresentation presentation) {
+                                        presentation.setItemText(string);
+                                        presentation.setTypeText(attributeValue);
+                                    }
+                                }));
+                            }
+                        }
+                    }
+                    return result;
                 }
-                result.getRecommedValues().add(LookupElementBuilder.create("from "));
-                result.getRecommedValues().addAll(MethodRecommendCache.getRecommends(beforeCurrentWordString));
-                return result;
-            } else if (afterContainsFrom) {
-                //todo make it just select the from value.
-                //make it happend
-                List<TableNameAndFieldName> fields = getRecommendFromTableFields(afterWords, cacheService);
-                for (TableNameAndFieldName field : fields) {
-                    result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
+                if (!afterContainsFrom) {
+                    List<TableNameAndFieldName> allFields = cacheService.getAllFieldsWithTable();
+                    for (TableNameAndFieldName field : allFields) {
+                        result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
+                    }
+                    result.getRecommedValues().add(LookupElementBuilder.create("from "));
+                    result.getRecommedValues().add(LookupElementBuilder.create("as "));
+                    result.getRecommedValues().addAll(MethodRecommendCache.getRecommends(beforeCurrentWordString));
+                    return result;
+                } else {
+                    //make it happend
+                    List<TableNameAndFieldName> fields = getRecommendFromTableFields(afterWords, cacheService);
+                    for (TableNameAndFieldName field : fields) {
+                        result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
+                    }
+                    result.getRecommedValues().addAll(MethodRecommendCache.getRecommends(beforeCurrentWordString));
+                    return result;
                 }
-                result.getRecommedValues().addAll(MethodRecommendCache.getRecommends(beforeCurrentWordString));
-                return result;
-            }
-
-
-            boolean beforeContainWhereOrOn = beforeWord.contains("where") || beforeWord.contains("on");
-            if (beforeContainsFrom) {
+            } else {
+                boolean beforeContainWhereOrOn = beforeWord.contains("where") || beforeWord.contains("on");
                 if (checkListContains(beforeWord, "order", "by")) {
                     List<TableNameAndFieldName> fields = getRecommendFromTableFields(beforeWord, cacheService);
                     for (TableNameAndFieldName field : fields) {
@@ -138,6 +166,22 @@ public class SqlParser {
 //            return result;
         }
         return result;
+    }
+
+    private static boolean checkAsRecommed(List<String> beforeWord, boolean currentIsSkipChar) {
+        int size = beforeWord.size();
+        if (size >= 2) {
+            if (currentIsSkipChar) {
+                if (beforeWord.get(size - 1).equals("as")) {
+                    return true;
+                }
+            } else {
+                if (beforeWord.get(size - 2).equals("as")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean checkListContains(List<String> beforeWord, String... contains) {

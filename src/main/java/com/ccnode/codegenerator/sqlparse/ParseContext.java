@@ -2,6 +2,8 @@ package com.ccnode.codegenerator.sqlparse;
 
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.xml.XmlFile;
+import com.intellij.psi.xml.XmlTag;
 
 /**
  * @Author bruce.ge
@@ -21,7 +23,27 @@ public class ParseContext {
 
     private int cursorOffSet;
 
+    private XmlTag currentTag;
+
+    private XmlFile currentXmlFile;
+
     public CompletionType completionType;
+
+    public XmlTag getCurrentTag() {
+        return currentTag;
+    }
+
+    public void setCurrentTag(XmlTag currentTag) {
+        this.currentTag = currentTag;
+    }
+
+    public XmlFile getCurrentXmlFile() {
+        return currentXmlFile;
+    }
+
+    public void setCurrentXmlFile(XmlFile currentXmlFile) {
+        this.currentXmlFile = currentXmlFile;
+    }
 
     public int getCursorOffSet() {
         return cursorOffSet;
