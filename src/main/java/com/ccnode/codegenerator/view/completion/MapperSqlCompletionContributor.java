@@ -133,6 +133,40 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             return;
         }
 
+        int findFieldIndex = realStart.lastIndexOf("#{");
+        if (findFieldIndex != -1 && findFieldIndex > realStart.length() - 10) {
+            //find all the prop for it.
+            String namespace = MyPsiXmlUtils.findCurrentXmlFileNameSpace(xmlFile);
+            PsiClass namespaceClass = PsiClassUtil.findClassOfQuatifiedType(xmlFile, namespace);
+            if (namespaceClass == null) {
+                return;
+            }
+
+            //only for those four method to use.
+            String methodName = MyPsiXmlUtils.findCurrentElementIntefaceMethodName(positionElement);
+            //find the corresponding method.
+            if (StringUtils.isBlank(methodName)) {
+                return;
+            }
+            PsiMethod findMethod = PsiClassUtil.getClassMethodByMethodName(namespaceClass, methodName);
+            if (findMethod == null) {
+                return;
+            }
+            List<String> lookUpResult = PsiClassUtil.extractMyBatisParam(findMethod);
+            String remaining = realStart.substring(findFieldIndex + 2);
+            int findAlpha = findFindAlpha(realStart);
+            String substring = "";
+            if(findAlpha!=-1){
+                substring = realStart.substring(findAlpha, findFieldIndex + 2);
+            }
+            for (String s : lookUpResult) {
+                if (s.startsWith(remaining)) {
+                    result.addElement(LookupElementBuilder.create(substring +s + "}"));
+                }
+            }
+            return;
+        }
+
 
         int m = realStart.lastIndexOf("`");
         if (m != -1 && m > realStart.length() - 10) {
@@ -172,8 +206,8 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             String startText = document.getText(new TextRange(startOffset1, endPosition));
             String afterText = document.getText(new TextRange(endPosition, value.getTextRange().getEndOffset()));
             //get words from startText.
-            ParseContext context = buildParseContext(parameters.getEditor().getProject(),realStart,startText,afterText,value.getText(),endPosition-startOffset1
-            ,parameters.getCompletionType());
+            ParseContext context = buildParseContext(parameters.getEditor().getProject(), realStart, startText, afterText, value.getText(), endPosition - startOffset1
+                    , parameters.getCompletionType());
             ParsedResult parse = SqlParser.parse(context);
             //get lots of recommed list.
 
@@ -186,35 +220,6 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
 
         }
 
-        int findFieldIndex = realStart.lastIndexOf("#{");
-        if (findFieldIndex != -1 && findFieldIndex > realStart.length() - 10) {
-            //find all the prop for it.
-            String namespace = MyPsiXmlUtils.findCurrentXmlFileNameSpace(xmlFile);
-            PsiClass namespaceClass = PsiClassUtil.findClassOfQuatifiedType(xmlFile, namespace);
-            if (namespaceClass == null) {
-                return;
-            }
-
-            //only for those four method to use.
-            String methodName = MyPsiXmlUtils.findCurrentElementIntefaceMethodName(positionElement);
-            //find the corresponding method.
-            if (StringUtils.isBlank(methodName)) {
-                return;
-            }
-            PsiMethod findMethod = PsiClassUtil.getClassMethodByMethodName(namespaceClass, methodName);
-            if (findMethod == null) {
-                return;
-            }
-            List<String> lookUpResult = PsiClassUtil.extractMyBatisParam(findMethod);
-            String remaining = realStart.substring(findFieldIndex + 2);
-            int findAlpha = findFindAlpha(realStart);
-            for (String s : lookUpResult) {
-                if (s.startsWith(remaining)) {
-                    result.addElement(LookupElementBuilder.create(realStart.substring(findAlpha, findFieldIndex + 2) + s + "}"));
-                }
-            }
-            return;
-        }
 
         //share the word.
 
@@ -246,7 +251,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
                 return i;
             }
         }
-        return 0;
+        return -1;
     }
 
     private static Set<String> extractField(List<ColumnAndField> columnAndFields) {

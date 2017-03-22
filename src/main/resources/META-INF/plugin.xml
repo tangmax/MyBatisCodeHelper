@@ -200,6 +200,7 @@
                                 implementationClass="com.ccnode.codegenerator.view.completion.MapperXmlTagElementCompletionContributor"/>
 
 
+        <inspectionToolProvider implementation="com.ccnode.codegenerator.view.inspection.MyBatisMethodNotFoundInXmlProvider"/>
         <psi.referenceContributor
                 implementation="com.ccnode.codegenerator.view.MyBatisJavaToXmlPsiReferenceContributor"/>
         <psi.referenceContributor

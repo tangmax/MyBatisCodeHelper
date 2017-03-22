@@ -10,6 +10,7 @@ import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
 import com.intellij.psi.util.PsiTypesUtil;
@@ -329,5 +330,21 @@ public class PsiClassUtil {
             }
         }
         return findMethod;
+    }
+
+    @Nullable
+    public static String extractRealType(PsiType returnType) {
+        if (returnType == null) {
+            return null;
+        }
+        if (returnType instanceof PsiClassReferenceType) {
+            PsiClassReferenceType referenceType = (PsiClassReferenceType) returnType;
+            if (referenceType.getParameterCount() == 0) {
+                return returnType.getCanonicalText();
+            } else {
+                return referenceType.getParameters()[0].getCanonicalText();
+            }
+        }
+        return returnType.getCanonicalText();
     }
 }

@@ -29,10 +29,10 @@ public class SqlParser {
         List<String> afterWords = extractWords(context.getAfterText().toLowerCase());
         boolean currentIsSkipChar = isSkipChar(context.getAllText().charAt(context.getCursorOffSet() - 1));
         if (beforeWord.size() == 0 || (beforeWord.size() == 1 && !currentIsSkipChar)) {
-            baseRecommends.add("insert into");
-            baseRecommends.add("select");
-            baseRecommends.add("update");
-            baseRecommends.add("delete");
+            baseRecommends.add("insert into ");
+            baseRecommends.add("select ");
+            baseRecommends.add("update ");
+            baseRecommends.add("delete ");
             result.setRecommedValues(convertToRecommeds(baseRecommends));
             return result;
         }
@@ -56,7 +56,7 @@ public class SqlParser {
                 for (TableNameAndFieldName field : allFields) {
                     result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
                 }
-                result.getRecommedValues().add(LookupElementBuilder.create("from"));
+                result.getRecommedValues().add(LookupElementBuilder.create("from "));
                 result.getRecommedValues().addAll(MethodRecommendCache.getRecommends(beforeCurrentWordString));
                 return result;
             } else if (afterContainsFrom) {

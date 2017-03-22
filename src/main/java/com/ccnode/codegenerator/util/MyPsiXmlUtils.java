@@ -269,4 +269,24 @@ public class MyPsiXmlUtils {
             PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, xmlDocument);
         });
     }
+
+    //    extract the method tag from xml.
+    @Nullable
+    public static PsiElement findTagForMethodName(XmlFile xmlFile, String name) {
+        XmlTag rootTag = xmlFile.getRootTag();
+        if(rootTag==null){
+            return null;
+        }
+        XmlTag[] subTags = rootTag.getSubTags();
+        if (subTags.length == 0) {
+            return null;
+        }
+        for (XmlTag tag : subTags) {
+            XmlAttribute id = tag.getAttribute("id");
+            if (id != null && id.getValue().equals(name)) {
+                return tag;
+            }
+        }
+        return null;
+    }
 }

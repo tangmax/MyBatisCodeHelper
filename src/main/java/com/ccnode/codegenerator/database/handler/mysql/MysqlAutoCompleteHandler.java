@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.database.handler.mysql;
 
 import com.ccnode.codegenerator.database.handler.AutoCompleteHandler;
+import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.psi.PsiParameter;
 
 /**
@@ -28,6 +29,6 @@ public class MysqlAutoCompleteHandler implements AutoCompleteHandler {
 
     @Override
     public boolean isSupportedParam(PsiParameter psiParameter) {
-        return MysqlHandlerUtils.getTypePropsByQulifiType(psiParameter.getType().getCanonicalText()) != null;
+        return MysqlHandlerUtils.getTypePropsByQulifiType(PsiClassUtil.convertToObjectText(psiParameter.getType().getCanonicalText())) != null;
     }
 }

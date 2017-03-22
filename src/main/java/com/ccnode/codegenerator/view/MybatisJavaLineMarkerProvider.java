@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.view;
 
 import com.ccnode.codegenerator.util.IconUtils;
+import com.ccnode.codegenerator.util.MyPsiXmlUtils;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
@@ -19,11 +20,8 @@ import com.intellij.psi.search.PsiSearchHelper;
 import com.intellij.psi.search.PsiShortNamesCache;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlFile;
-import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -58,7 +56,7 @@ public class MybatisJavaLineMarkerProvider extends RelatedItemLineMarkerProvider
                             continue;
                         }
                         //say we find the xml file.
-                        PsiElement psiElement = extractTagFromXml(method, xmlFile);
+                        PsiElement psiElement = MyPsiXmlUtils.findTagForMethodName(xmlFile, method.getName());
                         if (psiElement != null) {
                             methodElement = psiElement;
                             break;
@@ -104,22 +102,7 @@ public class MybatisJavaLineMarkerProvider extends RelatedItemLineMarkerProvider
         if (xmlFiles.size() == 0) {
             return null;
         }
-        return extractTagFromXml(method, xmlFiles.get(0));
+        return MyPsiXmlUtils.findTagForMethodName(xmlFiles.get(0), method.getName());
     }
 
-    //    extract the method tag from xml.
-    @Nullable
-    private PsiElement extractTagFromXml(@NotNull PsiMethod method, XmlFile xmlFile) {
-        XmlTag[] subTags = xmlFile.getRootTag().getSubTags();
-        if (subTags.length == 0) {
-            return null;
-        }
-        for (XmlTag tag : subTags) {
-            XmlAttribute id = tag.getAttribute("id");
-            if (id != null && id.getValue().equals(method.getName())) {
-                return tag;
-            }
-        }
-        return null;
-    }
 }
