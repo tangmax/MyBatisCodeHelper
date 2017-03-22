@@ -40,6 +40,14 @@ public class SqlParser {
         //if not contains from.
         MysqlCompleteCacheInteface cacheService = ServiceManager.getService(context.getProject(), MysqlCompleteCacheInteface.class);
         if (beforeWord.contains("select")) {
+
+            if (checkTableNameRecommend(beforeWord, currentIsSkipChar)) {
+                List<String> allTables = cacheService.getAllTables();
+                result.setRecommedValues(convertToRecommeds(allTables));
+                return result;
+            }
+
+
             boolean beforeContainsFrom = beforeWord.contains("from");
             boolean afterContainsFrom = afterWords.contains("from");
             //make the render more buautiful.
@@ -49,6 +57,7 @@ public class SqlParser {
                     result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
                 }
                 result.getRecommedValues().add(LookupElementBuilder.create("from"));
+                result.getRecommedValues().addAll(MethodRecommendCache.getRecommends(beforeCurrentWordString));
                 return result;
             } else if (afterContainsFrom) {
                 //todo make it just select the from value.
@@ -57,32 +66,68 @@ public class SqlParser {
                 for (TableNameAndFieldName field : fields) {
                     result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
                 }
+                result.getRecommedValues().addAll(MethodRecommendCache.getRecommends(beforeCurrentWordString));
                 return result;
             }
+
 
             boolean beforeContainWhereOrOn = beforeWord.contains("where") || beforeWord.contains("on");
-            if (beforeContainsFrom && !beforeContainWhereOrOn) {
-                List<String> allTables = cacheService.getAllTables();
-                baseRecommends = allTables;
-                baseRecommends.add("inner join ");
-                baseRecommends.add("left join ");
-                baseRecommends.add("right join ");
-                baseRecommends.add("where ");
-                if (beforeWord.contains("join")) {
-                    baseRecommends.add("on");
+            if (beforeContainsFrom) {
+                if (checkListContains(beforeWord, "order", "by")) {
+                    List<TableNameAndFieldName> fields = getRecommendFromTableFields(beforeWord, cacheService);
+                    for (TableNameAndFieldName field : fields) {
+                        result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
+                    }
+                    result.getRecommedValues().addAll(MethodRecommendCache.getRecommends(beforeCurrentWordString));
+                    result.getRecommedValues().add(LookupElementBuilder.create("limit "));
+                    return result;
+                } else if (checkListContains(beforeWord, "having")) {
+                    List<TableNameAndFieldName> fields = getRecommendFromTableFields(beforeWord, cacheService);
+                    for (TableNameAndFieldName field : fields) {
+                        result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
+                    }
+                    result.getRecommedValues().addAll(MethodRecommendCache.getRecommends(beforeCurrentWordString));
+                    result.getRecommedValues().add(LookupElementBuilder.create("limit "));
+                    result.getRecommedValues().add(LookupElementBuilder.create("order by "));
+                    return result;
+                } else if (checkListContains(beforeWord, "group", "by")) {
+                    List<TableNameAndFieldName> fields = getRecommendFromTableFields(beforeWord, cacheService);
+                    for (TableNameAndFieldName field : fields) {
+                        result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
+                    }
+                    result.getRecommedValues().add(LookupElementBuilder.create("order by "));
+                    result.getRecommedValues().add(LookupElementBuilder.create("limit "));
+                    result.getRecommedValues().add(LookupElementBuilder.create("having "));
+                    return result;
+                } else if (beforeContainWhereOrOn) {
+                    List<TableNameAndFieldName> fields = getRecommendFromTableFields(beforeWord, cacheService);
+                    for (TableNameAndFieldName field : fields) {
+                        result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
+                    }
+                    result.getRecommedValues().add(LookupElementBuilder.create("order by "));
+                    result.getRecommedValues().add(LookupElementBuilder.create("limit "));
+                    result.getRecommedValues().add(LookupElementBuilder.create("having "));
+                    result.getRecommedValues().add(LookupElementBuilder.create("group by "));
+                    return result;
+                } else {
+                    baseRecommends = Lists.newArrayList();
+                    baseRecommends.add("inner join ");
+                    baseRecommends.add("left join ");
+                    baseRecommends.add("right join ");
+                    baseRecommends.add("where ");
+                    if (beforeWord.contains("join")) {
+                        baseRecommends.add("on ");
+                    }
+                    result.getRecommedValues().addAll(convertToRecommeds(baseRecommends));
+                    result.getRecommedValues().add(LookupElementBuilder.create("order by "));
+                    result.getRecommedValues().add(LookupElementBuilder.create("limit "));
+                    result.getRecommedValues().add(LookupElementBuilder.create("having "));
+                    result.getRecommedValues().add(LookupElementBuilder.create("group by "));
+                    return result;
                 }
-                result.setRecommedValues(convertToRecommeds(baseRecommends));
-                return result;
             }
 
-            if (beforeContainsFrom && beforeContainWhereOrOn) {
-                //extract the table name and aliase for the tables.
-                List<TableNameAndFieldName> fields = getRecommendFromTableFields(beforeWord, cacheService);
-                for (TableNameAndFieldName field : fields) {
-                    result.getRecommedValues().add(getTableAndFieldElement(beforeCurrentWordString, field));
-                }
-                return result;
-            }
+
             //does it contains where
 //            String lastWord = beforeWord.get(beforeWord.size() - 1);
 //            String lastSecondWord = beforeWord.get(beforeWord.size() - 2);
@@ -93,6 +138,31 @@ public class SqlParser {
 //            return result;
         }
         return result;
+    }
+
+    private static boolean checkListContains(List<String> beforeWord, String... contains) {
+        for (String s : contains) {
+            if (!beforeWord.contains(s)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkTableNameRecommend(List<String> beforeWord, boolean currentIsSkipChar) {
+        int size = beforeWord.size();
+        if (size >= 2) {
+            if (currentIsSkipChar) {
+                if (beforeWord.get(size - 1).equals("join") || beforeWord.get(size - 1).equals("from")) {
+                    return true;
+                }
+            } else {
+                if (beforeWord.get(size - 2).equals("join") || beforeWord.get(size - 2).equals("from")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @NotNull
@@ -123,10 +193,10 @@ public class SqlParser {
         return "";
     }
 
-    private static List<TableNameAndFieldName> getRecommendFromTableFields(List<String> beforeWord, MysqlCompleteCacheInteface cacheInteface) {
+    private static List<TableNameAndFieldName> getRecommendFromTableFields(List<String> words, MysqlCompleteCacheInteface cacheInteface) {
         List<TableNameAndFieldName> recommends = Lists.newArrayList();
         //
-        List<TableNameAndAliaseName> tableNameAndAliaseNames = extractNameFrom(beforeWord);
+        List<TableNameAndAliaseName> tableNameAndAliaseNames = extractNameFrom(words);
         for (TableNameAndAliaseName tableNameAndAliaseName : tableNameAndAliaseNames) {
             if (tableNameAndAliaseName.getAliaseName() == null) {
                 recommends.addAll(cacheInteface.getTableAllFields(tableNameAndAliaseName.getTableName()));
@@ -146,23 +216,23 @@ public class SqlParser {
         return recommends;
     }
 
-    private static List<TableNameAndAliaseName> extractNameFrom(List<String> beforeWord) {
+    private static List<TableNameAndAliaseName> extractNameFrom(List<String> words) {
         List<TableNameAndAliaseName> tableNameAndAliaseNames = Lists.newArrayList();
-        int size = beforeWord.size();
-        for (int i = 0; i < beforeWord.size(); i++) {
-            String s = beforeWord.get(i);
+        int size = words.size();
+        for (int i = 0; i < words.size(); i++) {
+            String s = words.get(i);
             if (s.equals("from") || s.equals("join")) {
                 if (i < size - 1) {
                     TableNameAndAliaseName tableNameAndAliaseName = new TableNameAndAliaseName();
-                    String tableName = beforeWord.get(i + 1);
+                    String tableName = words.get(i + 1);
                     tableNameAndAliaseName.setTableName(tableName);
                     if (i < size - 2) {
-                        String aliase = beforeWord.get(i + 2);
+                        String aliase = words.get(i + 2);
                         if (aliase.equals("inner") || aliase.equals("left") || aliase.equals("right") || aliase.equals("where") || aliase.equals("on")) {
                             //not do any thing
                         } else if (aliase.equals("as")) {
                             if (i < size - 3) {
-                                tableNameAndAliaseName.setAliaseName(beforeWord.get(i + 3));
+                                tableNameAndAliaseName.setAliaseName(words.get(i + 3));
                             }
                         } else {
                             tableNameAndAliaseName.setAliaseName(aliase);
@@ -197,6 +267,6 @@ public class SqlParser {
     }
 
     private static boolean isSkipChar(char c) {
-        return c == ' ' || c == '\n' || c == '\t' || c == ',';
+        return c == ' ' || c == '\n' || c == '\t' || c == ',' || c == '(' || c == ')';
     }
 }
