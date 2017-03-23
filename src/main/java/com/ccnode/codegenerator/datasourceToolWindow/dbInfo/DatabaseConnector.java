@@ -2,6 +2,9 @@ package com.ccnode.codegenerator.datasourceToolWindow.dbInfo;
 
 import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 import com.google.common.collect.Lists;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 
 import java.sql.*;
 import java.util.List;
@@ -12,7 +15,7 @@ import java.util.List;
  * @Description
  */
 public class DatabaseConnector {
-    public static DatabaseInfo getDataBaseInfoFromConnection(String databaseType,String url, String userName, String password,String database) {
+    public static DatabaseInfo getDataBaseInfoFromConnection(String databaseType, String url, String userName, String password, String database) {
         Connection conn = null;
         Statement stmt = null;
         DatabaseInfo databaseInfo = null;
@@ -21,7 +24,7 @@ public class DatabaseConnector {
             Class.forName("com.mysql.jdbc.Driver");
             //STEP 3: Open a connection
             System.out.println("Connecting to databaseType...");
-            String realUrl = buildUrl(databaseType,url,database);
+            String realUrl = buildUrl(databaseType, url, database);
             conn = DriverManager.getConnection(realUrl, userName, password);
             DatabaseMetaData metaData = conn.getMetaData();
             String schemaName = database;
@@ -64,10 +67,10 @@ public class DatabaseConnector {
             conn.close();
         } catch (SQLException se) {
             //Handle errors for JDBC
-            se.printStackTrace();
+            Notifications.Bus.notify(new Notification("mybatisDb", "can't connect to db", "connect to " + url + " with userName " + userName + " with password" + password + " fail", NotificationType.ERROR, null));
         } catch (Exception e) {
             //Handle errors for Class.forName
-            e.printStackTrace();
+            Notifications.Bus.notify(new Notification("mybatisDb", "can't connect to db", "connect to " + url + " with userName " + userName + " with password" + password + " fail", NotificationType.ERROR, null));
         } finally {
             //finally block used to close resources
             try {
@@ -89,8 +92,8 @@ public class DatabaseConnector {
         return "world";
     }
 
-    public static boolean checkConnection(String databaseType,String url, String userName, String password,String database) {
-        String realUrl = buildUrl(databaseType,url,database);
+    public static boolean checkConnection(String databaseType, String url, String userName, String password, String database) {
+        String realUrl = buildUrl(databaseType, url, database);
         //display connect message.
         Connection conn = null;
         Statement stmt = null;
@@ -102,10 +105,10 @@ public class DatabaseConnector {
             //STEP 3: Open a connection
             System.out.println("Connecting to databaseType...");
             conn = DriverManager.getConnection(realUrl, userName, password);
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
-        }finally {
-            if(conn!=null){
+        } finally {
+            if (conn != null) {
                 try {
                     conn.close();
                 } catch (SQLException e) {
@@ -117,12 +120,12 @@ public class DatabaseConnector {
     }
 
 
-    private static String buildUrl(String databaseType, String text,String database) {
-        if(databaseType.equals(DataBaseConstants.MYSQL)){
+    private static String buildUrl(String databaseType, String text, String database) {
+        if (databaseType.equals(DataBaseConstants.MYSQL)) {
             //
-            return "jdbc:mysql://"+text+"/"+database;
-        } else{
-            return "jdbc:mysql://"+text+"/"+database;
+            return "jdbc:mysql://" + text + "/" + database;
+        } else {
+            return "jdbc:mysql://" + text + "/" + database;
         }
     }
 }

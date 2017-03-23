@@ -1,10 +1,10 @@
 package com.ccnode.codegenerator.view.datasource;
 
 import com.ccnode.codegenerator.datasourceToolWindow.DatasourceState;
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
+import com.ccnode.codegenerator.datasourceToolWindow.NewDatabaseInfo;
+import com.ccnode.codegenerator.view.completion.MysqlCompleteCacheInteface;
+import com.intellij.openapi.components.*;
+import com.intellij.openapi.project.ProjectManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +27,7 @@ public class MyBatisDatasourceComponent implements ProjectComponent, PersistentS
 
     @Override
     public void projectOpened() {
-        //do some thing to make view.
+
     }
 
     @Override

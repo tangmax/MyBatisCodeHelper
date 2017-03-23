@@ -37,9 +37,11 @@ public class MyBastisDatasourceForm {
     private JButton consoleButton;
     private JTree datasourceTree;
     private Project myProject;
+    private DatasourceState myState;
 
     private DefaultMutableTreeNode selectedNode;
 
+    //nodes database info.
     private Map<DefaultMutableTreeNode, NewDatabaseInfo> nodeDatabaseMap = new HashMap<>();
 
     private List<NewDatabaseInfo> myNewDatabaseInfos = new ArrayList<>();
@@ -47,13 +49,13 @@ public class MyBastisDatasourceForm {
     public MyBastisDatasourceForm(Project project) {
         myProject = project;
         MyBatisDatasourceComponent component = myProject.getComponent(MyBatisDatasourceComponent.class);
-        DatasourceState state = component.getState();
-        myNewDatabaseInfos = state.getDatabaseInfos();
-        new Thread(()->{
-            for (NewDatabaseInfo myNewDatabaseInfo : myNewDatabaseInfos) {
-                ServiceManager.getService(myProject,MysqlCompleteCacheInteface.class).addDatabaseCache(myNewDatabaseInfo);
-            }
-        }).start();
+        myState = component.getState();
+        myNewDatabaseInfos = myState.getDatabaseInfos();
+        NewDatabaseInfo activeDatabaseInfo = myState.getActiveDatabaseInfo();
+        if (activeDatabaseInfo != null) {
+            ServiceManager.getService(myProject, MysqlCompleteCacheInteface.class).addDatabaseCache(activeDatabaseInfo);
+        }
+
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,12 +67,12 @@ public class MyBastisDatasourceForm {
                     //gonna refresh the view.
                     NewDatabaseInfo newDatabaseInfo =
                             myBatisDatasourceConfigView.getNewDatabaseInfo();
-
+                    myState.setActiveDatabaseInfo(newDatabaseInfo);
                     DatabaseInfo dataBaseInfoFromConnection = DatabaseConnector.getDataBaseInfoFromConnection(newDatabaseInfo.getDatabaseType(),
                             newDatabaseInfo.getUrl(), newDatabaseInfo.getUserName(), newDatabaseInfo.getPassword(), newDatabaseInfo.getDatabase());
                     DefaultMutableTreeNode top =
                             new DefaultMutableTreeNode(dataBaseInfoFromConnection.getDatabaseName());
-                    nodeDatabaseMap.put(top,newDatabaseInfo);
+                    nodeDatabaseMap.put(top, newDatabaseInfo);
                     createNodes(top, dataBaseInfoFromConnection.getTableInfoList(), newDatabaseInfo);
                     DefaultTreeModel model = (DefaultTreeModel) datasourceTree.getModel();
                     DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
@@ -115,23 +117,22 @@ public class MyBastisDatasourceForm {
                         datasourceTree.getSelectionModel().setSelectionPath(pathForLocation);
                         JPopupMenu popupMenu = new JPopupMenu();
                         JMenuItem menuItem = new JMenuItem("mybatis generator");
-                        JMenuItem refresh = new JMenuItem("refresh");
-                        JMenuItem addForComplete = new JMenuItem("auto complete for mybatis file");
+                        JMenuItem setAsActiveDatasource = new JMenuItem("set current datasource as active");
                         JMenuItem removeDataSource = new JMenuItem("remove database");
                         removeDataSource.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 DefaultMutableTreeNode parent =
-                                        (DefaultMutableTreeNode)selectedNode.getParent();
-                                if(nodeDatabaseMap.containsKey(parent)){
+                                        (DefaultMutableTreeNode) selectedNode.getParent();
+                                if (nodeDatabaseMap.containsKey(parent)) {
                                     removeNodeFromTree(parent);
 
-                                } else{
+                                } else {
                                     removeNodeFromTree(selectedNode);
                                 }
                             }
                         });
-                        addForComplete.addActionListener(new ActionListener() {
+                        setAsActiveDatasource.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 //for get the database info.
@@ -143,6 +144,7 @@ public class MyBastisDatasourceForm {
                                     MysqlCompleteCacheInteface service = ServiceManager.getService(myProject, MysqlCompleteCacheInteface.class);
                                     service.cleanAll();
                                     service.addDatabaseCache(info);
+                                    myState.setActiveDatabaseInfo(info);
                                     Messages.showMessageDialog("success", "success", null);
                                 } else {
                                     Messages.showErrorDialog(myProject, "can't find database for it", "fail");
@@ -158,9 +160,8 @@ public class MyBastisDatasourceForm {
                             }
                         });
                         popupMenu.add(menuItem);
-                        popupMenu.add(refresh);
-                        popupMenu.add(addForComplete);
-                        if(nodeDatabaseMap.containsKey(selectedNode)) {
+                        popupMenu.add(setAsActiveDatasource);
+                        if (nodeDatabaseMap.containsKey(selectedNode)) {
                             popupMenu.add(removeDataSource);
                         }
                         popupMenu.show(datasourceTree, e.getX(), e.getY());
@@ -176,7 +177,10 @@ public class MyBastisDatasourceForm {
         NewDatabaseInfo o = nodeDatabaseMap.get(parent);
         myNewDatabaseInfos.remove(o);
         nodeDatabaseMap.remove(parent);
-        ServiceManager.getService(myProject,MysqlCompleteCacheInteface.class).cleanAll();
+        if (o.equals(myState.getActiveDatabaseInfo())) {
+            myState.setActiveDatabaseInfo(null);
+        }
+        ServiceManager.getService(myProject, MysqlCompleteCacheInteface.class).cleanAll();
         ((DefaultTreeModel) datasourceTree.getModel()).removeNodeFromParent(parent);
     }
 }

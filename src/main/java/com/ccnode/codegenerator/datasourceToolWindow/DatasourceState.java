@@ -11,6 +11,7 @@ import java.util.List;
 public class DatasourceState {
     private List<NewDatabaseInfo> databaseInfos = new ArrayList<>();
 
+    private NewDatabaseInfo activeDatabaseInfo;
 
     public List<NewDatabaseInfo> getDatabaseInfos() {
         return databaseInfos;
@@ -18,5 +19,13 @@ public class DatasourceState {
 
     public void setDatabaseInfos(List<NewDatabaseInfo> databaseInfos) {
         this.databaseInfos = databaseInfos;
+    }
+
+    public NewDatabaseInfo getActiveDatabaseInfo() {
+        return activeDatabaseInfo;
+    }
+
+    public void setActiveDatabaseInfo(NewDatabaseInfo activeDatabaseInfo) {
+        this.activeDatabaseInfo = activeDatabaseInfo;
     }
 }
