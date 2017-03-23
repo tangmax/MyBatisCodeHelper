@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.view.datasource;
 
+import com.ccnode.codegenerator.util.IconUtils;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -27,6 +28,7 @@ public class MyBatisDatasourceToolWindow implements ToolWindowFactory,DumbAware 
         myToolWindow = toolWindow;
         ContentFactory instance = ContentFactory.SERVICE.getInstance();
         Content content = instance.createContent(myToolWindowContent, "", false);
+        content.setIcon(IconUtils.useMyBatisIcon());
         toolWindow.getContentManager().addContent(content);
     }
 

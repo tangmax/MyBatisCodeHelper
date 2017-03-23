@@ -18,9 +18,6 @@ import java.util.List;
  */
 public class MyBatisDatasourceConfigView extends DialogWrapper {
     private JPanel jpanel;
-    private JButton button1;
-    private JButton button2;
-    private JButton button3;
     private JTextField urlField;
     private JTextField usernamefield;
     private JTextField passwordField;
