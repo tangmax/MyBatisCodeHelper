@@ -272,7 +272,7 @@ public class MyPsiXmlUtils {
 
     //    extract the method tag from xml.
     @Nullable
-    public static PsiElement findTagForMethodName(XmlFile xmlFile, String name) {
+    public static XmlTag findTagForMethodName(XmlFile xmlFile, String name) {
         XmlTag rootTag = xmlFile.getRootTag();
         if(rootTag==null){
             return null;

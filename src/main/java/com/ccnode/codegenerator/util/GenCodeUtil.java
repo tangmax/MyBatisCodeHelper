@@ -15,10 +15,10 @@ import java.util.List;
 public class GenCodeUtil {
 
 
-    public static final String ONE_RETRACT = "    ";
-    public static final String TWO_RETRACT = "        ";
-    public static final String THREE_RETRACT = "            ";
-    public static final String FOUR_RETRACT = "                ";
+    public static final String ONE_RETRACT = "\t";
+    public static final String TWO_RETRACT = "\t\t";
+    public static final String THREE_RETRACT = "\t\t\t";
+    public static final String FOUR_RETRACT = "\t\t\t\t";
     public static String MYSQL_TYPE = StringUtils.EMPTY;
     public static String PACKAGE_LINE = StringUtils.EMPTY;
 

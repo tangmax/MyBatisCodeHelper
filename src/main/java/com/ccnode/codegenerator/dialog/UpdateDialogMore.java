@@ -6,13 +6,11 @@ import com.ccnode.codegenerator.dialog.dto.MapperDto;
 import com.ccnode.codegenerator.dialog.dto.mybatis.*;
 import com.ccnode.codegenerator.enums.MethodName;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
-import com.ccnode.codegenerator.util.DateUtil;
-import com.ccnode.codegenerator.util.GenCodeUtil;
-import com.ccnode.codegenerator.util.PsiClassUtil;
-import com.ccnode.codegenerator.util.PsiDocumentUtils;
+import com.ccnode.codegenerator.util.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -129,8 +127,6 @@ public class UpdateDialogMore extends DialogWrapper {
             }
         });
 
-        PsiDocumentUtils.commitAndSaveDocument(manager, manager.getDocument(myXmlFile));
-
         if (this.sqlFileRaidio.isSelected()) {
             //generate sql file base on add prop.
             List<String> retList = new ArrayList<>();
@@ -219,9 +215,13 @@ public class UpdateDialogMore extends DialogWrapper {
             }
             final String insertValue = finalValue;
             WriteCommandAction.runWriteCommandAction(myProject, () -> {
+//                todo why the update will make /update missing.
                 TextRange valueTextRange = mapperMethod.getXmlTag().getValue().getTextRange();
-                manager.getDocument(myXmlFile.getContainingFile()).replaceString(valueTextRange.getStartOffset(), valueTextRange.getEndOffset(), insertValue);
-                PsiDocumentUtils.commitAndSaveDocument(manager, manager.getDocument(myXmlFile));
+                XmlTag tagForMethodName = MyPsiXmlUtils.findTagForMethodName(myXmlFile, mapperMethod.getXmlTag().getName());
+                Document document = manager.getDocument(myXmlFile);
+                document.replaceString(valueTextRange.getStartOffset(), valueTextRange.getEndOffset(), insertValue);
+                manager.commitDocument(document);
+                //find the range, compare the range, check if is the same.
             });
         }
         //else set with value.
