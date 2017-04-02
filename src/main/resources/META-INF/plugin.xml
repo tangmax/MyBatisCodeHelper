@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.ccnode.codegenerator.MyBatisCodeHelper</id>
     <name>MyBatisCodeHelper</name>
-    <version>1.0</version>
+    <version>1.5.0</version>
     <vendor email="gejun123456@gmail.com">MyBatisCodeHelper</vendor>
 
     <description><![CDATA[
