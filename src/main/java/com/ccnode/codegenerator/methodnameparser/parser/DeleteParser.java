@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.methodnameparser.parser;
 
+import com.ccnode.codegenerator.dialog.ParseTypeEnum;
 import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.delete.ParsedDelete;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.delete.ParsedDeleteDto;
@@ -53,6 +54,7 @@ public class DeleteParser extends BaseParser {
             case 0: {
                 if (remaining.startsWith(KeyWordConstants.BY)) {
                     ParsedDelete newDelete = parsedDelete.clone();
+                    newDelete.addParsePart(ParseTypeEnum.BY, KeyWordConstants.BY);
                     parseMethods(1, remaining, KeyWordConstants.BY.length(), newDelete);
                     newParseDelete = true;
                 }
@@ -63,6 +65,7 @@ public class DeleteParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedDelete clone = parsedDelete.clone();
                         clone.addQueryProp(props[i]);
+                        clone.addParsePart(ParseTypeEnum.PROPERTY, props[i]);
                         parseMethods(2, remaining, props[i].length(), clone);
                         newParseDelete = true;
                     }
@@ -74,6 +77,7 @@ public class DeleteParser extends BaseParser {
                     if (remaining.startsWith(link)) {
                         ParsedDelete clone = parsedDelete.clone();
                         clone.addConnector(link);
+                        clone.addParsePart(ParseTypeEnum.LINKOP, link);
                         parseMethods(1, remaining, link.length(), clone);
                         newParseDelete = true;
                     }
@@ -83,6 +87,7 @@ public class DeleteParser extends BaseParser {
                     if (remaining.startsWith(comp)) {
                         ParsedDelete clone = parsedDelete.clone();
                         clone.addQueryOperator(comp);
+                        clone.addParsePart(ParseTypeEnum.COMPARATOR, comp);
                         parseMethods(3, remaining, comp.length(), clone);
                         newParseDelete = true;
                     }
@@ -95,6 +100,7 @@ public class DeleteParser extends BaseParser {
                     if (remaining.startsWith(link)) {
                         ParsedDelete clone = parsedDelete.clone();
                         clone.addConnector(link);
+                        clone.addParsePart(ParseTypeEnum.LINKOP, link);
                         parseMethods(1, remaining, link.length(), clone);
                         newParseDelete = true;
                     }

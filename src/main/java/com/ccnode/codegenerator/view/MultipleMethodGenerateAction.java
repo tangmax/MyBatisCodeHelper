@@ -33,9 +33,10 @@ public class MultipleMethodGenerateAction extends AnAction {
 
     private static Log log = LogFactory.getLogger(MultipleMethodGenerateAction.class);
 
-    public MultipleMethodGenerateAction(){
-        super(null,null, IconUtils.useMyBatisIcon());
+    public MultipleMethodGenerateAction() {
+        super(null, null, IconUtils.useMyBatisIcon());
     }
+
     @Override
     public void actionPerformed(AnActionEvent e) {
         Stopwatch started = Stopwatch.createStarted();
@@ -89,7 +90,7 @@ public class MultipleMethodGenerateAction extends AnAction {
                 mm = "";
             }
         }
-        if(StringUtils.isNotBlank(mm)){
+        if (StringUtils.isNotBlank(mm)) {
             methodList.add(mm);
         }
         return methodList;
@@ -99,7 +100,7 @@ public class MultipleMethodGenerateAction extends AnAction {
     @Override
     public void update(AnActionEvent e) {
         PsiFile data = e.getData(PlatformDataKeys.PSI_FILE);
-        if (!data.isWritable() || !(data instanceof PsiJavaFile)) {
+        if (data == null || !data.isWritable() || !(data instanceof PsiJavaFile)) {
             e.getPresentation().setVisible(false);
             return;
         }

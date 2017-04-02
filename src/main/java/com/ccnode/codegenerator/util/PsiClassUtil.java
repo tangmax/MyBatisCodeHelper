@@ -8,13 +8,17 @@ import com.ccnode.codegenerator.pojo.DomainClassSourceType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
 import com.intellij.psi.util.PsiTypesUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -49,6 +53,32 @@ public class PsiClassUtil {
         }
         return props;
     }
+
+    @NotNull
+    public static String getModuleSrcPathOfClass(PsiClass srcClass) {
+        String qualifiedName = srcClass.getQualifiedName();
+        String[] split = qualifiedName.split("\\.");
+        int splitLength = split.length;
+
+        VirtualFile psiFile = srcClass.getContainingFile().getVirtualFile();
+        while (splitLength > 0) {
+            psiFile = psiFile.getParent();
+            splitLength--;
+        }
+        return psiFile.getPath();
+    }
+
+
+    @NotNull
+    public static String getPackageToModule(String path, String modulePath) {
+        Path moduleSrc = Paths.get(modulePath);
+        Path relativeToSouce = moduleSrc.relativize(Paths.get(path));
+        String relate = relativeToSouce.toString();
+        relate = relate.replace("\\", ".");
+        relate = relate.replace("/", ".");
+        return relate;
+    }
+
 
     public static PsiMethod getAddMethod(PsiClass srcClass) {
         PsiMethod[] methods = srcClass.getMethods();
@@ -300,5 +330,21 @@ public class PsiClassUtil {
             }
         }
         return findMethod;
+    }
+
+    @Nullable
+    public static String extractRealType(PsiType returnType) {
+        if (returnType == null) {
+            return null;
+        }
+        if (returnType instanceof PsiClassReferenceType) {
+            PsiClassReferenceType referenceType = (PsiClassReferenceType) returnType;
+            if (referenceType.getParameterCount() == 0) {
+                return returnType.getCanonicalText();
+            } else {
+                return referenceType.getParameters()[0].getCanonicalText();
+            }
+        }
+        return returnType.getCanonicalText();
     }
 }

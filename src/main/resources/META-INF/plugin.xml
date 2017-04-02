@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.ccnode.codegenerator.MyBatisCodeHelper</id>
     <name>MyBatisCodeHelper</name>
-    <version>1.4.5</version>
+    <version>1.0</version>
     <vendor email="gejun123456@gmail.com">MyBatisCodeHelper</vendor>
 
     <description><![CDATA[
@@ -176,6 +176,14 @@
         </component>
     </application-components>
 
+    <project-components>
+        <component>
+            <implementation-class>com.ccnode.codegenerator.view.datasource.MyBatisDatasourceComponent</implementation-class>
+        </component>
+    </project-components>
+
+
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <codeInsight.lineMarkerProvider language="JAVA"
@@ -192,6 +200,7 @@
                                 implementationClass="com.ccnode.codegenerator.view.completion.MapperXmlTagElementCompletionContributor"/>
 
 
+        <inspectionToolProvider implementation="com.ccnode.codegenerator.view.inspection.MyBatisMethodNotFoundInXmlProvider"/>
         <psi.referenceContributor
                 implementation="com.ccnode.codegenerator.view.MyBatisJavaToXmlPsiReferenceContributor"/>
         <psi.referenceContributor
@@ -199,6 +208,8 @@
         <applicationConfigurable instance="com.ccnode.codegenerator.myconfigurable.MyConfigurable"
                                  id="MyBatisCodeHelper"
                                  displayName="MyBatisCodeHelper"/>
+
+        <toolWindow id="Mybatis datasource" secondary="true" anchor="right" factoryClass="com.ccnode.codegenerator.view.datasource.MyBatisDatasourceToolWindow"/>
 
         <!--<renamePsiElementProcessor implementation="com.ccnode.codegenerator.view.rename.RenameResultMapSqlProcessor" order="first"/>-->
 
@@ -208,6 +219,8 @@
             <!--<descriptionDirectoryName>ConditionalOperatorConvertor</descriptionDirectoryName>-->
             <!--<bundleName>Generate daoxml</bundleName>-->
         </intentionAction>
+
+        <projectService serviceInterface="com.ccnode.codegenerator.view.completion.MysqlCompleteCacheInteface" serviceImplementation="com.ccnode.codegenerator.view.completion.MyBatisSqlCompleteCache"/>
 
 
         <!--<intentionAction>-->

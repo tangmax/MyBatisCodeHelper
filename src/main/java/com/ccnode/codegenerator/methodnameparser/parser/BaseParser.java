@@ -21,7 +21,8 @@ public class BaseParser {
     protected static String[] compareOp = {KeyWordConstants.BETWEEN, KeyWordConstants.GREATERTHAN, KeyWordConstants.GREATERTHANOREQUALTO,
             KeyWordConstants.LESSTHANOREQUALTO, KeyWordConstants.LESSTHAN, KeyWordConstants.BETWEENOREQUALTO,
             KeyWordConstants.ISNOTNULL, KeyWordConstants.ISNULL, KeyWordConstants.NOTNULL, KeyWordConstants.NOTLIKE, KeyWordConstants.LIKE
-            , KeyWordConstants.NOTIN, KeyWordConstants.NOT, KeyWordConstants.IN};
+            , KeyWordConstants.NOTIN, KeyWordConstants.NOT, KeyWordConstants.IN,KeyWordConstants.STARTING_WITH,KeyWordConstants.ENDING_WTIH
+            ,KeyWordConstants.BEFORE,KeyWordConstants.AFTER,KeyWordConstants.CONTAINING};
 
     protected static String[] functionOp = {KeyWordConstants.MAX,KeyWordConstants.MIN,KeyWordConstants.AVG,KeyWordConstants.SUM};
 

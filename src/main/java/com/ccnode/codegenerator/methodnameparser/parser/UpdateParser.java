@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.methodnameparser.parser;
 
+import com.ccnode.codegenerator.dialog.ParseTypeEnum;
 import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.update.ParsedUpdate;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.update.ParsedUpdateDto;
@@ -55,6 +56,7 @@ public class UpdateParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedUpdate newUpdate = parsedUpdate.clone();
                         newUpdate.addUpdateProps(props[i]);
+                        newUpdate.addParsePart(ParseTypeEnum.PROPERTY,props[i]);
                         parseMethods(1, remaining, props[i].length(), newUpdate);
                         newParseUpdate = true;
                     }
@@ -64,11 +66,13 @@ public class UpdateParser extends BaseParser {
             case 1: {
                 if (remaining.startsWith(KeyWordConstants.AND)) {
                     ParsedUpdate newUpdate = parsedUpdate.clone();
+                    newUpdate.addParsePart(ParseTypeEnum.AND, KeyWordConstants.AND);
                     parseMethods(0, remaining, KeyWordConstants.AND.length(), newUpdate);
                     newParseUpdate = true;
                 }
                 if (remaining.startsWith(KeyWordConstants.BY)) {
                     ParsedUpdate newUpdate = parsedUpdate.clone();
+                    newUpdate.addParsePart(ParseTypeEnum.BY,KeyWordConstants.BY);
                     parseMethods(2, remaining, KeyWordConstants.BY.length(), newUpdate);
                     newParseUpdate = true;
                 }
@@ -80,6 +84,7 @@ public class UpdateParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedUpdate newUpdate = parsedUpdate.clone();
                         newUpdate.addQueryProp(props[i]);
+                        newUpdate.addParsePart(ParseTypeEnum.PROPERTY,props[i]);
                         parseMethods(3, remaining, props[i].length(), newUpdate);
                         newParseUpdate = true;
                     }
@@ -92,6 +97,7 @@ public class UpdateParser extends BaseParser {
                     if (remaining.startsWith(link)) {
                         ParsedUpdate newUpdate = parsedUpdate.clone();
                         newUpdate.addConnector(link);
+                        newUpdate.addParsePart(ParseTypeEnum.LINKOP,link);
                         parseMethods(2, remaining, link.length(), newUpdate);
                         newParseUpdate = true;
                     }
@@ -101,6 +107,7 @@ public class UpdateParser extends BaseParser {
                     if (remaining.startsWith(comp)) {
                         ParsedUpdate newUpdate = parsedUpdate.clone();
                         newUpdate.addQueryOperator(comp);
+                        newUpdate.addParsePart(ParseTypeEnum.COMPARATOR, comp);
                         parseMethods(4, remaining, comp.length(), newUpdate);
                         newParseUpdate = true;
                     }
@@ -113,6 +120,7 @@ public class UpdateParser extends BaseParser {
                     if (remaining.startsWith(link)) {
                         ParsedUpdate newUpdate = parsedUpdate.clone();
                         newUpdate.addConnector(link);
+                        newUpdate.addParsePart(ParseTypeEnum.LINKOP, link);
                         parseMethods(2, remaining, link.length(), newUpdate);
                         newParseUpdate = true;
                     }

@@ -8,20 +8,29 @@ import java.util.List;
  * Created by bruce.ge on 2016/12/12.
  */
 public class QueryParseDto {
-    private List<QueryInfo> queryInfos;
+    private QueryInfo queryInfo;
 
     private Boolean hasMatched = false;
 
-
-    public List<QueryInfo> getQueryInfos() {
-        return queryInfos;
-    }
-
-    public void setQueryInfos(List<QueryInfo> queryInfos) {
-        this.queryInfos = queryInfos;
-    }
+    private Boolean displayErrorMsg = true;
 
     private List<String> errorMsg;
+
+    public Boolean getDisplayErrorMsg() {
+        return displayErrorMsg;
+    }
+
+    public void setDisplayErrorMsg(Boolean displayErrorMsg) {
+        this.displayErrorMsg = displayErrorMsg;
+    }
+
+    public QueryInfo getQueryInfo() {
+        return queryInfo;
+    }
+
+    public void setQueryInfo(QueryInfo queryInfo) {
+        this.queryInfo = queryInfo;
+    }
 
     public Boolean getHasMatched() {
         return hasMatched;

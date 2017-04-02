@@ -9,6 +9,7 @@ import com.ccnode.codegenerator.freemarker.TemplateConstants;
 import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.view.GenerateMethodXmlAction;
 import com.google.common.collect.Maps;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -225,9 +226,21 @@ public class MapperUtil {
         return false;
     }
 
+    @NotNull
     public static String extractClassShortName(String fullName) {
         int i = fullName.lastIndexOf(".");
         return fullName.substring(i + 1);
+    }
+
+
+    @Nullable
+    public static String extractPackage(String fullName) {
+        int i = fullName.lastIndexOf(".");
+        if(i==-1){
+            return null;
+        } else {
+            return fullName.substring(0,i);
+        }
     }
 
     public static String deleteEndEmptyChar(String text) {

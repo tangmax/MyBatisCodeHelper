@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.database.handler.mysql;
 
 import com.ccnode.codegenerator.constants.MapperConstants;
+import com.ccnode.codegenerator.database.DbUtils;
 import com.ccnode.codegenerator.database.handler.BaseQueryBuilder;
 import com.ccnode.codegenerator.database.handler.QueryBuilderHandler;
 import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
@@ -34,14 +35,14 @@ public class MysqlQueryBuilderHandler implements QueryBuilderHandler {
             if (find.getDistinct()) {
                 builder.append(" distinct(");
                 for (FetchProp prop : find.getFetchProps()) {
-                    builder.append(relation.getPropColumn(prop.getFetchProp()) + ",");
+                    builder.append(relation.getPropFormatColumn(prop.getFetchProp()) + ",");
                 }
                 builder.deleteCharAt(builder.length() - 1);
                 builder.append(")");
             } else {
                 for (FetchProp prop : find.getFetchProps()) {
                     if (prop.getFetchFunction() == null) {
-                        builder.append(" " + relation.getPropColumn(prop.getFetchProp()) + ",");
+                        builder.append(" " + relation.getPropFormatColumn(prop.getFetchProp()) + ",");
                     } else {
                         handleWithFunction(relation, builder, prop);
                     }
@@ -53,21 +54,22 @@ public class MysqlQueryBuilderHandler implements QueryBuilderHandler {
     }
 
     public static void handleWithFunction(FieldToColumnRelation relation, StringBuilder builder, FetchProp prop) {
+        String returnVal = DbUtils.buildSelectFunctionVal(prop);
         switch (prop.getFetchFunction()) {
             case KeyWordConstants.MAX: {
-                builder.append(" max(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                builder.append(String.format(" max(%s) as %s,", relation.getPropFormatColumn(prop.getFetchProp()),returnVal));
                 break;
             }
             case KeyWordConstants.MIN: {
-                builder.append(" min(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                builder.append(String.format(" min(%s) as %s,", relation.getPropFormatColumn(prop.getFetchProp()),returnVal));
                 break;
             }
             case KeyWordConstants.AVG: {
-                builder.append(" avg(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                builder.append(String.format(" avg(%s) as %s,", relation.getPropFormatColumn(prop.getFetchProp()),returnVal));
                 break;
             }
             case KeyWordConstants.SUM: {
-                builder.append(" sum(" + relation.getPropColumn(prop.getFetchProp()) + "),");
+                builder.append(String.format(" sum(%s) as %s,", relation.getPropFormatColumn(prop.getFetchProp()),returnVal));
                 break;
             }
         }
@@ -83,7 +85,7 @@ public class MysqlQueryBuilderHandler implements QueryBuilderHandler {
         if (find.getOrderByProps() != null) {
             info.setSql(info.getSql() + " order by");
             for (OrderByRule rule : find.getOrderByProps()) {
-                info.setSql(info.getSql() + " " + parsedResult.getRelation().getPropColumn(rule.getProp()) + " " + rule.getOrder());
+                info.setSql(info.getSql() + " " + parsedResult.getRelation().getPropFormatColumn(rule.getProp()) + " " + rule.getOrder());
             }
         }
         if (find.getLimit() > 0) {

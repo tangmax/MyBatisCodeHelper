@@ -1,8 +1,6 @@
 package com.ccnode.codegenerator.genmethodxml;
 
 import com.ccnode.codegenerator.constants.MapperConstants;
-import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
-import com.ccnode.codegenerator.dialog.ChooseXmlToUseDialog;
 import com.ccnode.codegenerator.dialog.GenerateResultMapDialog;
 import com.ccnode.codegenerator.dialog.MethodExistDialog;
 import com.ccnode.codegenerator.methodnameparser.QueryParseDto;
@@ -27,7 +25,6 @@ import com.intellij.psi.xml.XmlTag;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -123,13 +120,7 @@ public class GenMethodXmlInvoker {
                 //create tag into the file.
                 FieldToColumnRelation relation1 = generateResultMapDialog.getRelation();
                 //use to generate resultMap
-                String allColumnMap = MyPsiXmlUtils.buildAllCoumnMap(relation1.getFiledToColumnMap());
-                XmlTag resultMap = rootTag.createChildTag(MyBatisXmlConstants.RESULTMAP, "", allColumnMap, false);
-                resultMap.setAttribute(MyBatisXmlConstants.ID, relation1.getResultMapId());
-                resultMap.setAttribute(MyBatisXmlConstants.TYPE, pojoClass.getQualifiedName());
-                rootTag.addSubTag(resultMap, true);
-                Document xmlDocument = psiDocumentManager.getDocument(psixml);
-                PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, xmlDocument);
+                MyPsiXmlUtils.buildAllColumnMap(myProject,psiDocumentManager.getDocument(psixml), rootTag, psiDocumentManager, relation1, pojoClass.getQualifiedName());
 
                 existXmlTagInfo.setFieldToColumnRelation(MyPsiXmlUtils.convertToRelation(relation1));
             }
@@ -162,8 +153,8 @@ public class GenMethodXmlInvoker {
                 } else {
                     WriteCommandAction.runWriteCommandAction(myProject, () -> {
                         existTag.delete();
+                        PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, document);
                     });
-                    PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, document);
                 }
             }
             rootTag = psixml.getRootTag();
@@ -171,36 +162,24 @@ public class GenMethodXmlInvoker {
             methodInfo.setPsiClassFullName(pojoClass.getQualifiedName());
             methodInfo.setPsiClassName(pojoClass.getName());
             methodInfo.setFieldMap(PsiClassUtil.buildFieldMapWithConvertPrimitiveType(pojoClass));
+            methodInfo.setProject(myProject);
+            methodInfo.setMybatisXmlFile(psixml);
+            methodInfo.setSrcClass(srcClass);
             QueryParseDto parseDto = QueryParser.parse(props, methodInfo);
             XmlTagAndInfo choosed = null;
-            if(parseDto==null){
-                Messages.showErrorDialog(myProject,"the text must start with find or delete or count or update","parse error");
+            if (parseDto == null) {
+                Messages.showErrorDialog(myProject, "the text must start with find or delete or count or update", "parse error");
                 return null;
             }
             if (parseDto.getHasMatched()) {
                 //dothings in it.
-                List<QueryInfo> queryInfos = parseDto.getQueryInfos();
+                QueryInfo queryInfos = parseDto.getQueryInfo();
                 //generate tag for them
-                List<XmlTagAndInfo> tags = new ArrayList<>();
-                for (QueryInfo info : queryInfos) {
-                    XmlTagAndInfo tag = MyPsiXmlUtils.generateTag(rootTag, info, methodInfo.getMethodName());
-                    tags.add(tag);
-                }
-
-                if (tags.size() > 1) {
-                    //let user choose with one.
-                    ChooseXmlToUseDialog chooseXmlToUseDialog = new ChooseXmlToUseDialog(myProject, tags);
-                    boolean b = chooseXmlToUseDialog.showAndGet();
-                    if (!b) {
-                        return null;
-                    } else {
-                        choosed = tags.get(chooseXmlToUseDialog.getChoosedIndex());
-                    }
-
-                } else {
-                    choosed = tags.get(0);
-                }
+                choosed = MyPsiXmlUtils.generateTag(rootTag, queryInfos, methodInfo.getMethodName());
             } else {
+                if (!parseDto.getDisplayErrorMsg()) {
+                    return null;
+                }
                 //there is no match the current methodName display error msg for user.
                 String content = "";
                 List<String> errorMsg = parseDto.getErrorMsg();
@@ -261,4 +240,5 @@ public class GenMethodXmlInvoker {
             return null;
         }
     }
+
 }

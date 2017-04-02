@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.database.handler.oracle;
 
 import com.ccnode.codegenerator.database.handler.AutoCompleteHandler;
+import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.psi.PsiParameter;
 
 /**
@@ -27,7 +28,7 @@ public class OracleAutoComplateHandler implements AutoCompleteHandler {
 
     @Override
     public boolean isSupportedParam(PsiParameter psiParameter) {
-        return OracleHandlerUtils.getTypePropByQulitifiedName(psiParameter.getType().getCanonicalText())!=null;
+        return OracleHandlerUtils.getTypePropByQulitifiedName(PsiClassUtil.convertToObjectText(psiParameter.getType().getCanonicalText()))!=null;
     }
 
 }

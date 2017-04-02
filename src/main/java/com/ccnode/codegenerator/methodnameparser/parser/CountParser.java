@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.methodnameparser.parser;
 
+import com.ccnode.codegenerator.dialog.ParseTypeEnum;
 import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.count.ParsedCount;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.count.ParsedCountDto;
@@ -53,6 +54,7 @@ public class CountParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedCount clone = count.clone();
                         clone.addFetchProps(props[i]);
+                        clone.addParsePart(ParseTypeEnum.PROPERTY, props[i]);
                         parseMethods(1, remaining, props[i].length(), clone);
                         newParsedCount = true;
                     }
@@ -60,12 +62,14 @@ public class CountParser extends BaseParser {
                 if (remaining.startsWith(KeyWordConstants.DISTINCT)) {
                     ParsedCount clone = count.clone();
                     clone.setDistinct(true);
+                    clone.addParsePart(ParseTypeEnum.DISTINCT, KeyWordConstants.DISTINCT);
                     parseMethods(2, remaining, KeyWordConstants.DISTINCT.length(), clone);
                     newParsedCount = true;
                 }
 
                 if (remaining.startsWith(KeyWordConstants.BY)) {
                     ParsedCount clone = count.clone();
+                    clone.addParsePart(ParseTypeEnum.BY, KeyWordConstants.BY);
                     parseMethods(4, remaining, KeyWordConstants.BY.length(), clone);
                     newParsedCount = true;
                 }
@@ -75,6 +79,7 @@ public class CountParser extends BaseParser {
             case 1: {
                 if (remaining.startsWith(KeyWordConstants.BY)) {
                     ParsedCount clone = count.clone();
+                    clone.addParsePart(ParseTypeEnum.BY, KeyWordConstants.BY);
                     parseMethods(4, remaining, KeyWordConstants.BY.length(), clone);
                     newParsedCount = true;
                 }
@@ -86,6 +91,7 @@ public class CountParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedCount clone = count.clone();
                         clone.addFetchProps(props[i]);
+                        clone.addParsePart(ParseTypeEnum.PROPERTY, props[i]);
                         parseMethods(3, remaining, props[i].length(), clone);
                         newParsedCount = true;
                     }
@@ -96,12 +102,14 @@ public class CountParser extends BaseParser {
             case 3: {
                 if (remaining.startsWith(KeyWordConstants.AND)) {
                     ParsedCount clone = count.clone();
+                    clone.addParsePart(ParseTypeEnum.AND, KeyWordConstants.AND);
                     parseMethods(2, remaining, KeyWordConstants.AND.length(), clone);
                     newParsedCount = true;
                 }
 
                 if (remaining.startsWith(KeyWordConstants.BY)) {
                     ParsedCount clone = count.clone();
+                    clone.addParsePart(ParseTypeEnum.BY, KeyWordConstants.BY);
                     parseMethods(4, remaining, KeyWordConstants.BY.length(), clone);
                     newParsedCount = true;
                 }
@@ -113,6 +121,7 @@ public class CountParser extends BaseParser {
                     if (remaining.startsWith(lowerProps[i])) {
                         ParsedCount clone = count.clone();
                         clone.addQueryProp(props[i]);
+                        clone.addParsePart(ParseTypeEnum.PROPERTY, props[i]);
                         parseMethods(5, remaining, props[i].length(), clone);
                         newParsedCount = true;
                     }
@@ -125,6 +134,7 @@ public class CountParser extends BaseParser {
                     if (remaining.startsWith(link)) {
                         ParsedCount clone = count.clone();
                         clone.addConnector(link);
+                        clone.addParsePart(ParseTypeEnum.LINKOP, link);
                         parseMethods(4, remaining, link.length(), clone);
                         newParsedCount = true;
                     }
@@ -133,6 +143,7 @@ public class CountParser extends BaseParser {
                     if (remaining.startsWith(comp)) {
                         ParsedCount clone = count.clone();
                         clone.addQueryOperator(comp);
+                        clone.addParsePart(ParseTypeEnum.COMPARATOR, comp);
                         parseMethods(6, remaining, comp.length(), clone);
                         newParsedCount = true;
                     }
@@ -145,6 +156,7 @@ public class CountParser extends BaseParser {
                     if (remaining.startsWith(link)) {
                         ParsedCount clone = count.clone();
                         clone.addConnector(link);
+                        clone.addParsePart(ParseTypeEnum.LINKOP, link);
                         parseMethods(4, remaining, link.length(), clone);
                         newParsedCount = true;
                     }

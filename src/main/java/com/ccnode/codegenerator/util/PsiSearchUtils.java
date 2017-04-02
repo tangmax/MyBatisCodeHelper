@@ -22,6 +22,9 @@ import java.util.List;
 public class PsiSearchUtils {
     @NotNull
     public static List<XmlFile> searchMapperXml(@NotNull Project project, Module moduleForPsiElement, final String srcClassQualifiedName) {
+        if(moduleForPsiElement==null){
+            return new ArrayList<>();
+        }
         PsiSearchHelper searchService = ServiceManager.getService(project, PsiSearchHelper.class);
         List<XmlFile> xmlFiles = new ArrayList<XmlFile>();
         searchService.processUsagesInNonJavaFiles("mapper", new PsiNonJavaFileReferenceProcessor() {

@@ -5,6 +5,9 @@ import com.ccnode.codegenerator.methodnameparser.parsedresult.delete.ParsedDelet
 import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFind;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.update.ParsedUpdate;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.xml.XmlFile;
 
 import java.util.Map;
 
@@ -20,6 +23,14 @@ public class MethodNameParsedResult {
     private String methodName;
 
     private FieldToColumnRelation relation;
+
+    private XmlFile mybatisXmlFile;
+
+
+    private Project project;
+
+
+    private PsiClass srcClass;
 
     private String tableName;
 
@@ -43,6 +54,23 @@ public class MethodNameParsedResult {
 
     public void setPsiClassFullName(String psiClassFullName) {
         this.psiClassFullName = psiClassFullName;
+    }
+
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public PsiClass getSrcClass() {
+        return srcClass;
+    }
+
+    public void setSrcClass(PsiClass srcClass) {
+        this.srcClass = srcClass;
     }
 
     public ParsedTypeEnum getParsedType() {
@@ -123,5 +151,13 @@ public class MethodNameParsedResult {
 
     public void setParsedCount(ParsedCount parsedCount) {
         this.parsedCount = parsedCount;
+    }
+
+    public XmlFile getMybatisXmlFile() {
+        return mybatisXmlFile;
+    }
+
+    public void setMybatisXmlFile(XmlFile mybatisXmlFile) {
+        this.mybatisXmlFile = mybatisXmlFile;
     }
 }

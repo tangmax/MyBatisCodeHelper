@@ -28,8 +28,12 @@ public class FieldToColumnRelation {
         this.filedToColumnMap = filedToColumnMap;
     }
 
-    public String getPropColumn(String prop) {
+    public String getPropFormatColumn(String prop) {
         String s = filedToColumnMap.get(prop.toLowerCase());
         return DatabaseComponenent.formatColumn(s);
+    }
+
+    public String getPropColumn(String prop){
+        return filedToColumnMap.get(prop.toLowerCase());
     }
 }

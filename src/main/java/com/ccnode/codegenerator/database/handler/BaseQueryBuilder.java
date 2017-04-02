@@ -1,6 +1,10 @@
 package com.ccnode.codegenerator.database.handler;
 
 import com.ccnode.codegenerator.constants.QueryTypeConstants;
+import com.ccnode.codegenerator.database.DbUtils;
+import com.ccnode.codegenerator.database.GenClassDialog;
+import com.ccnode.codegenerator.database.GenClassInfo;
+import com.ccnode.codegenerator.genCode.GenClassService;
 import com.ccnode.codegenerator.methodnameparser.KeyWordConstants;
 import com.ccnode.codegenerator.methodnameparser.buidler.MethodNameParsedResult;
 import com.ccnode.codegenerator.methodnameparser.buidler.ParamInfo;
@@ -13,6 +17,10 @@ import com.ccnode.codegenerator.methodnameparser.parsedresult.find.ParsedFind;
 import com.ccnode.codegenerator.methodnameparser.parsedresult.update.ParsedUpdate;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.GenCodeUtil;
+import com.ccnode.codegenerator.util.MyPsiXmlUtils;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.xml.XmlFile;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -74,7 +82,7 @@ public class BaseQueryBuilder implements QueryBuilder {
         if (count.isDistinct()) {
             builder.append("distinct(");
             for (int i = 0; i < count.getFetchProps().size(); i++) {
-                builder.append(relation.getPropColumn(count.getFetchProps().get(i)));
+                builder.append(relation.getPropFormatColumn(count.getFetchProps().get(i)));
                 if (i != count.getFetchProps().size() - 1) {
                     builder.append(",");
                 }
@@ -85,7 +93,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                 builder.append("1");
             } else {
                 for (int i = 0; i < count.getFetchProps().size(); i++) {
-                    builder.append(relation.getPropColumn(count.getFetchProps().get(i)));
+                    builder.append(relation.getPropFormatColumn(count.getFetchProps().get(i)));
                     if (i != count.getFetchProps().size() - 1) {
                         builder.append(",");
                     }
@@ -141,7 +149,7 @@ public class BaseQueryBuilder implements QueryBuilder {
             ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("updated" + firstCharUpper(prop)).
                     withParamType(extractLast(updateQualifyType)).withParamValue("updated" + firstCharUpper(prop)).build();
             info.getParamInfos().add(paramInfo);
-            builder.append(" " + relation.getPropColumn(prop) + "=#{" + paramInfo.getParamAnno() + "}");
+            builder.append(" " + relation.getPropFormatColumn(prop) + "=#{" + paramInfo.getParamAnno() + "}");
             if (i != update.getUpdateProps().size() - 1) {
                 builder.append(",");
             }
@@ -170,7 +178,7 @@ public class BaseQueryBuilder implements QueryBuilder {
             String prop = rule.getProp();
             String operator = rule.getOperator();
             String connector = rule.getConnector();
-            String propColumn = relation.getPropColumn(prop);
+            String propColumn = relation.getPropFormatColumn(prop);
             String paramQualtifyType = fieldMap.get(prop);
             info.getImportList().add(paramQualtifyType);
             String paramShortType = extractLast(paramQualtifyType);
@@ -180,6 +188,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                 builder.append(" " + propColumn + "=#{" + paramInfo.getParamAnno() + "}");
             } else {
                 switch (operator) {
+                    case KeyWordConstants.AFTER:
                     case KeyWordConstants.GREATERTHAN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("min" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("min" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
@@ -193,6 +202,7 @@ public class BaseQueryBuilder implements QueryBuilder {
                         builder.append(" " + propColumn + cdata(">=") + " #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
+                    case KeyWordConstants.BEFORE:
                     case KeyWordConstants.LESSTHAN: {
                         ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("max" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("max" + firstCharUpper(prop)).build();
                         info.getParamInfos().add(paramInfo);
@@ -269,6 +279,24 @@ public class BaseQueryBuilder implements QueryBuilder {
                         builder.append(" " + propColumn + "like #{" + paramInfo.getParamAnno() + "}");
                         break;
                     }
+                    case KeyWordConstants.STARTING_WITH:{
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop+"Prefix").withParamType(paramShortType).withParamValue(prop+"Prefix").build();
+                        info.getParamInfos().add(paramInfo);
+                        builder.append(" " + propColumn + "like #{" + paramInfo.getParamAnno() + "}%");
+                        break;
+                    }
+                    case KeyWordConstants.ENDING_WTIH:{
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno(prop+"Suffix").withParamType(paramShortType).withParamValue(prop+"Suffix").build();
+                        info.getParamInfos().add(paramInfo);
+                        builder.append(" " + propColumn + "like %#{" + paramInfo.getParamAnno() + "}");
+                        break;
+                    }
+                    case KeyWordConstants.CONTAINING:{
+                        ParamInfo paramInfo = ParamInfo.ParamInfoBuilder.aParamInfo().withParamAnno("containing" + firstCharUpper(prop)).withParamType(paramShortType).withParamValue("containing" + firstCharUpper(prop)).build();
+                        info.getParamInfos().add(paramInfo);
+                        builder.append(" " + propColumn + "like %#{" + paramInfo.getParamAnno() + "}%");
+                        break;
+                    }
                 }
             }
             if (connector != null) {
@@ -291,8 +319,29 @@ public class BaseQueryBuilder implements QueryBuilder {
         if (find.getFetchProps() != null && find.getFetchProps().size() > 0) {
             if (find.getFetchProps().size() > 1) {
 //need to handle when fetch two property let user choose to create class for it.
-
-                info.setReturnMap(relation.getResultMapId());
+                //let user to generate class for it.
+                //check the return result.
+                boolean checkHasFunction = checkHasFunction(find);
+                if(checkHasFunction&&find.getGroupByProps()==null){
+                    returnList = false;
+                }
+                GenClassDialog genClassDialog = new GenClassDialog(result.getProject(), find.getFetchProps(), fieldMap, result.getMethodName(), relation,result.getSrcClass());
+                boolean b = genClassDialog.showAndGet();
+                if(!b){
+                    //todo make it here.
+                    return null;
+                } else{
+                    GenClassInfo genClassInfo = genClassDialog.getGenClassInfo();
+                    GenClassService.generateClassFileUsingFtl(genClassInfo);
+                    VirtualFileManager.getInstance().syncRefresh();
+                    PsiDocumentManager manager = PsiDocumentManager.getInstance(result.getProject());
+                    //gonna build the resultMap for it.
+                    XmlFile mybatisXmlFile = result.getMybatisXmlFile();
+                    MyPsiXmlUtils.buildAllColumnMap(result.getProject(),manager.getDocument(mybatisXmlFile),mybatisXmlFile.getRootTag(),
+                            manager,genClassDialog.getExtractFieldToColumnRelation(),genClassDialog.getClassQutifiedName());
+                    info.setReturnClass(genClassDialog.getClassQutifiedName());
+                    info.setReturnMap(genClassDialog.getExtractFieldToColumnRelation().getResultMapId());
+                }
             } else {
                 //说明等于1
                 FetchProp prop = find.getFetchProps().get(0);
@@ -302,18 +351,8 @@ public class BaseQueryBuilder implements QueryBuilder {
                 } else {
                     returnList = false;
                     String fetchFunction = prop.getFetchFunction();
-                    switch (fetchFunction) {
-                        case KeyWordConstants.MAX:
-                        case KeyWordConstants.MIN: {
-                            info.setReturnClass(fieldMap.get(prop.getFetchProp()));
-                            break;
-                        }
-                        case KeyWordConstants.AVG:
-                        case KeyWordConstants.SUM: {
-                            info.setReturnClass("java.math.BigDecimal");
-                            break;
-                        }
-                    }
+                    String returnClass = DbUtils.getReturnClassFromFunction(fieldMap, fetchFunction, prop.getFetchProp());
+                    info.setReturnClass(returnClass);
                 }
             }
         } else {
@@ -350,6 +389,19 @@ public class BaseQueryBuilder implements QueryBuilder {
         queryBuilderHandler.handleFindAfterFromTable(info, result);
         return info;
 
+    }
+
+    private static boolean checkHasFunction(ParsedFind find) {
+        List<FetchProp> fetchProps = find.getFetchProps();
+        if(fetchProps==null||fetchProps.size()==0){
+            return false;
+        }
+        for (FetchProp fetchProp : fetchProps) {
+            if(fetchProp.getFetchFunction()!=null){
+                return true;
+            }
+        }
+        return false;
     }
 
     private static String extractLast(String returnClass) {

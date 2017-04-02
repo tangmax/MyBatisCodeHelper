@@ -74,8 +74,8 @@ public class MethodNameCompletionContributor extends CompletionContributor {
                     }
                 }
                 if (lower.equals("find")) {
-                    LookupElementBuilder builder = LookupElementBuilder.create(text + "First");
-                    result.addElement(builder);
+                    result.addElement(LookupElementBuilder.create(text + "First"));
+                    result.addElement(LookupElementBuilder.create(text + "One"));
                 }
             }
             if (defaultrecommed) {
@@ -96,6 +96,7 @@ public class MethodNameCompletionContributor extends CompletionContributor {
                 if (lower.endsWith("b")) {
                     afterlower.add("etween");
                     afterlower.add("etweenOrEqualTo");
+                    afterlower.add("efore");
                 }
                 if (lower.endsWith("i")) {
                     afterlower.add("n");
@@ -107,11 +108,24 @@ public class MethodNameCompletionContributor extends CompletionContributor {
                     afterlower.add("ot");
                     afterlower.add("otNull");
                 }
-                if(lower.endsWith("a")){
-                    afterlower.add("nd");
-                }
                 if(lower.endsWith("o")){
                     afterlower.add("r");
+                }
+
+                if(lower.endsWith("a")){
+                    afterlower.add("fter");
+                }
+
+                if(lower.endsWith("s")){
+                    afterlower.add("tartingwith");
+                }
+
+                if(lower.endsWith("e")){
+                    afterlower.add("ndingwith");
+                }
+
+                if(lower.endsWith("c")){
+                    afterlower.add("ontaining");
                 }
 
             }
@@ -123,6 +137,7 @@ public class MethodNameCompletionContributor extends CompletionContributor {
 
             if(lower.endsWith("a")){
                 afterlower.add("vg");
+                afterlower.add("nd");
             }
 
             if(lower.endsWith("s")){

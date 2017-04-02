@@ -1,4 +1,4 @@
-package com.ccnode.codegenerator.database.dbInfo;
+package com.ccnode.codegenerator.datasourceToolWindow.dbInfo;
 
 import java.util.List;
 

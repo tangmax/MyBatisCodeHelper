@@ -2,6 +2,9 @@ package com.ccnode.codegenerator.view.completion;
 
 import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
+import com.ccnode.codegenerator.sqlparse.ParseContext;
+import com.ccnode.codegenerator.sqlparse.ParsedResult;
+import com.ccnode.codegenerator.sqlparse.SqlParser;
 import com.ccnode.codegenerator.util.MyPsiXmlUtils;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.google.common.collect.ImmutableList;
@@ -10,10 +13,15 @@ import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
+import com.intellij.psi.xml.XmlTagValue;
 import com.intellij.psi.xml.XmlText;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +36,7 @@ import java.util.Set;
  */
 public class MapperSqlCompletionContributor extends CompletionContributor {
 
+    //    shall sort with order.
     private static ImmutableListMultimap<String, String> multimap = ImmutableListMultimap.<String, String>builder()
             .put("s", "select")
             .put("S", "SELECT")
@@ -81,14 +90,19 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             .put("U", "UNION")
             .put("r", "replace")
             .put("R", "REPLACE")
+            .put("u", "using")
+            .put("U", "USING")
             .build();
 
 
+    //not only basic type completion.
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
-        if (parameters.getCompletionType() != CompletionType.BASIC) {
-            return;
-        }
+//        if (parameters.getCompletionType() != CompletionType.BASIC) {
+//            return;
+//        }
+        //auto complete for different type.
+        // there are two type of the interface can be find or can't be find.
         PsiElement positionElement = parameters.getOriginalPosition();
         if (positionElement == null) {
             return;
@@ -101,7 +115,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         String positionText = position.getText();
         int endPosition = parameters.getEditor().getCaretModel().getCurrentCaret().getSelectionStart();
         int startOffset = parameters.getPosition().getTextRange().getStartOffset();
-        if (endPosition - startOffset <= 0) {
+        if (endPosition - startOffset < 0) {
             return;
         }
         //there are end text for it.
@@ -117,29 +131,6 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         }
         if (!rootTag1.getName().equals(MyBatisXmlConstants.MAPPER)) {
             return;
-        }
-
-        int m = realStart.lastIndexOf("`");
-        if (m != -1 && m > realStart.length() - 10) {
-            String lastText = realStart.substring(m + 1);
-
-            //get all the rootMap for it.
-            XmlTag[] subTags =
-                    rootTag1.getSubTags();
-            List<ColumnAndField> columnAndFields = new ArrayList<>();
-            for (XmlTag tag : subTags) {
-                if (tag.getName().equals(MyBatisXmlConstants.RESULTMAP)) {
-                    columnAndFields.addAll(generateColumnNames(tag));
-                }
-            }
-            Set<String> columns = extractColumn(columnAndFields);
-            int firstStart = findFindAlpha(realStart);
-            columns.forEach((item) -> {
-                boolean b = item.startsWith(lastText);
-                if (b) {
-                    result.addElement(LookupElementBuilder.create(realStart.substring(firstStart, m + 1) + item + "`"));
-                }
-            });
         }
 
         int findFieldIndex = realStart.lastIndexOf("#{");
@@ -164,12 +155,74 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             List<String> lookUpResult = PsiClassUtil.extractMyBatisParam(findMethod);
             String remaining = realStart.substring(findFieldIndex + 2);
             int findAlpha = findFindAlpha(realStart);
+            String substring = "";
+            if(findAlpha!=-1){
+                substring = realStart.substring(findAlpha, findFieldIndex + 2);
+            }
             for (String s : lookUpResult) {
                 if (s.startsWith(remaining)) {
-                    result.addElement(LookupElementBuilder.create(realStart.substring(findAlpha, findFieldIndex + 2) + s + "}"));
+                    result.addElement(LookupElementBuilder.create(substring +s + "}"));
                 }
             }
+            return;
         }
+
+
+        int m = realStart.lastIndexOf("`");
+        if (m != -1 && m > realStart.length() - 10) {
+            String lastText = realStart.substring(m + 1);
+
+            //get all the rootMap for it.
+            XmlTag[] subTags =
+                    rootTag1.getSubTags();
+            List<ColumnAndField> columnAndFields = new ArrayList<>();
+            for (XmlTag tag : subTags) {
+                if (tag.getName().equals(MyBatisXmlConstants.RESULTMAP)) {
+                    columnAndFields.addAll(generateColumnNames(tag));
+                }
+            }
+            Set<String> columns = extractColumn(columnAndFields);
+            int firstStart = findFindAlpha(realStart);
+            columns.forEach((item) -> {
+                boolean b = item.startsWith(lastText);
+                if (b) {
+                    result.addElement(LookupElementBuilder.create(realStart.substring(firstStart, m + 1) + item + "`"));
+                }
+            });
+//            return;
+        }
+
+        XmlTag currentElementXmlTag = MyPsiXmlUtils.findCurrentElementXmlTag(positionElement);
+        if (currentElementXmlTag != null) {
+            String text = currentElementXmlTag.getText();
+            XmlTagValue value =
+                    currentElementXmlTag.getValue();
+
+            Document document = PsiDocumentManager.getInstance(parameters.getEditor().getProject()).getDocument(xmlFile);
+            int startOffset1 = value.getTextRange().getStartOffset();
+            if (endPosition < startOffset1) {
+                return;
+            }
+            String startText = document.getText(new TextRange(startOffset1, endPosition));
+            String afterText = document.getText(new TextRange(endPosition, value.getTextRange().getEndOffset()));
+            //get words from startText.
+            ParseContext context = buildParseContext(parameters.getEditor().getProject(), realStart, startText, afterText, value.getText(), endPosition - startOffset1
+                    , parameters.getCompletionType(),currentElementXmlTag,xmlFile);
+            ParsedResult parse = SqlParser.parse(context);
+            //get lots of recommed list.
+
+            if (parse.getRecommedValues().size() > 0) {
+                for (LookupElement s : parse.getRecommedValues()) {
+                    result.addElement(s);
+                }
+                return;
+            }
+
+        }
+
+
+        //share the word.
+
 
         if (realStart.length() == 1) {
             ImmutableList<String> recommends = multimap.get(realStart);
@@ -180,13 +233,27 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
 
     }
 
+    private ParseContext buildParseContext(Project project, String realStart, String startText, String afterText, String text, int i, CompletionType type,XmlTag currentTag,XmlFile xmlFile) {
+        ParseContext context = new ParseContext();
+        context.setCursorOffSet(i);
+        context.setBeforeText(startText);
+        context.setAfterText(afterText);
+        context.setAllText(text);
+        context.setCurrentWordStart(realStart);
+        context.setProject(project);
+        context.setCompletionType(type);
+        context.setCurrentTag(currentTag);
+        context.setCurrentXmlFile(xmlFile);
+        return context;
+    }
+
     private static int findFindAlpha(String realStart) {
         for (int i = 0; i < realStart.length(); i++) {
             if (Character.isLetterOrDigit(realStart.charAt(i))) {
                 return i;
             }
         }
-        return 0;
+        return -1;
     }
 
     private static Set<String> extractField(List<ColumnAndField> columnAndFields) {

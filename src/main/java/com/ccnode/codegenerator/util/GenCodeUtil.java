@@ -1,7 +1,5 @@
 package com.ccnode.codegenerator.util;
 
-import com.ccnode.codegenerator.database.DatabaseComponenent;
-import com.ccnode.codegenerator.myconfigurable.DataBaseConstants;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -17,10 +15,10 @@ import java.util.List;
 public class GenCodeUtil {
 
 
-    public static final String ONE_RETRACT = "    ";
-    public static final String TWO_RETRACT = "        ";
-    public static final String THREE_RETRACT = "            ";
-    public static final String FOUR_RETRACT = "                ";
+    public static final String ONE_RETRACT = "\t";
+    public static final String TWO_RETRACT = "\t\t";
+    public static final String THREE_RETRACT = "\t\t\t";
+    public static final String FOUR_RETRACT = "\t\t\t\t";
     public static String MYSQL_TYPE = StringUtils.EMPTY;
     public static String PACKAGE_LINE = StringUtils.EMPTY;
 
@@ -93,6 +91,15 @@ public class GenCodeUtil {
     public static String getLowerCamel(String value) {
         return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, value);
     }
+
+    public static String getUpperStart(String value){
+        return value.substring(0,1).toUpperCase()+value.substring(1);
+    }
+
+    public static String getCamelFromUnderScore(String value) {
+        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, value);
+    }
+
 
     public static void main(String[] args) {
 //        System.out.println(deducePackage("src/main/java/com/qunar/insurance","com.qunar.insurance.annotion"));
