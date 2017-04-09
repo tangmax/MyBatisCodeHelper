@@ -19,6 +19,8 @@ public class MethodXmlPsiInfo {
 
     private Map<String, String> fieldMap;
 
+    private String allColumnName;
+
     private String psiClassName;
 
     private XmlFile mybatisXmlFile;
@@ -101,5 +103,14 @@ public class MethodXmlPsiInfo {
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+
+    public String getAllColumnName() {
+        return allColumnName;
+    }
+
+    public void setAllColumnName(String allColumnName) {
+        this.allColumnName = allColumnName;
     }
 }

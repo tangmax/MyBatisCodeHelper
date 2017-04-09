@@ -13,6 +13,9 @@ public class ExistXmlTagInfo {
     private boolean hasAllColumn;
 
 
+    private String allColumnSqlId;
+
+
     private boolean hasResultMap;
 
     public boolean isHasResultMap() {
@@ -45,5 +48,13 @@ public class ExistXmlTagInfo {
 
     public void setHasAllColumn(boolean hasAllColumn) {
         this.hasAllColumn = hasAllColumn;
+    }
+
+    public String getAllColumnSqlId() {
+        return allColumnSqlId;
+    }
+
+    public void setAllColumnSqlId(String allColumnSqlId) {
+        this.allColumnSqlId = allColumnSqlId;
     }
 }

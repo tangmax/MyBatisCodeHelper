@@ -10,6 +10,10 @@ import java.util.Map;
 public class FieldToColumnRelation {
     private String resultMapId;
 
+    private Boolean hasFullRelation;
+
+    private Boolean hasJavaTypeResultMap;
+
     private Map<String, String> filedToColumnMap;
 
     public String getResultMapId() {
@@ -33,7 +37,23 @@ public class FieldToColumnRelation {
         return DatabaseComponenent.formatColumn(s);
     }
 
+    public Boolean getHasFullRelation() {
+        return hasFullRelation;
+    }
+
+    public void setHasFullRelation(Boolean hasFullRelation) {
+        this.hasFullRelation = hasFullRelation;
+    }
+
     public String getPropColumn(String prop){
         return filedToColumnMap.get(prop.toLowerCase());
+    }
+
+    public Boolean getHasJavaTypeResultMap() {
+        return hasJavaTypeResultMap;
+    }
+
+    public void setHasJavaTypeResultMap(Boolean hasJavaTypeResultMap) {
+        this.hasJavaTypeResultMap = hasJavaTypeResultMap;
     }
 }

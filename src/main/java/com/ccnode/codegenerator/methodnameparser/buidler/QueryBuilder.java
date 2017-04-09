@@ -110,6 +110,7 @@ public class QueryBuilder {
         methodNameParsedResult.setSrcClass(info.getSrcClass());
         methodNameParsedResult.setProject(info.getProject());
         methodNameParsedResult.setMybatisXmlFile(info.getMybatisXmlFile());
+        methodNameParsedResult.setAllColumnName(info.getAllColumnName());
         return methodNameParsedResult;
     }
 

@@ -86,14 +86,12 @@ public class GenMethodXmlInvoker {
             return null;
         }
 
-        ExistXmlTagInfo existXmlTagInfo = MyPsiXmlUtils.extractExistXmlInfo(props, rootTag, pojoClass.getQualifiedName());
-        if (existXmlTagInfo.getTableName() == null && domainClassInfo.getDomainClassSourceType() == DomainClassSourceType.MYBATISPLUS) {
-            String tableName = MyBatisPlusUtils.extractTableNameForMybatisPlus(domainClassInfo);
-            if (tableName != null) {
-                existXmlTagInfo.setTableName(tableName);
-            }
+//        ExistXmlTagInfo existXmlTagInfo = MyPsiXmlUtils.extractExistXmlInfo(props, rootTag, pojoClass.getQualifiedName());
+        String tableName = MyPsiXmlUtils.findTableNameFromRootTag(rootTag);
+        if (tableName == null && domainClassInfo.getDomainClassSourceType() == DomainClassSourceType.MYBATISPLUS) {
+            tableName = MyBatisPlusUtils.extractTableNameForMybatisPlus(domainClassInfo);
         }
-        if (StringUtils.isEmpty(existXmlTagInfo.getTableName())) {
+        if (StringUtils.isEmpty(tableName)) {
 
             Messages.showErrorDialog("can't find table name from your " + psixml.getName() + "" +
                     "\nplease add a correct insert method into the file\n" +
@@ -103,9 +101,10 @@ public class GenMethodXmlInvoker {
             return null;
         }
 
+        FieldToColumnRelation relation =  MyPsiXmlUtils.findFieldToColumnRelation(rootTag,pojoClass.getQualifiedName(),props);
         PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(myProject);
-        if (existXmlTagInfo.getFieldToColumnRelation() == null) {
-            if (existXmlTagInfo.isHasResultMap()) {
+        if (!relation.getHasFullRelation()) {
+            if (relation.getHasJavaTypeResultMap()) {
                 Messages.showErrorDialog("please check with your resultMap\n" +
                         "dose it contain all the property of " + pojoClass.getQualifiedName() + "? ", "proprety in resultMap is not complete");
                 return null;
@@ -122,29 +121,38 @@ public class GenMethodXmlInvoker {
                 //use to generate resultMap
                 MyPsiXmlUtils.buildAllColumnMap(myProject,psiDocumentManager.getDocument(psixml), rootTag, psiDocumentManager, relation1, pojoClass.getQualifiedName());
 
-                existXmlTagInfo.setFieldToColumnRelation(MyPsiXmlUtils.convertToRelation(relation1));
+                relation = MyPsiXmlUtils.convertToRelation(relation1);
             }
         }
 
-        if (!existXmlTagInfo.isHasAllColumn()) {
-            String allColumn = MyPsiXmlUtils.buildAllColumn(existXmlTagInfo.getFieldToColumnRelation().getFiledToColumnMap());
+        String allColumnName = MyPsiXmlUtils.findAllColumnName(rootTag,relation.getFiledToColumnMap());
+        if(allColumnName==null){
+            String allColumn = MyPsiXmlUtils.buildAllColumn(relation.getFiledToColumnMap());
             XmlTag sql = rootTag.createChildTag("sql", "", allColumn, false);
             sql.setAttribute("id", MapperConstants.ALL_COLUMN);
             rootTag.addSubTag(sql, true);
+            allColumnName = MapperConstants.ALL_COLUMN;
         }
 
         StringBuilder newDaoTextBuider = new StringBuilder();
         List<XmlTag> newGeneratedTag = Lists.newArrayList();
         Set<String> allImportList = Sets.newHashSet();
         Document document = psiDocumentManager.getDocument(srcClass.getContainingFile());
+        MethodXmlPsiInfo methodInfo = new MethodXmlPsiInfo();
+        methodInfo.setTableName(tableName);
+        methodInfo.setRelation(relation);
+        methodInfo.setAllColumnName(allColumnName);
+        methodInfo.setTableName(tableName);
+        methodInfo.setPsiClassFullName(pojoClass.getQualifiedName());
+        methodInfo.setPsiClassName(pojoClass.getName());
+        methodInfo.setFieldMap(PsiClassUtil.buildFieldMapWithConvertPrimitiveType(pojoClass));
+        methodInfo.setProject(myProject);
+        methodInfo.setMybatisXmlFile(psixml);
+        methodInfo.setSrcClass(srcClass);
         for (String methodName : this.methodNameList) {
-            MethodXmlPsiInfo methodInfo = new MethodXmlPsiInfo();
             methodInfo.setMethodName(methodName);
-            methodInfo.setRelation(existXmlTagInfo.getFieldToColumnRelation());
-
             XmlTag existTag
                     = MyPsiXmlUtils.methodAlreadyExist(psixml, methodInfo.getMethodName());
-
             if (existTag != null) {
                 MethodExistDialog exist = new MethodExistDialog(myProject, existTag.getText());
                 boolean b = exist.showAndGet();
@@ -158,13 +166,6 @@ public class GenMethodXmlInvoker {
                 }
             }
             rootTag = psixml.getRootTag();
-            methodInfo.setTableName(existXmlTagInfo.getTableName());
-            methodInfo.setPsiClassFullName(pojoClass.getQualifiedName());
-            methodInfo.setPsiClassName(pojoClass.getName());
-            methodInfo.setFieldMap(PsiClassUtil.buildFieldMapWithConvertPrimitiveType(pojoClass));
-            methodInfo.setProject(myProject);
-            methodInfo.setMybatisXmlFile(psixml);
-            methodInfo.setSrcClass(srcClass);
             QueryParseDto parseDto = QueryParser.parse(props, methodInfo);
             XmlTagAndInfo choosed = null;
             if (parseDto == null) {

@@ -1,6 +1,5 @@
 package com.ccnode.codegenerator.util;
 
-import com.ccnode.codegenerator.constants.MapperConstants;
 import com.ccnode.codegenerator.constants.MyBatisXmlConstants;
 import com.ccnode.codegenerator.database.DatabaseComponenent;
 import com.ccnode.codegenerator.dialog.MapperUtil;
@@ -9,6 +8,7 @@ import com.ccnode.codegenerator.methodnameparser.tag.XmlTagAndInfo;
 import com.ccnode.codegenerator.pojo.ExistXmlTagInfo;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
@@ -20,6 +20,7 @@ import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +32,9 @@ import java.util.*;
  * @Description
  */
 public class MyPsiXmlUtils {
+
+    public static final int TABLENAME_MAX_SIZE = 30;
+
     @NotNull
     public static List<XmlTag> getXmlAttributeOfType(XmlDocument xmlDocument, Set<String> tagNames) {
         List<XmlTag> values = Lists.newArrayList();
@@ -126,6 +130,35 @@ public class MyPsiXmlUtils {
         return rootTag.getAttributeValue(MyBatisXmlConstants.NAMESPACE);
     }
 
+    @Nullable
+    public static String findTableNameFromRootTag(XmlTag rootTag) {
+        List<XmlTag> insertXmlTags = findTagWithNameType(rootTag, MyBatisXmlConstants.INSERT);
+        if (insertXmlTags.isEmpty()) {
+            return null;
+        }
+        for (XmlTag insertXmlTag : insertXmlTags) {
+            String insertText = insertXmlTag.getValue().getText();
+            //go format it.
+            String tableName = MapperUtil.extractTable(insertText);
+            if (tableName != null && tableName.length() < TABLENAME_MAX_SIZE) {
+                return tableName;
+            }
+        }
+        return null;
+    }
+
+    @NotNull
+    private static List<XmlTag> findTagWithNameType(XmlTag rootTag, String tagName) {
+        List<XmlTag> xmlTags = Lists.newArrayList();
+        XmlTag[] subTags = rootTag.getSubTags();
+        for (XmlTag tag : subTags) {
+            if (tag.getName().equalsIgnoreCase(tagName)) {
+                xmlTags.add(tag);
+            }
+        }
+        return xmlTags;
+    }
+
     @NotNull
     public static ExistXmlTagInfo extractExistXmlInfo(List<String> props, XmlTag rootTag, String qualifiedName) {
         ExistXmlTagInfo existXmlTagInfo = new ExistXmlTagInfo();
@@ -155,8 +188,8 @@ public class MyPsiXmlUtils {
                 }
             } else if (!existXmlTagInfo.isHasAllColumn() && tag.getName().equalsIgnoreCase(MyBatisXmlConstants.SQL)) {
                 XmlAttribute id = tag.getAttribute(MyBatisXmlConstants.ID);
-                if (id != null && id.getValue().equals(MapperConstants.ALL_COLUMN)) {
-                    existXmlTagInfo.setHasAllColumn(true);
+                if (id != null && StringUtils.isNotBlank(id.getValue())) {
+                    String text = tag.getValue().getText();
                 }
             }
             //then go next shall be the same.
@@ -165,6 +198,7 @@ public class MyPsiXmlUtils {
         return existXmlTagInfo;
     }
 
+    @Nullable
     public static FieldToColumnRelation extractFieldAndColumnRelation(XmlTag tag, List<String> props, String resultMapId) {
         Set<String> propSet = new HashSet<>(props);
         XmlTag[] subTags = tag.getSubTags();
@@ -263,7 +297,7 @@ public class MyPsiXmlUtils {
         XmlTag resultMap = rootTag.createChildTag(MyBatisXmlConstants.RESULTMAP, "", allColumnMap, false);
         resultMap.setAttribute(MyBatisXmlConstants.ID, relation1.getResultMapId());
         resultMap.setAttribute(MyBatisXmlConstants.TYPE, qualifiedName);
-        WriteCommandAction.runWriteCommandAction(myProject,()->{
+        WriteCommandAction.runWriteCommandAction(myProject, () -> {
             rootTag.addSubTag(resultMap, true);
             Document xmlDocument = document;
             PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, xmlDocument);
@@ -274,7 +308,7 @@ public class MyPsiXmlUtils {
     @Nullable
     public static XmlTag findTagForMethodName(XmlFile xmlFile, String name) {
         XmlTag rootTag = xmlFile.getRootTag();
-        if(rootTag==null){
+        if (rootTag == null) {
             return null;
         }
         XmlTag[] subTags = rootTag.getSubTags();
@@ -288,5 +322,87 @@ public class MyPsiXmlUtils {
             }
         }
         return null;
+    }
+
+    @NotNull
+    public static FieldToColumnRelation findFieldToColumnRelation(XmlTag rootTag, String qualifiedName, List<String> props) {
+        List<XmlTag> resultMapTags = findTagWithNameType(rootTag, MyBatisXmlConstants.RESULTMAP);
+        FieldToColumnRelation fieldToColumnRelation = new FieldToColumnRelation();
+        fieldToColumnRelation.setHasFullRelation(false);
+        fieldToColumnRelation.setHasJavaTypeResultMap(false);
+        for (XmlTag tag : resultMapTags) {
+            XmlAttribute id = tag.getAttribute(MyBatisXmlConstants.ID);
+            if (id != null && id.getValue() != null) {
+                String resultMapId = id.getValue();
+                XmlAttribute typeAttribute = tag.getAttribute(MyBatisXmlConstants.TYPE);
+                if (typeAttribute != null && typeAttribute.getValue() != null && typeAttribute.getValue().trim().equals(qualifiedName)) {
+                    //mean we find the corresponding prop.
+                    fieldToColumnRelation.setHasJavaTypeResultMap(true);
+                    FieldToColumnRelation relation = extractFieldAndColumnRelation(tag, props, resultMapId);
+                    if (relation != null) {
+                        fieldToColumnRelation.setHasFullRelation(true);
+                        fieldToColumnRelation.setFiledToColumnMap(relation.getFiledToColumnMap());
+                        fieldToColumnRelation.setResultMapId(relation.getResultMapId());
+                        return fieldToColumnRelation;
+                    }
+                }
+            }
+        }
+        return fieldToColumnRelation;
+    }
+
+    @Nullable
+    public static String findAllColumnName(XmlTag rootTag, Map<String, String> filedToColumnMap) {
+        List<XmlTag> sqlTags = findTagWithNameType(rootTag, MyBatisXmlConstants.SQL);
+        Set<String> allColumns = getAllColumn(filedToColumnMap);
+        for (XmlTag sqlTag : sqlTags) {
+            XmlAttribute id = sqlTag.getAttribute(MyBatisXmlConstants.ID);
+            if (id != null && StringUtils.isNotBlank(id.getValue())) {
+                String text = sqlTag.getValue().getText();
+                if (checkContainAllColumn(text, allColumns)) {
+                    return id.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean checkContainAllColumn(String text, Set<String> allColumns) {
+        Set<String> textColumns = Sets.newHashSet();
+        String u = "";
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c == '`' || c == ' ' || c == '\t' || c == '\n' || c == ',') {
+                if (u.length() > 0) {
+                    textColumns.add(u);
+                    u = "";
+                } else {
+                    continue;
+                }
+            } else {
+                u+=c;
+            }
+        }
+        if(u.length()>0){
+            textColumns.add(u);
+        }
+        if (textColumns.size() == allColumns.size()) {
+            for (String textColumn : textColumns) {
+                if (!allColumns.contains(textColumn)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+
+    }
+
+    private static Set<String> getAllColumn(Map<String, String> filedToColumnMap) {
+        Set<String> allColumn = Sets.newHashSet();
+        filedToColumnMap.forEach((key, value) -> {
+            allColumn.add(value);
+        });
+        return allColumn;
     }
 }

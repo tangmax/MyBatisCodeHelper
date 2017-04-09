@@ -27,6 +27,9 @@ public class MethodNameParsedResult {
     private XmlFile mybatisXmlFile;
 
 
+    private String allColumnName;
+
+
     private Project project;
 
 
@@ -159,5 +162,14 @@ public class MethodNameParsedResult {
 
     public void setMybatisXmlFile(XmlFile mybatisXmlFile) {
         this.mybatisXmlFile = mybatisXmlFile;
+    }
+
+
+    public String getAllColumnName() {
+        return allColumnName;
+    }
+
+    public void setAllColumnName(String allColumnName) {
+        this.allColumnName = allColumnName;
     }
 }

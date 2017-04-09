@@ -1,6 +1,5 @@
 package com.ccnode.codegenerator.database.handler.mysql;
 
-import com.ccnode.codegenerator.constants.MapperConstants;
 import com.ccnode.codegenerator.database.DbUtils;
 import com.ccnode.codegenerator.database.handler.BaseQueryBuilder;
 import com.ccnode.codegenerator.database.handler.QueryBuilderHandler;
@@ -29,7 +28,7 @@ public class MysqlQueryBuilderHandler implements QueryBuilderHandler {
         StringBuilder builder = new StringBuilder();
         //will notice it.
         if (queryAllTable) {
-            builder.append("\n" + GenCodeUtil.ONE_RETRACT + "select <include refid=\"" + MapperConstants.ALL_COLUMN + "\"/>");
+            builder.append("\n" + GenCodeUtil.ONE_RETRACT + "select <include refid=\"" + parsedResult.getAllColumnName() + "\"/>");
         } else {
             builder.append("\n" + GenCodeUtil.ONE_RETRACT + "select");
             if (find.getDistinct()) {
