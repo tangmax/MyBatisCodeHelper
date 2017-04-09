@@ -9,6 +9,7 @@ import com.ccnode.codegenerator.util.MyPsiXmlUtils;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Lists;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
@@ -94,6 +95,9 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             .put("U", "USING")
             .build();
 
+    private static List<String> jdbcType = Lists.newArrayList("CHAR", "VARCHAR", "LONGVARCHAR", "BIT", "TINYINT", "SMALLINT", "INTEGER", "BIGINT", "REAL"
+            , "DOUBLE", "FLOAT", "DECIMAL", "NUMERIC", "DATE", "TIME", "TIMESTAMP");
+
 
     //not only basic type completion.
     @Override
@@ -136,6 +140,19 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         int findFieldIndex = realStart.lastIndexOf("#{");
         if (findFieldIndex != -1 && findFieldIndex > realStart.length() - 10) {
             //find all the prop for it.
+            //todo just a fast use of this, need thing more into it.
+            if (realStart.endsWith(",")) {
+                //do jdbcType recommed..
+                int findAlpha = findFindAlpha(realStart);
+                String substring = "";
+                if (findAlpha != -1) {
+                    substring = realStart.substring(findAlpha);
+                }
+                for (String s : jdbcType) {
+                    result.addElement(LookupElementBuilder.create(substring + "jdbcType=" + s + "}"));
+                }
+                return;
+            }
             String namespace = MyPsiXmlUtils.findCurrentXmlFileNameSpace(xmlFile);
             PsiClass namespaceClass = PsiClassUtil.findClassOfQuatifiedType(xmlFile, namespace);
             if (namespaceClass == null) {
@@ -156,12 +173,12 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             String remaining = realStart.substring(findFieldIndex + 2);
             int findAlpha = findFindAlpha(realStart);
             String substring = "";
-            if(findAlpha!=-1){
+            if (findAlpha != -1) {
                 substring = realStart.substring(findAlpha, findFieldIndex + 2);
             }
             for (String s : lookUpResult) {
                 if (s.startsWith(remaining)) {
-                    result.addElement(LookupElementBuilder.create(substring +s + "}"));
+                    result.addElement(LookupElementBuilder.create(substring + s + "}"));
                 }
             }
             return;
@@ -207,7 +224,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             String afterText = document.getText(new TextRange(endPosition, value.getTextRange().getEndOffset()));
             //get words from startText.
             ParseContext context = buildParseContext(parameters.getEditor().getProject(), realStart, startText, afterText, value.getText(), endPosition - startOffset1
-                    , parameters.getCompletionType(),currentElementXmlTag,xmlFile);
+                    , parameters.getCompletionType(), currentElementXmlTag, xmlFile);
             ParsedResult parse = SqlParser.parse(context);
             //get lots of recommed list.
 
@@ -233,7 +250,7 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
 
     }
 
-    private ParseContext buildParseContext(Project project, String realStart, String startText, String afterText, String text, int i, CompletionType type,XmlTag currentTag,XmlFile xmlFile) {
+    private ParseContext buildParseContext(Project project, String realStart, String startText, String afterText, String text, int i, CompletionType type, XmlTag currentTag, XmlFile xmlFile) {
         ParseContext context = new ParseContext();
         context.setCursorOffSet(i);
         context.setBeforeText(startText);
