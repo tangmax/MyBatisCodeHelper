@@ -52,6 +52,9 @@ public class MethodNameCompletionContributor extends CompletionContributor {
             //todo could use like when there. why after press tab can't show with more?
 //            get pojo class from it.
             DomainClassInfo domainClassInfo = PsiClassUtil.getDomainClassInfo(containingClass);
+            if(domainClassInfo==null){
+                return;
+            }
             PsiClass pojoClass = domainClassInfo.getDomainClass();
             if (pojoClass == null) {
                 return;
