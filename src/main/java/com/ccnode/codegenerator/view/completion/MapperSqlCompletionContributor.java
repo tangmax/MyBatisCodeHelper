@@ -138,50 +138,14 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
         }
 
         int findFieldIndex = realStart.lastIndexOf("#{");
-        if (findFieldIndex != -1 && findFieldIndex > realStart.length() - 10) {
-            //find all the prop for it.
-            //todo just a fast use of this, need thing more into it.
-            if (realStart.endsWith(",")) {
-                //do jdbcType recommed..
-                int findAlpha = findFindAlpha(realStart);
-                String substring = "";
-                if (findAlpha != -1) {
-                    substring = realStart.substring(findAlpha);
-                }
-                for (String s : jdbcType) {
-                    result.addElement(LookupElementBuilder.create(substring + "jdbcType=" + s + "}"));
-                }
+        //不如直接判断 之后的字符是否包含}号
+        //判断findFieldIndex>10的原因是？ 表示的当前的字符离#{的距离不超过10
+        if (findFieldIndex != -1) {
+            String laterString = realStart.substring(findFieldIndex);
+            if(!laterString.contains("}")){
+                addRecommendInParam(result, positionElement, realStart, xmlFile, findFieldIndex);
                 return;
             }
-            String namespace = MyPsiXmlUtils.findCurrentXmlFileNameSpace(xmlFile);
-            PsiClass namespaceClass = PsiClassUtil.findClassOfQuatifiedType(xmlFile, namespace);
-            if (namespaceClass == null) {
-                return;
-            }
-
-            //only for those four method to use.
-            String methodName = MyPsiXmlUtils.findCurrentElementIntefaceMethodName(positionElement);
-            //find the corresponding method.
-            if (StringUtils.isBlank(methodName)) {
-                return;
-            }
-            PsiMethod findMethod = PsiClassUtil.getClassMethodByMethodName(namespaceClass, methodName);
-            if (findMethod == null) {
-                return;
-            }
-            List<String> lookUpResult = PsiClassUtil.extractMyBatisParam(findMethod);
-            String remaining = realStart.substring(findFieldIndex + 2);
-            int findAlpha = findFindAlpha(realStart);
-            String substring = "";
-            if (findAlpha != -1) {
-                substring = realStart.substring(findAlpha, findFieldIndex + 2);
-            }
-            for (String s : lookUpResult) {
-                if (s.startsWith(remaining)) {
-                    result.addElement(LookupElementBuilder.create(substring + s + "}"));
-                }
-            }
-            return;
         }
 
 
@@ -248,6 +212,53 @@ public class MapperSqlCompletionContributor extends CompletionContributor {
             }
         }
 
+    }
+
+    private void addRecommendInParam(@NotNull CompletionResultSet result, PsiElement positionElement, String realStart, XmlFile xmlFile, int findFieldIndex) {
+
+        //find all the prop for it.
+        //todo just a fast use of this, need thing more into it.
+        if (realStart.endsWith(",")) {
+            //do jdbcType recommed..
+            int findAlpha = findFindAlpha(realStart);
+            String substring = "";
+            if (findAlpha != -1) {
+                substring = realStart.substring(findAlpha);
+            }
+            for (String s : jdbcType) {
+                result.addElement(LookupElementBuilder.create(substring + "jdbcType=" + s));
+            }
+            return;
+        }
+        String namespace = MyPsiXmlUtils.findCurrentXmlFileNameSpace(xmlFile);
+        PsiClass namespaceClass = PsiClassUtil.findClassOfQuatifiedType(xmlFile, namespace);
+        if (namespaceClass == null) {
+            return;
+        }
+
+        //only for those four method to use.
+        String methodName = MyPsiXmlUtils.findCurrentElementIntefaceMethodName(positionElement);
+        //find the corresponding method.
+        if (StringUtils.isBlank(methodName)) {
+            return;
+        }
+        PsiMethod findMethod = PsiClassUtil.getClassMethodByMethodName(namespaceClass, methodName);
+        if (findMethod == null) {
+            return;
+        }
+        List<String> lookUpResult = PsiClassUtil.extractMyBatisParam(findMethod);
+        String remaining = realStart.substring(findFieldIndex + 2);
+        int findAlpha = findFindAlpha(realStart);
+        String substring = "";
+        if (findAlpha != -1) {
+            substring = realStart.substring(findAlpha, findFieldIndex + 2);
+        }
+        for (String s : lookUpResult) {
+            if (s.startsWith(remaining)) {
+                result.addElement(LookupElementBuilder.create(substring + s + "}"));
+            }
+        }
+        return;
     }
 
     private ParseContext buildParseContext(Project project, String realStart, String startText, String afterText, String text, int i, CompletionType type, XmlTag currentTag, XmlFile xmlFile) {
