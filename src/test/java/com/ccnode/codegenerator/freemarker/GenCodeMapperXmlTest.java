@@ -41,6 +41,7 @@ public class GenCodeMapperXmlTest {
         columnAndFieldAndFormattedColumn.setFormattedColumn(columnName);
         columnAndFieldAndFormattedColumn.setField(fieldName);
         columnAndFieldAndFormattedColumn.setColumn(columnName);
+        columnAndFieldAndFormattedColumn.setJdbcType("INTEGER");
         return columnAndFieldAndFormattedColumn;
     }
 

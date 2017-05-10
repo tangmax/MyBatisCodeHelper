@@ -36,6 +36,7 @@ public class GenMapperService {
             columnAndField.setColumn(prop.getColumnName());
             columnAndField.setField(prop.getFieldName());
             columnAndField.setFormattedColumn(DatabaseComponenent.formatColumn(prop.getColumnName()));
+            columnAndField.setJdbcType(prop.getFiledType());
             return columnAndField;
         }).collect(Collectors.toList());
         root.put(TemplateConstants.USE_GENERATED_KEYS, MyBatisCodeHelperApplicationComponent.getInstance().getState().getProfile().getUseGeneratedKeys());

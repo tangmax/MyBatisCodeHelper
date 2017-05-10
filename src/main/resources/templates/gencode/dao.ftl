@@ -8,11 +8,14 @@ import ${pojoFullType};
 
 <#if addMapperAnnotation>@Mapper</#if>
 public interface ${daoType} {
-    int insert(@Param("pojo") ${pojoType} pojo);
 
-    int insertSelective(@Param("pojo") ${pojoType} pojo);
+    ${pojoType} selectByPrimaryKey(Long id);
 
-    int insertList(@Param("pojos") List<${pojoType}> pojo);
+    int deleteByPrimaryKey(Long id);
 
-    int update(@Param("pojo") ${pojoType} pojo);
+    int insert(${pojoType} pojo);
+
+    int updateByPrimaryKeySelective(${pojoType} pojo);
+
+    int updateByPrimaryKey(${pojoType} pojo);
 }

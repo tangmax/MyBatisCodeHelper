@@ -8,11 +8,14 @@ public class ColumnAndField {
 
     protected String field;
 
+    protected String jdbcType;
+
     public ColumnAndField(){}
 
-    public ColumnAndField(String column, String field) {
+    public ColumnAndField(String column, String field, String jdbcType) {
         this.column = column;
         this.field = field;
+        this.jdbcType = jdbcType;
     }
 
     public String getColumn() {
@@ -29,5 +32,13 @@ public class ColumnAndField {
 
     public void setField(String field) {
         this.field = field;
+    }
+
+    public String getJdbcType() {
+        return jdbcType;
+    }
+
+    public void setJdbcType(String jdbcType) {
+        this.jdbcType = jdbcType;
     }
 }
